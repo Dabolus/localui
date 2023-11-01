@@ -1,13 +1,11 @@
-import * as React from 'react';
-import * as ReactDOMServer from 'react-dom/server';
+import { renderToString } from 'react-dom/server';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
-import createEmotionCache from './src/createEmotionCache';
-import theme from './src/theme';
-import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider, CssBaseline } from '@mui/material';
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
+import createEmotionCache from './src/createEmotionCache';
+import theme from './src/theme';
 
 export default function handleRequest(
   request: Request,
@@ -31,7 +29,7 @@ export default function handleRequest(
   }
 
   // Render the component to a string.
-  const html = ReactDOMServer.renderToString(<MuiRemixServer />);
+  const html = renderToString(<MuiRemixServer />);
 
   // Grab the CSS from emotion
   const { styles } = extractCriticalToChunks(html);

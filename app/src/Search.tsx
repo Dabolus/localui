@@ -57,8 +57,7 @@ export default function Search() {
         {...bindTrigger(popupState)}
         onFocus={popupState.open}
         onBlur={popupState.close}
-        placeholder="Search…"
-        inputProps={{ 'aria-label': 'Search' }}
+        placeholder="Search"
       />
       <Popover
         {...bindPopover(popupState)}

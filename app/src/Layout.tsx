@@ -1,14 +1,13 @@
 import { PropsWithChildren } from 'react';
-import Box from '@mui/material/Box';
-import Footer from './Footer';
-import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
+import { Box, AppBar, IconButton, Toolbar, Typography } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
+import Footer from './Footer';
 import Search from './Search';
 
 export default function Layout({ children }: PropsWithChildren<{}>) {
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="static" sx={{ flex: 0 }}>
         <Toolbar variant="dense">
           <IconButton
             edge="start"
@@ -24,8 +23,8 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
           <Search />
         </Toolbar>
       </AppBar>
-      <Box sx={{ my: 4 }}>
-        {children}
+      <Box sx={{ flex: 1 }}>{children}</Box>
+      <Box sx={{ flex: 0 }}>
         <Footer />
       </Box>
     </>

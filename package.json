@@ -9,17 +9,20 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.440.0",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.1",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.16",
+    "@mui/x-data-grid": "^6.17.0",
     "@remix-run/css-bundle": "^2.2.0",
     "@remix-run/node": "^2.2.0",
     "@remix-run/react": "^2.2.0",
     "@remix-run/serve": "^2.2.0",
     "@remix-run/server-runtime": "^2.2.0",
+    "fuse.js": "^7.0.0",
     "material-ui-popup-state": "^5.0.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
