@@ -1,17 +1,19 @@
 import { createTheme } from '@mui/material/styles';
-import { red } from '@mui/material/colors';
+import './fonts/styles.css';
 
 // Create a theme instance.
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#556cd6',
+      main: '#232f3e',
     },
     secondary: {
-      main: '#19857b',
+      main: '#ff9900',
     },
-    error: {
-      main: red.A400,
+  },
+  typography: {
+    allVariants: {
+      fontFamily: '"Amazon Ember", sans-serif',
     },
   },
 });
