@@ -22,6 +22,8 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import { formatDateTime, highlightMatches } from '~/src/utils';
+import CurrentPath from '~/src/components/CurrentPath';
+import { setupAwsClients } from '~/src/aws';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -30,21 +32,12 @@ const SearchField = styled(TextField)({
 });
 
 export async function loader() {
-  const s3Client = new S3Client({
-    // TODO: use environment variables
-    endpoint: 'http://127.0.0.1:4566',
-    region: 'us-east-1',
-    credentials: {
-      accessKeyId: 'user',
-      secretAccessKey: 'password',
-    },
-  });
+  const [s3Client] = setupAwsClients('s3') as [S3Client];
   const response = await s3Client.send(new ListBucketsCommand({}));
-
   return json({ buckets: response.Buckets ?? [] });
 }
 
-export default function About() {
+export default function BucketsList() {
   const { buckets } = useLoaderData<typeof loader>();
   const [selectedBuckets, setSelectedBuckets] = useState<string[]>([]);
   const [search, setSearch] = useState('');
@@ -56,13 +49,14 @@ export default function About() {
 
   return (
     <>
+      <CurrentPath />
       <Stack p={2}>
         <Stack
           direction="row"
           justifyContent="space-between"
           alignItems="center"
         >
-          <Typography variant="h5" component="h1" gutterBottom>
+          <Typography variant="h5" component="h2" gutterBottom>
             Buckets ({buckets.length})
           </Typography>
           <Stack direction="row" gap={1}>

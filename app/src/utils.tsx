@@ -33,3 +33,15 @@ export const highlightMatches = (
 
   return <>{result}</>;
 };
+
+export const kebabToTitleCase = (text: string) =>
+  text
+    .split('-')
+    .map(word => word[0].toUpperCase() + word.slice(1))
+    .join(' ');
+
+export const titleToKebabCase = (text: string) =>
+  text
+    .split(' ')
+    .map(word => word.toLowerCase())
+    .join('-');

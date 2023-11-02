@@ -17,7 +17,7 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" component="h1" noWrap sx={{ flexGrow: 1 }}>
             AWS UI
           </Typography>
           <Search />
