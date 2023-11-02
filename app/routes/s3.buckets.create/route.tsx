@@ -16,17 +16,21 @@ import {
   Autocomplete,
 } from '@mui/material';
 import CurrentPath from '~/src/components/CurrentPath';
-import { setupAwsClients, awsRegionsWithContinents } from '~/src/aws';
+import { setupAwsClients } from '~/src/aws/server';
+import { awsRegionsWithContinents } from '~/src/aws/common';
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const [s3Client] = setupAwsClients('s3') as [S3Client];
+  const providedRegion = formData.get('region') ?? undefined;
   const response = await s3Client.send(
     new CreateBucketCommand({
       Bucket: formData.get('name') as string,
       CreateBucketConfiguration: {
         LocationConstraint:
-          (formData.get('region') as BucketLocationConstraint) ?? undefined,
+          providedRegion === 'us-east-1'
+            ? undefined
+            : (providedRegion as BucketLocationConstraint),
       },
     }),
   );
@@ -49,7 +53,7 @@ export default function CreateBucket() {
         width="100%"
         maxWidth={640}
         component={Form}
-        method="post"
+        method="POST"
         action="/s3/buckets/create"
       >
         <Typography variant="h5" component="h2" gutterBottom>
@@ -69,14 +73,18 @@ export default function CreateBucket() {
                   }`
                 }
                 defaultValue={awsRegionsWithContinents[0]}
-                renderInput={params => (
-                  <TextField
-                    {...params}
-                    required
-                    label="Region"
-                    name="region"
-                  />
-                )}
+                renderInput={params => {
+                  const optionName = params.inputProps.value as string;
+                  const optionValue = optionName.slice(
+                    optionName.lastIndexOf(' ') + 1,
+                  );
+                  return (
+                    <>
+                      <input name="region" type="hidden" value={optionValue} />
+                      <TextField {...params} required label="Region" />
+                    </>
+                  );
+                }}
               />
             </Stack>
           </CardContent>

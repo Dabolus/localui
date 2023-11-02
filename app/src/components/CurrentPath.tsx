@@ -15,7 +15,7 @@ import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { ChevronRight as ChevronRightIcon } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 import { kebabToTitleCase } from '../utils';
-import { serviceToNameMap } from '../aws';
+import { serviceToNameMap } from '../aws/common';
 
 interface PathLinkProps extends RemixLinkProps {
   selected?: boolean;

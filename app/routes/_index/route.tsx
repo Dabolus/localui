@@ -1,7 +1,8 @@
 import { Link as RemixLink, useLoaderData } from '@remix-run/react';
 import { Typography, Link, Stack } from '@mui/material';
 import { redirect, type MetaFunction } from '@remix-run/node';
-import { getEnabledServices, serviceToNameMap } from '~/src/aws';
+import { getEnabledServices } from '~/src/aws/server';
+import { serviceToNameMap } from '~/src/aws/common';
 import CurrentPath from '~/src/components/CurrentPath';
 
 // https://remix.run/docs/en/main/route/meta
@@ -12,7 +13,6 @@ export const meta: MetaFunction = () => [
 
 export async function loader() {
   const services = getEnabledServices();
-  console.log(services);
   return services.length > 1 ? { services } : redirect(`/${services[0]}`);
 }
 
