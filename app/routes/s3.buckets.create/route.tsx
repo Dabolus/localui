@@ -1,4 +1,8 @@
-import { S3Client, CreateBucketCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  CreateBucketCommand,
+  BucketLocationConstraint,
+} from '@aws-sdk/client-s3';
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
 import { Form } from '@remix-run/react';
 import {
@@ -9,9 +13,10 @@ import {
   Card,
   CardHeader,
   CardContent,
+  Autocomplete,
 } from '@mui/material';
 import CurrentPath from '~/src/components/CurrentPath';
-import { setupAwsClients } from '~/src/aws';
+import { setupAwsClients, awsRegionsWithContinents } from '~/src/aws';
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -19,6 +24,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const response = await s3Client.send(
     new CreateBucketCommand({
       Bucket: formData.get('name') as string,
+      CreateBucketConfiguration: {
+        LocationConstraint:
+          (formData.get('region') as BucketLocationConstraint) ?? undefined,
+      },
     }),
   );
 
@@ -49,7 +58,27 @@ export default function CreateBucket() {
         <Card sx={{ width: '100%' }}>
           <CardHeader title="General configuration" />
           <CardContent>
-            <TextField required label="Bucket name" name="name" />
+            <Stack spacing={4}>
+              <TextField required label="Bucket name" name="name" />
+              <Autocomplete
+                options={awsRegionsWithContinents}
+                groupBy={option => option.continent}
+                getOptionLabel={option =>
+                  `${option.zone || option.continent} (${option.region}) ${
+                    option.id
+                  }`
+                }
+                defaultValue={awsRegionsWithContinents[0]}
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    required
+                    label="Region"
+                    name="region"
+                  />
+                )}
+              />
+            </Stack>
           </CardContent>
         </Card>
         <Stack
