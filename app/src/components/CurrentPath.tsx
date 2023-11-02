@@ -33,21 +33,29 @@ export interface CurrentPathProps {
 export default function CurrentPath({ withHeading }: CurrentPathProps) {
   const { pathname } = useLocation();
   const pathSegments = pathname.split('/');
-  const lastItem = kebabToTitleCase(pathSegments[pathSegments.length - 1]);
+  const normalizedPathSegments = [
+    'home',
+    ...pathSegments.slice(1).filter(Boolean),
+  ];
+  const lastItem = kebabToTitleCase(
+    normalizedPathSegments[normalizedPathSegments.length - 1],
+  );
 
   return (
     <Box p={2}>
       <Breadcrumbs separator={<ChevronRightIcon />}>
-        {pathSegments.map((item, index) => {
-          const pageTitle = kebabToTitleCase(item || 'home');
+        {normalizedPathSegments.map((item, index) => {
+          const pageTitle = kebabToTitleCase(item);
+          const path =
+            pathname.slice(0, pathname.indexOf(item) + item.length) || '/';
 
           return (
             <PathLink
-              key={index}
+              key={path}
               component={RemixLink}
-              to={pathname.slice(0, pathname.indexOf(item) + item.length)}
-              selected={index === pathSegments.length - 1}
-              {...(index === pathSegments.length - 1 && {
+              to={path}
+              selected={index === normalizedPathSegments.length - 1}
+              {...(index === normalizedPathSegments.length - 1 && {
                 'aria-current': 'page',
               })}
             >
