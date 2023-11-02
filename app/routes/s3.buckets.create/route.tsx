@@ -64,7 +64,7 @@ export default function CreateBucket() {
                 options={awsRegionsWithContinents}
                 groupBy={option => option.continent}
                 getOptionLabel={option =>
-                  `${option.zone || option.continent} (${option.region}) ${
+                  `${option.zone ?? option.continent} (${option.region}) ${
                     option.id
                   }`
                 }

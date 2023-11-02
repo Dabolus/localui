@@ -37,17 +37,16 @@ const serviceToConfigMap: Record<
 
 const resolveEnvironmentVariable = (
   suffix: string,
-  serviceEnvName?: string,
-  defaultValue?: string,
+  serviceEnvName: string,
+  defaultValue = '',
+  fallbackEnvName = '',
 ): string =>
   // Try to get the specific service variable
-  process.env[`AWS_UI_${serviceEnvName}_${suffix}`] ||
+  process.env[`AWS_UI_${serviceEnvName}_${suffix}`] ??
   // If not available, try to get the generic services variable
-  process.env[`AWS_UI_${suffix}`] ||
+  process.env[`AWS_UI_${fallbackEnvName || suffix}`] ??
   // If not available, use the default value provided
-  defaultValue ||
-  // Surrender and return an empty string
-  '';
+  defaultValue;
 
 export const setupAwsClients = (...services: string[]): AwsClient[] =>
   services.map(service => {
@@ -58,6 +57,7 @@ export const setupAwsClients = (...services: string[]): AwsClient[] =>
         envName,
         // Use localstack endpoint as default if no env variable is provided
         'http://localhost:4566',
+        'SERVICES_ENDPOINT',
       ),
       // Default to us-east-1 if no region is provided
       region: resolveEnvironmentVariable('REGION', envName, 'us-east-1'),
@@ -224,3 +224,10 @@ export const awsRegionsWithContinents: AwsRegionWithContinent[] =
       continent,
     })),
   );
+
+export const getEnabledServices = () =>
+  process.env.AWS_UI_ENABLED_SERVICES?.split(',') ?? ['s3']; // Default to all available services if no env variable is provided
+
+export const serviceToNameMap: Record<string, string> = {
+  s3: 'S3',
+};
