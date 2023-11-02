@@ -32,7 +32,7 @@ const SearchField = styled(TextField)({
 export async function loader() {
   const s3Client = new S3Client({
     // TODO: use environment variables
-    endpoint: 'http://127.0.0.1:12346',
+    endpoint: 'http://127.0.0.1:4566',
     region: 'us-east-1',
     credentials: {
       accessKeyId: 'user',
@@ -87,7 +87,7 @@ export default function About() {
               variant="contained"
               color="secondary"
               component={RemixLink}
-              to="/s3/buckets/new"
+              to="/s3/buckets/create"
             >
               Create bucket
             </Button>

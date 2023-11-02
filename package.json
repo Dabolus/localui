@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "build": "remix build",
-    "dev": "remix dev --manual",
+    "dev": "concurrently 'yarn:dev:*'",
+    "dev:remix": "remix dev --manual",
+    "dev:localstack": "docker compose up --force-recreate --build --renew-anon-volumes --remove-orphans",
     "start": "remix-serve ./build/index.js",
     "typecheck": "tsc"
   },
@@ -31,6 +33,7 @@
     "@remix-run/dev": "^2.2.0",
     "@types/react": "^18.2.33",
     "@types/react-dom": "^18.2.14",
+    "concurrently": "^8.2.2",
     "typescript": "^5.2.2"
   },
   "engines": {
