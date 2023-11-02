@@ -45,3 +45,17 @@ export const titleToKebabCase = (text: string) =>
     .split(' ')
     .map(word => word.toLowerCase())
     .join('-');
+
+export const prettifySize = (bytes: number | undefined): string => {
+  if (bytes === undefined) {
+    return '-';
+  }
+  const measurementUnits = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB'];
+  let finalVal = bytes;
+  let unitIndex = 0;
+  while (finalVal > 1024) {
+    finalVal /= 1024;
+    unitIndex++;
+  }
+  return `${Math.round(finalVal)}${measurementUnits[unitIndex]}`;
+};

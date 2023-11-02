@@ -28,7 +28,7 @@ import {
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
-import { formatDateTime, highlightMatches } from '~/src/utils';
+import { formatDateTime, highlightMatches, prettifySize } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { setupAwsClients } from '~/src/aws/server';
 import { s3StorageClassToNameMap } from '~/src/aws/common';
@@ -223,7 +223,7 @@ export default function BucketDetails() {
             {
               field: 'size',
               headerName: 'Size',
-              valueGetter: params => params.row.item.Size ?? '-',
+              valueGetter: params => prettifySize(params.row.item.Size),
               sortable: !search,
               flex: 1,
             },
