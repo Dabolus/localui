@@ -15,6 +15,7 @@ import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { ChevronRight as ChevronRightIcon } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 import { kebabToTitleCase } from '../utils';
+import { serviceToNameMap } from '../aws';
 
 interface PathLinkProps extends RemixLinkProps {
   selected?: boolean;
@@ -32,20 +33,15 @@ export interface CurrentPathProps {
 
 export default function CurrentPath({ withHeading }: CurrentPathProps) {
   const { pathname } = useLocation();
-  const pathSegments = pathname.split('/');
-  const normalizedPathSegments = [
-    'home',
-    ...pathSegments.slice(1).filter(Boolean),
-  ];
-  const lastItem = kebabToTitleCase(
-    normalizedPathSegments[normalizedPathSegments.length - 1],
-  );
+  const pathSegments = pathname === '/' ? [''] : pathname.split('/');
+  const lastItem = pathSegments[pathSegments.length - 1] || 'home';
 
   return (
     <Box p={2}>
       <Breadcrumbs separator={<ChevronRightIcon />}>
-        {normalizedPathSegments.map((item, index) => {
-          const pageTitle = kebabToTitleCase(item);
+        {pathSegments.map((item, index) => {
+          const pageTitle =
+            serviceToNameMap[item] ?? kebabToTitleCase(item || 'home');
           const path =
             pathname.slice(0, pathname.indexOf(item) + item.length) || '/';
 
@@ -54,8 +50,8 @@ export default function CurrentPath({ withHeading }: CurrentPathProps) {
               key={path}
               component={RemixLink}
               to={path}
-              selected={index === normalizedPathSegments.length - 1}
-              {...(index === normalizedPathSegments.length - 1 && {
+              selected={index === pathSegments.length - 1}
+              {...(index === pathSegments.length - 1 && {
                 'aria-current': 'page',
               })}
             >
@@ -66,7 +62,7 @@ export default function CurrentPath({ withHeading }: CurrentPathProps) {
       </Breadcrumbs>
       {withHeading && (
         <Typography variant="h2" sx={visuallyHidden}>
-          {lastItem}
+          {serviceToNameMap[lastItem] ?? kebabToTitleCase(lastItem)}
         </Typography>
       )}
     </Box>
