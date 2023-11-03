@@ -159,14 +159,14 @@ export const serviceToNameMap: Record<string, string> = {
 };
 
 export const s3StorageClassToNameMap: Record<ObjectStorageClass, string> = {
-  [ObjectStorageClass.DEEP_ARCHIVE]: 'S3 Glacier Deep Archive',
-  [ObjectStorageClass.GLACIER]: 'S3 Glacier Flexible Retrieval',
-  [ObjectStorageClass.GLACIER_IR]: 'S3 Glacier Instant Retrieval',
-  [ObjectStorageClass.INTELLIGENT_TIERING]: 'S3 Intelligent-Tiering',
-  [ObjectStorageClass.ONEZONE_IA]: 'S3 One Zone-Infrequent Access',
-  [ObjectStorageClass.OUTPOSTS]: 'S3 on Outposts',
-  [ObjectStorageClass.REDUCED_REDUNDANCY]: 'S3 Reduced Redundancy',
-  [ObjectStorageClass.SNOW]: 'Snow Family',
-  [ObjectStorageClass.STANDARD]: 'S3 Standard',
-  [ObjectStorageClass.STANDARD_IA]: 'S3 Standard-Infrequent Access',
+  [ObjectStorageClass.DEEP_ARCHIVE]: 'Glacier DA',
+  [ObjectStorageClass.GLACIER]: 'Glacier FR',
+  [ObjectStorageClass.GLACIER_IR]: 'Glacier IR',
+  [ObjectStorageClass.INTELLIGENT_TIERING]: 'Intelligent-Tiering',
+  [ObjectStorageClass.ONEZONE_IA]: 'One Zone-IA',
+  [ObjectStorageClass.OUTPOSTS]: 'Outposts',
+  [ObjectStorageClass.REDUCED_REDUNDANCY]: 'Reduced Redundancy',
+  [ObjectStorageClass.SNOW]: 'Snow',
+  [ObjectStorageClass.STANDARD]: '-',
+  [ObjectStorageClass.STANDARD_IA]: 'IA',
 };

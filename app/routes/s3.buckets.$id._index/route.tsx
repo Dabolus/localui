@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
@@ -70,33 +70,46 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       Delimiter: '/',
     }),
   );
-  return json({ objects: response.Contents ?? [] });
+  return json({
+    directories: response.CommonPrefixes ?? [],
+    objects: response.Contents ?? [],
+  });
 }
 
 export default function BucketDetails() {
   const { id } = useParams();
-  const { objects } = useLoaderData<typeof loader>();
+  const { directories, objects } = useLoaderData<typeof loader>();
+  const mergedContent = useMemo<
+    ((typeof directories)[number] & (typeof objects)[number])[]
+  >(() => [...directories, ...objects], [directories, objects]);
   const submit = useSubmit();
   const [selectedObjects, setSelectedObjects] = useState<string[]>([]);
   const [search, setSearch] = useState('');
-  const { results: searchResults } = useFuzzySearch(search, objects, {
-    keys: ['Key'],
+  const { results: searchResults } = useFuzzySearch(search, mergedContent, {
+    keys: ['Key', 'Prefix'],
     includeMatches: true,
   });
   const { revalidate } = useRevalidator();
   const formRef = useRef<HTMLFormElement | null>(null);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     noClick: true,
-    onDrop: (acceptedFiles, _rejectedFiles, event) => {
+    onDrop: (
+      acceptedFiles: (File & { path?: string })[],
+      _rejectedFiles,
+      event,
+    ) => {
       if (!formRef.current) {
         return;
       }
       // The file input value is read-only, so we need to create a new FormData
-      // object and append the files to it.
+      // object and append the files and their paths to it.
       event.preventDefault();
       const formData = new FormData(formRef.current);
       formData.delete('files');
-      acceptedFiles.forEach(file => formData.append('files', file));
+      acceptedFiles.forEach(file => {
+        formData.append('paths', file.path ?? file.name);
+        formData.append('files', file);
+      });
       submit(formData, {
         method: formRef.current.getAttribute('method') as HTMLFormMethod,
         action: formRef.current.getAttribute('action') as string,
@@ -115,17 +128,13 @@ export default function BucketDetails() {
           alignItems="center"
         >
           <Typography variant="h5" component="h2" gutterBottom>
-            Objects ({objects.length})
+            Objects ({mergedContent.length})
           </Typography>
           <Stack direction="row" gap={1}>
             <Button onClick={revalidate}>
               <RefreshIcon />
             </Button>
-            <Button
-              component={RemixLink}
-              to="create-folder"
-              disabled={selectedObjects.length < 1}
-            >
+            <Button component={RemixLink} to="create-folder">
               Create folder
             </Button>
             <Button
@@ -171,6 +180,7 @@ export default function BucketDetails() {
           <UploadIcon fontSize="large" />
           <Typography>Drop files here to upload them</Typography>
         </DropOverlay>
+        <input type="hidden" name="paths" />
         <input {...getInputProps({ name: 'files' })} />
         <DataGrid
           rowSelectionModel={selectedObjects}
@@ -188,12 +198,12 @@ export default function BucketDetails() {
               headerName: 'Name',
               renderCell: params => (
                 <Link
-                  to={params.row.item.Key ?? ''}
+                  to={params.row.item.Key ?? params.row.item.Prefix ?? ''}
                   color="secondary"
                   component={RemixLink}
                 >
                   {highlightMatches(
-                    params.row.item.Key ?? '',
+                    params.row.item.Key ?? params.row.item.Prefix ?? '',
                     params.row.matches?.[0]?.indices,
                   )}
                 </Link>
@@ -204,10 +214,9 @@ export default function BucketDetails() {
             {
               field: 'type',
               headerName: 'Type',
-              valueGetter: params =>
-                params.row.item.Key?.endsWith('/') ? 'Folder' : 'File',
+              valueGetter: params => (params.row.item.Key ? 'File' : 'Folder'),
               sortable: !search,
-              flex: 1,
+              width: 100,
             },
             {
               field: 'lastModified',
@@ -218,14 +227,14 @@ export default function BucketDetails() {
                 </time>
               ),
               sortable: !search,
-              flex: 1,
+              width: 300,
             },
             {
               field: 'size',
               headerName: 'Size',
               valueGetter: params => prettifySize(params.row.item.Size),
               sortable: !search,
-              flex: 1,
+              width: 100,
             },
             {
               field: 'storageClass',
@@ -235,7 +244,7 @@ export default function BucketDetails() {
                   ? s3StorageClassToNameMap[params.row.item.StorageClass]
                   : '-',
               sortable: !search,
-              flex: 1,
+              width: 150,
             },
           ]}
           getRowId={row => row.item.Key ?? ''}
