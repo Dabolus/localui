@@ -3,8 +3,10 @@ import { LoaderFunctionArgs } from '@remix-run/node';
 import { base64UrlDecode } from '~/src/utils';
 import { setupAwsClients } from '~/src/aws/server';
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const key = base64UrlDecode(params.key ?? '');
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const { searchParams } = new URL(request.url);
+  const isPreview = searchParams.has('preview');
+  const key = base64UrlDecode(params.key!);
   const prefix = key.slice(0, key.lastIndexOf('/') + 1);
   const baseName = key.replace(prefix, '');
   const [s3Client] = setupAwsClients('s3') as [S3Client];
@@ -19,7 +21,9 @@ export async function loader({ params }: LoaderFunctionArgs) {
       ...(getObjectResponse.ContentType && {
         'Content-Type': getObjectResponse.ContentType,
       }),
-      'Content-Disposition': `attachment; filename="${baseName}"`,
+      'Content-Disposition': `${
+        isPreview ? 'inline' : 'attachment'
+      }; filename="${baseName}"`,
     },
   });
 }

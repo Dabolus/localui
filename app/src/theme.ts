@@ -51,6 +51,18 @@ const theme = createTheme({
         size: 'small',
       },
     },
+    MuiCardHeader: {
+      styleOverrides: {
+        content: {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+        },
+        title: {
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+      },
+    },
   },
 });
 

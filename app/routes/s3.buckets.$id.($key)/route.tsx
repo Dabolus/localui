@@ -29,6 +29,7 @@ import {
   Download as DownloadIcon,
   Refresh as RefreshIcon,
   Clear as ClearIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
@@ -296,8 +297,24 @@ export default function BucketDetails() {
             height="100%"
             p={2}
           >
-            <CardHeader title={selectedObject.BaseName} />
+            <CardHeader
+              title={selectedObject.BaseName}
+              action={
+                <IconButton
+                  LinkComponent={RemixLink}
+                  {...{ to: `/s3/buckets/${id}` }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              }
+            />
             <Stack direction="row" gap={1}>
+              <Button
+                component={RemixLink}
+                to={`/s3/buckets/${id}/${key}/preview`}
+              >
+                Preview
+              </Button>
               <Button
                 variant="contained"
                 color="secondary"
