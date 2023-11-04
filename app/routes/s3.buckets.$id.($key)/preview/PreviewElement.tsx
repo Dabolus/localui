@@ -52,7 +52,13 @@ const CsvViewer: FunctionComponent<
 
   return (
     dataGridProps && (
-      <DataGrid aria-label={name} density="compact" {...dataGridProps} />
+      <DataGrid
+        aria-label={name}
+        density="compact"
+        disableRowSelectionOnClick
+        pageSizeOptions={[100]}
+        {...dataGridProps}
+      />
     )
   );
 };
