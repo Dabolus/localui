@@ -50,6 +50,7 @@ import { s3StorageClassToNameMap } from '~/src/aws/common';
 import PreviewElement, { PreviewElementProps } from './preview/PreviewElement';
 import PreviewDialog from './preview/PreviewDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
+import TableOverlay from '~/src/components/TableOverlay';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -300,10 +301,6 @@ export default function BucketDetails() {
             onRowSelectionModelChange={newSelection =>
               setSelectedObjects(newSelection as string[])
             }
-            slotProps={{
-              row: getRootProps(),
-              noRowsOverlay: getRootProps(),
-            }}
             rows={searchResults}
             columns={[
               {
@@ -366,6 +363,13 @@ export default function BucketDetails() {
             getRowId={row => row.item.Key ?? row.item.Prefix ?? ''}
             checkboxSelection
             disableRowSelectionOnClick
+            slots={{ noRowsOverlay: TableOverlay }}
+            slotProps={{
+              row: getRootProps(),
+              noRowsOverlay: getRootProps({
+                children: 'No objects available.',
+              }),
+            }}
           />
         </DroppableForm>
         {selectedObject && (

@@ -19,6 +19,7 @@ import {
 import {
   Refresh as RefreshIcon,
   Clear as ClearIcon,
+  TakeoutDining as TakeoutDiningIcon,
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
@@ -28,6 +29,7 @@ import { setupAwsClients } from '~/src/aws/server';
 import EmptyBucketsDialog from './EmptyBucketsDialog';
 import DeleteBucketsDialog from './DeleteBucketsDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
+import TableOverlay from '~/src/components/TableOverlay';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -180,6 +182,12 @@ export default function BucketsList() {
         checkboxSelection
         disableRowSelectionOnClick
         sx={{ height: 'calc(100vh - 270px)' }}
+        slots={{ noRowsOverlay: TableOverlay }}
+        slotProps={{
+          noRowsOverlay: {
+            children: 'No buckets available.',
+          },
+        }}
       />
       <EmptyBucketsDialog
         open={searchParams.has('empty') && buckets.length > 0}
