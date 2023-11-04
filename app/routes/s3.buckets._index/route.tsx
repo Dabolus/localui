@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
 import { json } from '@remix-run/node';
 import {
   useLoaderData,
   Link as RemixLink,
   useRevalidator,
+  useSearchParams,
 } from '@remix-run/react';
 import {
   Typography,
@@ -24,6 +25,8 @@ import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import { formatDateTime, highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { setupAwsClients } from '~/src/aws/server';
+import DeleteBucketsDialog from './DeleteBucketsDialog';
+import useLinkUtils from '~/src/hooks/useLinkUtils';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -39,13 +42,26 @@ export async function loader() {
 
 export default function BucketsList() {
   const { buckets } = useLoaderData<typeof loader>();
-  const [selectedBuckets, setSelectedBuckets] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const { results: searchResults } = useFuzzySearch(search, buckets, {
     keys: ['Name'],
     includeMatches: true,
   });
   const { revalidate } = useRevalidator();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { withSearchParams } = useLinkUtils();
+  const selectedBuckets = searchParams.get('selection')?.split(',') ?? [];
+
+  useEffect(() => {
+    if (selectedBuckets.length > 0) {
+      return;
+    }
+    setSearchParams(currentParams => {
+      currentParams.delete('delete');
+      currentParams.delete('empty');
+      return currentParams;
+    });
+  }, [selectedBuckets.length, setSearchParams]);
 
   return (
     <>
@@ -65,14 +81,20 @@ export default function BucketsList() {
             </Button>
             <Button
               component={RemixLink}
-              to="/s3/buckets/empty"
+              to={withSearchParams('/s3/buckets', currentSearchParams => {
+                currentSearchParams.set('empty', '');
+                return currentSearchParams;
+              })}
               disabled={selectedBuckets.length < 1}
             >
               Empty
             </Button>
             <Button
               component={RemixLink}
-              to="/s3/buckets/delete"
+              to={withSearchParams('/s3/buckets', currentSearchParams => {
+                currentSearchParams.set('delete', '');
+                return currentSearchParams;
+              })}
               disabled={selectedBuckets.length < 1}
             >
               Delete
@@ -112,7 +134,14 @@ export default function BucketsList() {
       <DataGrid
         rowSelectionModel={selectedBuckets}
         onRowSelectionModelChange={newSelection =>
-          setSelectedBuckets(newSelection as string[])
+          setSearchParams(previousParams => {
+            if (newSelection.length < 1) {
+              previousParams.delete('selection');
+            } else {
+              previousParams.set('selection', newSelection.join(','));
+            }
+            return previousParams;
+          })
         }
         rows={searchResults}
         columns={[
@@ -149,6 +178,10 @@ export default function BucketsList() {
         getRowId={row => row.item.Name ?? ''}
         checkboxSelection
         disableRowSelectionOnClick
+      />
+      <DeleteBucketsDialog
+        open={searchParams.has('delete') && buckets.length > 0}
+        buckets={selectedBuckets}
       />
     </>
   );
