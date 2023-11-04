@@ -66,7 +66,7 @@ export default function BucketsList() {
 
   return (
     <>
-      <CurrentPath />
+      <CurrentPath items={['s3', 'buckets']} />
       <Stack p={2}>
         <Stack
           direction="row"

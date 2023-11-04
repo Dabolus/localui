@@ -136,6 +136,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function BucketDetails() {
   const { id, key: rawKey } = useParams();
+  const mergedSegments = rawKey ? base64UrlDecode(rawKey) : undefined;
+  const segments = mergedSegments?.split('/').filter(Boolean) ?? [];
   const { directories, objects, selectedObject } =
     useLoaderData<typeof loader>();
   const mergedContent = useMemo<
@@ -188,25 +190,48 @@ export default function BucketDetails() {
       return;
     }
     let cancelled = false;
+    let url: string | undefined;
     fetch(`/s3/buckets/${id}/${rawKey}/download?preview`).then(async res => {
       const blob = await res.blob();
       const contentType = res.headers.get('Content-Type')!;
       if (cancelled) {
         return;
       }
-      const url = URL.createObjectURL(blob);
+      url = URL.createObjectURL(blob);
       const key = base64UrlDecode(rawKey!);
       setPreviewElementProps({ contentType, name: key, src: url });
     });
 
     return () => {
       cancelled = true;
+      if (url) {
+        URL.revokeObjectURL(url);
+      }
     };
   }, [selectedObject?.Key, id, rawKey]);
 
   return (
     <>
-      <CurrentPath />
+      <CurrentPath
+        items={[
+          's3',
+          'buckets',
+          {
+            key: id!,
+            name: id!,
+          },
+          ...segments.map(segment => ({
+            key: segment,
+            name: segment,
+            to: `/s3/buckets/${id}/${base64UrlEncode(
+              mergedSegments?.slice(
+                0,
+                mergedSegments?.indexOf(segment) + segment.length + 1,
+              ) ?? '',
+            )}`,
+          })),
+        ]}
+      />
       <Stack p={2}>
         <Stack
           direction="row"

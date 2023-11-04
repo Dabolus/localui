@@ -45,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function CreateBucket() {
   return (
     <>
-      <CurrentPath />
+      <CurrentPath items={['s3', 'buckets', 'create']} />
       <Stack
         p={2}
         spacing={2}

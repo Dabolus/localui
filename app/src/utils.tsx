@@ -67,7 +67,10 @@ export const prettifySize = (bytes: number | undefined): string => {
 };
 
 export const base64UrlEncode = (str: string) =>
-  btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  btoa(encodeURIComponent(str))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
 
 export const base64UrlDecode = (str: string) =>
-  atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+  decodeURIComponent(atob(str.replace(/-/g, '+').replace(/_/g, '/')));
