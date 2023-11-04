@@ -281,7 +281,7 @@ export default function BucketDetails() {
           />
         </div>
       </Stack>
-      <Box position="relative" height="100%">
+      <Box position="relative" height="calc(100vh - 270px)">
         <DroppableForm
           method="POST"
           action={`/s3/buckets/${id}/upload`}

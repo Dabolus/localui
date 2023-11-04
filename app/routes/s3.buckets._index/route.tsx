@@ -179,6 +179,7 @@ export default function BucketsList() {
         getRowId={row => row.item.Name ?? ''}
         checkboxSelection
         disableRowSelectionOnClick
+        sx={{ height: 'calc(100vh - 270px)' }}
       />
       <EmptyBucketsDialog
         open={searchParams.has('empty') && buckets.length > 0}
