@@ -25,6 +25,7 @@ import {
   Card,
   CardHeader,
   unstable_useEnhancedEffect as useEnhancedEffect,
+  CardContent,
 } from '@mui/material';
 import {
   Upload as UploadIcon,
@@ -389,55 +390,57 @@ export default function BucketDetails() {
                 </IconButton>
               }
             />
-            <Stack direction="row" gap={1}>
-              <Button
-                variant="contained"
-                color="secondary"
-                component="a"
-                href={`/s3/buckets/${id}/${rawKey}/download`}
-                download={selectedObject.BaseName}
-                startIcon={<DownloadIcon />}
-              >
-                Download
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                component={RemixLink}
-                to={`/s3/buckets/${id}/${rawKey}/delete`}
-              >
-                Delete
-              </Button>
-            </Stack>
-            {previewElementProps && (
-              <InlinePreviewContainer>
-                <FullScreenPreviewButton
-                  aria-label="Open full screen preview"
-                  component={RemixLink}
-                  to={withSearchParams(
-                    `/s3/buckets/${id}/${rawKey}`,
-                    previousParams => {
-                      previousParams.set('preview', '');
-                      return previousParams;
-                    },
-                  )}
+            <CardContent sx={{ height: '100%' }}>
+              <Stack direction="row" gap={1}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  component="a"
+                  href={`/s3/buckets/${id}/${rawKey}/download`}
+                  download={selectedObject.BaseName}
+                  startIcon={<DownloadIcon />}
                 >
-                  <FullscreenIcon />
-                </FullScreenPreviewButton>
-                <InlinePreviewElement {...previewElementProps} />
-                <PreviewDialog
-                  open={searchParams.has('preview')}
-                  closeLink={withSearchParams(
-                    `/s3/buckets/${id}/${rawKey}`,
-                    previousParams => {
-                      previousParams.delete('preview');
-                      return previousParams;
-                    },
-                  )}
-                  {...previewElementProps}
-                />
-              </InlinePreviewContainer>
-            )}
+                  Download
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  component={RemixLink}
+                  to={`/s3/buckets/${id}/${rawKey}/delete`}
+                >
+                  Delete
+                </Button>
+              </Stack>
+              {previewElementProps && (
+                <InlinePreviewContainer>
+                  <FullScreenPreviewButton
+                    aria-label="Open full screen preview"
+                    component={RemixLink}
+                    to={withSearchParams(
+                      `/s3/buckets/${id}/${rawKey}`,
+                      previousParams => {
+                        previousParams.set('preview', '');
+                        return previousParams;
+                      },
+                    )}
+                  >
+                    <FullscreenIcon />
+                  </FullScreenPreviewButton>
+                  <InlinePreviewElement {...previewElementProps} />
+                  <PreviewDialog
+                    open={searchParams.has('preview')}
+                    closeLink={withSearchParams(
+                      `/s3/buckets/${id}/${rawKey}`,
+                      previousParams => {
+                        previousParams.delete('preview');
+                        return previousParams;
+                      },
+                    )}
+                    {...previewElementProps}
+                  />
+                </InlinePreviewContainer>
+              )}
+            </CardContent>
           </Card>
         )}
       </Box>
