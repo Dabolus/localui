@@ -215,13 +215,13 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   if (contentType.startsWith('text/csv')) {
     return <CsvViewer src={src} name={name} />;
   }
-  if (contentType.startsWith('text/')) {
-    return <TextViewer src={src} name={name} />;
-  }
   if (contentType.startsWith('application/json')) {
     return <JsonViewer src={src} name={name} />;
   }
-  return <FullSizeIframe src={src} title={name} />;
+  if (contentType.startsWith('application/pdf')) {
+    return <FullSizeIframe src={src} title={name} />;
+  }
+  return <TextViewer src={src} name={name} />;
 };
 
 export const PreviewElement: FunctionComponent<PreviewElementProps> = ({
