@@ -1679,7 +1679,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/base@npm:5.0.0-beta.22":
+"@mui/base@npm:5.0.0-beta.22, @mui/base@npm:^5.0.0-beta.20":
   version: 5.0.0-beta.22
   resolution: "@mui/base@npm:5.0.0-beta.22"
   dependencies:
@@ -1868,6 +1868,28 @@ __metadata:
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
   checksum: 35bf3495eaabae5717de36dd1676e355201af80cbe2b4d3d25b63051b93e78bb5a4b4e81f26048d38658a11483beb0a0fd4281f8ee543667ea63ec478e29c31b
+  languageName: node
+  linkType: hard
+
+"@mui/x-tree-view@npm:^6.17.0":
+  version: 6.17.0
+  resolution: "@mui/x-tree-view@npm:6.17.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.23.2"
+    "@mui/base": "npm:^5.0.0-beta.20"
+    "@mui/utils": "npm:^5.14.14"
+    "@types/react-transition-group": "npm:^4.4.8"
+    clsx: "npm:^2.0.0"
+    prop-types: "npm:^15.8.1"
+    react-transition-group: "npm:^4.4.5"
+  peerDependencies:
+    "@emotion/react": ^11.9.0
+    "@emotion/styled": ^11.8.1
+    "@mui/material": ^5.8.6
+    "@mui/system": ^5.8.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 53d883fed2b16c76dad1588cdfe0e36142705f9c9782a645a29de3739f14bcfe0e6515d32f77a8909279f9a97eec7cb8324e43361d89e85363440ebf365bc144
   languageName: node
   linkType: hard
 
@@ -3112,6 +3134,7 @@ __metadata:
     "@mui/icons-material": "npm:^5.14.16"
     "@mui/material": "npm:^5.14.16"
     "@mui/x-data-grid": "npm:^6.17.0"
+    "@mui/x-tree-view": "npm:^6.17.0"
     "@remix-run/css-bundle": "npm:^2.2.0"
     "@remix-run/dev": "npm:^2.2.0"
     "@remix-run/node": "npm:^2.2.0"
