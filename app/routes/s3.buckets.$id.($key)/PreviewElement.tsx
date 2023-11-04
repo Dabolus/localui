@@ -1,14 +1,17 @@
+import { FunctionComponent, HTMLAttributes, ReactNode, useState } from 'react';
+import { PrismAsyncLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
 import { TreeItem, TreeView, TreeViewProps } from '@mui/x-tree-view';
-import { FunctionComponent, HTMLAttributes, ReactNode, useState } from 'react';
 import {
   styled,
   unstable_useEnhancedEffect as useEnhancedEffect,
+  useTheme,
 } from '@mui/material';
 import {
   ExpandMore as ExpandMoreIcon,
   ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
+import { createAmazonSyntaxHighlighterTheme } from './preview/utils';
 
 export interface PreviewContentProps {
   contentType: string;
@@ -49,8 +52,7 @@ const CsvViewer: FunctionComponent<
   return dataGridProps && <DataGrid aria-label={name} {...dataGridProps} />;
 };
 
-const FullScreenPre = styled('pre')(({ theme }) => ({
-  background: theme.palette.background.default,
+const FullScreenSyntaxHighlighter = styled(SyntaxHighlighter)(({ theme }) => ({
   width: '100%',
   height: '100%',
   margin: 0,
@@ -62,6 +64,7 @@ const TextViewer: FunctionComponent<
   Pick<PreviewElementProps, 'name' | 'src'>
 > = ({ name, src }) => {
   const [content, setContent] = useState<string>('');
+  const theme = useTheme();
 
   useEnhancedEffect(() => {
     fetch(src)
@@ -69,7 +72,16 @@ const TextViewer: FunctionComponent<
       .then(data => setContent(data));
   }, []);
 
-  return <FullScreenPre aria-label={name}>{content}</FullScreenPre>;
+  return (
+    <FullScreenSyntaxHighlighter
+      aria-label={name}
+      language={name.split('.').pop()}
+      style={createAmazonSyntaxHighlighterTheme(theme)}
+      showLineNumbers
+    >
+      {content}
+    </FullScreenSyntaxHighlighter>
+  );
 };
 
 const ColoredKey = styled('strong')(({ theme }) => ({
@@ -77,16 +89,16 @@ const ColoredKey = styled('strong')(({ theme }) => ({
 }));
 const ColoredValue = styled('span')<{ $value: any }>(({ $value, theme }) => ({
   ...(typeof $value === 'number' && {
-    color: theme.palette.secondary.dark,
+    color: theme.palette.secondary.main,
   }),
   ...(typeof $value === 'string' && {
-    color: theme.palette.success.dark,
+    color: theme.palette.success.main,
   }),
   ...(typeof $value === 'boolean' && {
-    color: theme.palette.info.dark,
+    color: theme.palette.info.main,
   }),
   ...($value === null && {
-    color: theme.palette.error.dark,
+    color: theme.palette.error.main,
   }),
 }));
 const JsonValue: FunctionComponent<{ value: any }> = ({ value }) => (
