@@ -76,7 +76,6 @@ const DroppableForm = styled(Form)<{ $isDragActive?: boolean }>({
 });
 
 const InlinePreviewElement = styled(PreviewElement)(({ theme }) => ({
-  cursor: 'pointer',
   padding: theme.spacing(2, 0),
 }));
 

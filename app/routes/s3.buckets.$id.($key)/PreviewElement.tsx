@@ -49,6 +49,29 @@ const CsvViewer: FunctionComponent<
   return dataGridProps && <DataGrid aria-label={name} {...dataGridProps} />;
 };
 
+const FullScreenPre = styled('pre')(({ theme }) => ({
+  background: theme.palette.background.default,
+  width: '100%',
+  height: '100%',
+  margin: 0,
+  padding: '1rem',
+  overflow: 'auto',
+}));
+
+const TextViewer: FunctionComponent<
+  Pick<PreviewElementProps, 'name' | 'src'>
+> = ({ name, src }) => {
+  const [content, setContent] = useState<string>('');
+
+  useEnhancedEffect(() => {
+    fetch(src)
+      .then(response => response.text())
+      .then(data => setContent(data));
+  }, []);
+
+  return <FullScreenPre aria-label={name}>{content}</FullScreenPre>;
+};
+
 const ColoredKey = styled('strong')(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
@@ -157,6 +180,12 @@ export const PreviewContainer = styled('div')({
   },
 });
 
+const FullSizeIframe = styled('iframe')({
+  width: '100%',
+  height: '100%',
+  border: 'none',
+});
+
 export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   contentType,
   name,
@@ -174,10 +203,13 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   if (contentType.startsWith('text/csv')) {
     return <CsvViewer src={src} name={name} />;
   }
+  if (contentType.startsWith('text/')) {
+    return <TextViewer src={src} name={name} />;
+  }
   if (contentType.startsWith('application/json')) {
     return <JsonViewer src={src} name={name} />;
   }
-  return <iframe src={src} title={name} />;
+  return <FullSizeIframe src={src} title={name} />;
 };
 
 export const PreviewElement: FunctionComponent<PreviewElementProps> = ({
