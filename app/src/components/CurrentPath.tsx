@@ -23,7 +23,9 @@ interface PathLinkProps extends RemixLinkProps {
 const PathLink = styled(Link)<PathLinkProps>(({ theme, selected }) => ({
   fontWeight: theme.typography.fontWeightBold,
   fontSize: '0.9rem',
-  color: selected ? theme.palette.text.primary : theme.palette.text.disabled,
+  color: selected
+    ? theme.vars.palette.text.primary
+    : theme.vars.palette.text.disabled,
 })) as OverridableComponent<LinkTypeMap<PathLinkProps, typeof RemixLink>>;
 
 export type PathItem =

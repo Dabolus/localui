@@ -86,27 +86,27 @@ const TextViewer: FunctionComponent<
 };
 
 const ColoredKey = styled('strong')(({ theme }) => ({
-  color: theme.palette.primary.main,
+  color: theme.vars.palette.primary.main,
 }));
 const ColoredValue = styled('span')<{ $value: any }>(({ $value, theme }) => ({
   ...(typeof $value === 'number' && {
-    color: theme.palette.secondary.main,
+    color: theme.vars.palette.secondary.main,
   }),
   ...(typeof $value === 'string' && {
-    color: theme.palette.success.main,
+    color: theme.vars.palette.success.main,
   }),
   ...(typeof $value === 'boolean' && {
-    color: theme.palette.info.main,
+    color: theme.vars.palette.info.main,
   }),
   ...($value === null && {
-    color: theme.palette.error.main,
+    color: theme.vars.palette.error.main,
   }),
 }));
 const JsonValue: FunctionComponent<{ value: any }> = ({ value }) => (
   <ColoredValue $value={value}>{JSON.stringify(value)}</ColoredValue>
 );
 const JsonTreeView = styled(TreeView)(({ theme }) => ({
-  background: theme.palette.background.default,
+  background: theme.vars.palette.background.default,
   padding: theme.spacing(2, 0),
   width: '100%',
   height: '100%',
@@ -182,7 +182,7 @@ const JsonViewer: FunctionComponent<
 };
 
 export const PreviewContainer = styled('div')(({ theme }) => ({
-  background: theme.palette.background.default,
+  background: theme.vars.palette.background.default,
   width: '100%',
   height: '100%',
   display: 'flex',

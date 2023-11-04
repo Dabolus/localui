@@ -321,8 +321,8 @@ export const createAmazonSyntaxHighlighterTheme = (
     wordSpacing: 'normal',
     wordBreak: 'normal',
     wordWrap: 'normal',
-    color: theme.palette.text.primary,
-    background: theme.palette.background.default,
+    color: theme.vars.palette.text.primary,
+    background: theme.vars.palette.background.default,
     fontFamily: "'Amazon Ember Mono', monospace",
     fontSize: '1em',
     lineHeight: '1.5em',
@@ -350,126 +350,126 @@ export const createAmazonSyntaxHighlighterTheme = (
       padding: '0.1em',
     },
     '.language-css > code': {
-      color: theme.palette.secondary.main,
+      color: theme.vars.palette.secondary.main,
     },
     '.language-sass > code': {
-      color: theme.palette.secondary.main,
+      color: theme.vars.palette.secondary.main,
     },
     '.language-scss > code': {
-      color: theme.palette.secondary.main,
+      color: theme.vars.palette.secondary.main,
     },
     '[class*="language-"] .namespace': {
       opacity: 0.7,
     },
     atrule: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     'attr-name': {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     'attr-value': {
-      color: theme.palette.success.main,
+      color: theme.vars.palette.success.main,
     },
     attribute: {
-      color: theme.palette.success.main,
+      color: theme.vars.palette.success.main,
     },
     boolean: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     builtin: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     cdata: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     char: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     class: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     'class-name': {
       color: '#6182b8',
     },
     comment: {
-      color: theme.palette.text.disabled,
+      color: theme.vars.palette.text.disabled,
     },
     constant: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     deleted: {
-      color: theme.palette.error.main,
+      color: theme.vars.palette.error.main,
     },
     doctype: {
-      color: theme.palette.text.disabled,
+      color: theme.vars.palette.text.disabled,
     },
     entity: {
-      color: theme.palette.error.main,
+      color: theme.vars.palette.error.main,
     },
     function: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     hexcode: {
-      color: theme.palette.secondary.main,
+      color: theme.vars.palette.secondary.main,
     },
     id: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
       fontWeight: 'bold',
     },
     important: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
       fontWeight: 'bold',
     },
     inserted: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     keyword: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     number: {
-      color: theme.palette.secondary.main,
+      color: theme.vars.palette.secondary.main,
     },
     operator: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     prolog: {
-      color: theme.palette.text.disabled,
+      color: theme.vars.palette.text.disabled,
     },
     property: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     'pseudo-class': {
-      color: theme.palette.success.main,
+      color: theme.vars.palette.success.main,
     },
     'pseudo-element': {
-      color: theme.palette.success.main,
+      color: theme.vars.palette.success.main,
     },
     punctuation: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     regex: {
-      color: theme.palette.info.dark,
+      color: theme.vars.palette.info.dark,
     },
     selector: {
-      color: theme.palette.error.main,
+      color: theme.vars.palette.error.main,
     },
     string: {
-      color: theme.palette.success.main,
+      color: theme.vars.palette.success.main,
     },
     symbol: {
-      color: theme.palette.info.main,
+      color: theme.vars.palette.info.main,
     },
     tag: {
-      color: theme.palette.error.main,
+      color: theme.vars.palette.error.main,
     },
     unit: {
-      color: theme.palette.secondary.main,
+      color: theme.vars.palette.secondary.main,
     },
     url: {
-      color: theme.palette.error.main,
+      color: theme.vars.palette.error.main,
     },
     variable: {
-      color: theme.palette.error.main,
+      color: theme.vars.palette.error.main,
     },
   };
 };

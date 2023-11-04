@@ -1,27 +1,47 @@
-import { createTheme } from '@mui/material';
+import { experimental_extendTheme as extendTheme } from '@mui/material';
 import { Link as RemixLink } from '@remix-run/react';
 import './fonts/styles.css';
+// See: https://mui.com/material-ui/experimental-api/css-theme-variables/usage/#typescript
+import type {} from '@mui/material/themeCssVarsAugmentation';
 
 // Create a theme instance.
-const theme = createTheme({
-  shape: {
-    borderRadius: 2,
-  },
-  palette: {
-    primary: {
-      main: '#232f3e',
+const theme = extendTheme({
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: {
+          main: '#232f3e',
+        },
+        secondary: {
+          main: '#ff9900',
+        },
+        background: {
+          default: '#f2f3f3',
+        },
+      },
     },
-    secondary: {
-      main: '#ff9900',
-    },
-    background: {
-      default: '#f2f3f3',
+    dark: {
+      palette: {
+        primary: {
+          main: '#f2f3f3',
+        },
+        secondary: {
+          main: '#ff9900',
+        },
+        background: {
+          default: '#232f3e',
+          paper: '#2f3e4e',
+        },
+      },
     },
   },
   typography: {
     allVariants: {
       fontFamily: '"Amazon Ember", sans-serif',
     },
+  },
+  shape: {
+    borderRadius: 2,
   },
   components: {
     MuiButton: {

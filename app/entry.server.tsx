@@ -1,7 +1,10 @@
 import { renderToString } from 'react-dom/server';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import {
+  Experimental_CssVarsProvider as CssVarsProvider,
+  CssBaseline,
+} from '@mui/material';
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from './src/createEmotionCache';
@@ -19,11 +22,11 @@ export default function handleRequest(
   function MuiRemixServer() {
     return (
       <CacheProvider value={cache}>
-        <ThemeProvider theme={theme}>
+        <CssVarsProvider theme={theme} defaultMode="system">
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <RemixServer context={remixContext} url={request.url} />
-        </ThemeProvider>
+        </CssVarsProvider>
       </CacheProvider>
     );
   }

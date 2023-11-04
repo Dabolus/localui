@@ -2,7 +2,10 @@ import { ReactNode, useState, useMemo, startTransition } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import { RemixBrowser } from '@remix-run/react';
 import { CacheProvider } from '@emotion/react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import {
+  Experimental_CssVarsProvider as CssVarsProvider,
+  CssBaseline,
+} from '@mui/material';
 import ClientStyleContext from './src/ClientStyleContext';
 import createEmotionCache from './src/createEmotionCache';
 import theme from './src/theme';
@@ -34,11 +37,11 @@ const hydrate = () => {
     hydrateRoot(
       document,
       <ClientCacheProvider>
-        <ThemeProvider theme={theme}>
+        <CssVarsProvider theme={theme} defaultMode="system">
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
           <RemixBrowser />
-        </ThemeProvider>
+        </CssVarsProvider>
       </ClientCacheProvider>,
     );
   });

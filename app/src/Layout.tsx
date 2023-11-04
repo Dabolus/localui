@@ -11,7 +11,7 @@ const LogoLink = styled(Link)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1.5),
-  color: theme.palette.primary.contrastText,
+  color: theme.palette.common.white,
 })) as typeof Link;
 
 export default function Layout({ children }: PropsWithChildren<{}>) {

@@ -10,7 +10,10 @@ import {
   isRouteErrorResponse,
 } from '@remix-run/react';
 import { withEmotionCache } from '@emotion/react';
-import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/material';
+import {
+  unstable_useEnhancedEffect as useEnhancedEffect,
+  getInitColorSchemeScript,
+} from '@mui/material';
 import theme from './src/theme';
 import ClientStyleContext from './src/ClientStyleContext';
 import Layout from './src/Layout';
@@ -41,11 +44,14 @@ const Document = withEmotionCache(
     }, []);
 
     return (
-      <html lang="en">
+      <html lang="en" data-mui-color-scheme="light">
         <head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <meta name="theme-color" content={theme.palette.primary.main} />
+          <meta
+            name="theme-color"
+            content={theme.colorSchemes.light.palette.primary.main}
+          />
           {title ? <title>{title}</title> : null}
           <Meta />
           <Links />
@@ -67,6 +73,7 @@ const Document = withEmotionCache(
             name="emotion-insertion-point"
             content="emotion-insertion-point"
           />
+          {getInitColorSchemeScript({ defaultMode: 'system' })}
         </head>
         <body>
           {children}

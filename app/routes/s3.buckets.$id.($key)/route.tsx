@@ -69,7 +69,7 @@ const DropOverlay = styled('div')(({ theme, hidden }) => ({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: theme.palette.background.default,
+  backgroundColor: theme.vars.palette.background.default,
 }));
 
 const DroppableForm = styled(Form)<{ $isDragActive?: boolean }>({
@@ -93,10 +93,10 @@ const FullScreenPreviewButton = styled(IconButton)(({ theme }) => ({
   position: 'absolute',
   top: theme.spacing(3),
   right: theme.spacing(1),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.vars.palette.background.paper,
 
   '&:hover': {
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.vars.palette.background.default,
   },
 })) as typeof IconButton;
 
