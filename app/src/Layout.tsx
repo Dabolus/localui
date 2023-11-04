@@ -1,26 +1,30 @@
 import { PropsWithChildren } from 'react';
-import { Box, AppBar, IconButton, Toolbar, Typography } from '@mui/material';
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Link as RemixLink } from '@remix-run/react';
+import { Box, AppBar, Toolbar, Typography, styled, Link } from '@mui/material';
 import Footer from './Footer';
 import Search from './Search';
 import GlobalLoadingIndicator from './components/GlobalLoadingIndicator';
+import AwsUiIcon from './components/AwsUiIcon';
+
+const LogoLink = styled(Link)(({ theme }) => ({
+  flexGrow: 1,
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1.5),
+  color: theme.palette.primary.contrastText,
+})) as typeof Link;
 
 export default function Layout({ children }: PropsWithChildren<{}>) {
   return (
     <>
       <AppBar position="static" sx={{ flex: 0 }}>
         <Toolbar variant="dense">
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="Open menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" component="h1" noWrap sx={{ flexGrow: 1 }}>
-            AWS UI
-          </Typography>
+          <LogoLink component={RemixLink} to="/" underline="none">
+            <AwsUiIcon />
+            <Typography variant="h6" component="h1" noWrap>
+              AWS UI
+            </Typography>
+          </LogoLink>
           <Search />
         </Toolbar>
       </AppBar>
