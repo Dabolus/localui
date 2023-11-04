@@ -25,6 +25,7 @@ import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import { formatDateTime, highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { setupAwsClients } from '~/src/aws/server';
+import EmptyBucketsDialog from './EmptyBucketsDialog';
 import DeleteBucketsDialog from './DeleteBucketsDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 
@@ -178,6 +179,10 @@ export default function BucketsList() {
         getRowId={row => row.item.Name ?? ''}
         checkboxSelection
         disableRowSelectionOnClick
+      />
+      <EmptyBucketsDialog
+        open={searchParams.has('empty') && buckets.length > 0}
+        buckets={selectedBuckets}
       />
       <DeleteBucketsDialog
         open={searchParams.has('delete') && buckets.length > 0}
