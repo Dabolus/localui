@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react';
+import { Link as RemixLink } from '@remix-run/react';
 import {
   Dialog,
   DialogContent,
@@ -25,12 +26,12 @@ const PreviewDialogContent = styled(DialogContent)({
 
 export type PreviewDialogProps = PreviewElementProps & {
   open: DialogProps['open'];
-  onClose: () => unknown;
+  closeLink: string;
 };
 
 const PreviewDialog: FunctionComponent<PreviewDialogProps> = ({
   open,
-  onClose,
+  closeLink,
   ...props
 }) => {
   return (
@@ -44,7 +45,11 @@ const PreviewDialog: FunctionComponent<PreviewDialogProps> = ({
           <Typography variant="h6" component="h2">
             {props.name}
           </Typography>
-          <IconButton aria-label="Close preview" onClick={onClose}>
+          <IconButton
+            aria-label="Close preview"
+            component={RemixLink}
+            to={closeLink}
+          >
             <CloseIcon />
           </IconButton>
         </Stack>

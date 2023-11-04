@@ -11,6 +11,7 @@ import {
   Form,
   useSubmit,
   FormEncType,
+  useSearchParams,
 } from '@remix-run/react';
 import {
   Typography,
@@ -47,6 +48,7 @@ import { setupAwsClients } from '~/src/aws/server';
 import { s3StorageClassToNameMap } from '~/src/aws/common';
 import PreviewElement, { PreviewElementProps } from './preview/PreviewElement';
 import PreviewDialog from './preview/PreviewDialog';
+import useLinkUtils from '~/src/hooks/useLinkUtils';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -96,7 +98,7 @@ const FullScreenPreviewButton = styled(IconButton)(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.palette.background.default,
   },
-}));
+})) as typeof IconButton;
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const key = params.key ? base64UrlDecode(params.key) : undefined;
@@ -174,7 +176,8 @@ export default function BucketDetails() {
       });
     },
   });
-  const [fullScreenPreviewOpen, setFullScreenPreviewOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { withSearchParams } = useLinkUtils();
   const [previewElementProps, setPreviewElementProps] = useState<
     PreviewElementProps | undefined
   >(undefined);
@@ -383,14 +386,28 @@ export default function BucketDetails() {
             {previewElementProps && (
               <InlinePreviewContainer>
                 <FullScreenPreviewButton
-                  onClick={() => setFullScreenPreviewOpen(true)}
+                  aria-label="Open full screen preview"
+                  component={RemixLink}
+                  to={withSearchParams(
+                    `/s3/buckets/${id}/${rawKey}`,
+                    previousParams => {
+                      previousParams.set('preview', '');
+                      return previousParams;
+                    },
+                  )}
                 >
                   <FullscreenIcon />
                 </FullScreenPreviewButton>
                 <InlinePreviewElement {...previewElementProps} />
                 <PreviewDialog
-                  open={fullScreenPreviewOpen}
-                  onClose={() => setFullScreenPreviewOpen(false)}
+                  open={searchParams.has('preview')}
+                  closeLink={withSearchParams(
+                    `/s3/buckets/${id}/${rawKey}`,
+                    previousParams => {
+                      previousParams.delete('preview');
+                      return previousParams;
+                    },
+                  )}
                   {...previewElementProps}
                 />
               </InlinePreviewContainer>
