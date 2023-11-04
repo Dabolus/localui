@@ -45,8 +45,8 @@ import {
 import CurrentPath from '~/src/components/CurrentPath';
 import { setupAwsClients } from '~/src/aws/server';
 import { s3StorageClassToNameMap } from '~/src/aws/common';
-import PreviewElement, { PreviewElementProps } from './PreviewElement';
-import PreviewDialog from './PreviewDialog';
+import PreviewElement, { PreviewElementProps } from './preview/PreviewElement';
+import PreviewDialog from './preview/PreviewDialog';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {

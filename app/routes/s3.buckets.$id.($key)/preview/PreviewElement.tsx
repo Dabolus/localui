@@ -11,7 +11,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
-import { createAmazonSyntaxHighlighterTheme } from './preview/utils';
+import { createAmazonSyntaxHighlighterTheme } from './utils';
 
 export interface PreviewContentProps {
   contentType: string;
