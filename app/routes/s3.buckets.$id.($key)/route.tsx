@@ -87,11 +87,15 @@ const InlinePreviewContainer = styled('div')({
 });
 
 const FullScreenPreviewButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
   zIndex: 1,
   position: 'absolute',
   top: theme.spacing(3),
   right: theme.spacing(1),
+  backgroundColor: theme.palette.background.paper,
+
+  '&:hover': {
+    backgroundColor: theme.palette.background.default,
+  },
 }));
 
 export async function loader({ params }: LoaderFunctionArgs) {
