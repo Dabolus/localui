@@ -78,7 +78,7 @@ const DroppableForm = styled(Form)<{ $isDragActive?: boolean }>({
 });
 
 const InlinePreviewElement = styled(PreviewElement)(({ theme }) => ({
-  padding: theme.spacing(2, 0),
+  margin: theme.spacing(2, 0),
 }));
 
 const InlinePreviewContainer = styled('div')({
@@ -176,13 +176,14 @@ export default function BucketDetails() {
       });
     },
   });
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { withSearchParams } = useLinkUtils();
   const [previewElementProps, setPreviewElementProps] = useState<
     PreviewElementProps | undefined
   >(undefined);
 
   useEnhancedEffect(() => {
+    setPreviewElementProps(undefined);
     if (!selectedObject?.Key) {
       return;
     }

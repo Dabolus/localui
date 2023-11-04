@@ -1,8 +1,9 @@
 import { FunctionComponent, HTMLAttributes, ReactNode, useState } from 'react';
-import { PrismAsyncLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { PrismAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
 import { TreeItem, TreeView, TreeViewProps } from '@mui/x-tree-view';
 import {
+  Typography,
   styled,
   unstable_useEnhancedEffect as useEnhancedEffect,
   useTheme,
@@ -11,7 +12,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
-import { createAmazonSyntaxHighlighterTheme } from './utils';
+import { createAmazonSyntaxHighlighterTheme, getPrismLanguage } from './utils';
 
 export interface PreviewContentProps {
   contentType: string;
@@ -61,8 +62,8 @@ const FullScreenSyntaxHighlighter = styled(SyntaxHighlighter)(({ theme }) => ({
 }));
 
 const TextViewer: FunctionComponent<
-  Pick<PreviewElementProps, 'name' | 'src'>
-> = ({ name, src }) => {
+  Pick<PreviewElementProps, 'name' | 'src'> & { language: string }
+> = ({ name, src, language }) => {
   const [content, setContent] = useState<string>('');
   const theme = useTheme();
 
@@ -75,7 +76,7 @@ const TextViewer: FunctionComponent<
   return (
     <FullScreenSyntaxHighlighter
       aria-label={name}
-      language={name.split('.').pop()}
+      language={language}
       style={createAmazonSyntaxHighlighterTheme(theme)}
       showLineNumbers
     >
@@ -106,6 +107,7 @@ const JsonValue: FunctionComponent<{ value: any }> = ({ value }) => (
 );
 const JsonTreeView = styled(TreeView)(({ theme }) => ({
   background: theme.palette.background.default,
+  padding: theme.spacing(2, 0),
   width: '100%',
   height: '100%',
   overflow: 'auto',
@@ -179,7 +181,8 @@ const JsonViewer: FunctionComponent<
   );
 };
 
-export const PreviewContainer = styled('div')({
+export const PreviewContainer = styled('div')(({ theme }) => ({
+  background: theme.palette.background.default,
   width: '100%',
   height: '100%',
   display: 'flex',
@@ -190,7 +193,7 @@ export const PreviewContainer = styled('div')({
     maxWidth: '100%',
     maxHeight: '100%',
   },
-});
+}));
 
 const FullSizeIframe = styled('iframe')({
   width: '100%',
@@ -221,7 +224,11 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   if (contentType.startsWith('application/pdf')) {
     return <FullSizeIframe src={src} title={name} />;
   }
-  return <TextViewer src={src} name={name} />;
+  const prismLanguage = getPrismLanguage(name);
+  if (prismLanguage) {
+    return <TextViewer src={src} name={name} language={prismLanguage} />;
+  }
+  return <Typography>Preview not supported for this file type.</Typography>;
 };
 
 export const PreviewElement: FunctionComponent<PreviewElementProps> = ({

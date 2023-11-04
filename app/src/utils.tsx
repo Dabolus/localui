@@ -46,6 +46,12 @@ export const titleToKebabCase = (text: string) =>
     .map(word => word.toLowerCase())
     .join('-');
 
+export const camelToKebabCase = (text: string) =>
+  text
+    .split(/(?=[A-Z])/)
+    .map(word => word.toLowerCase())
+    .join('-');
+
 export const prettifySize = (bytes: number | undefined): string => {
   if (bytes === undefined) {
     return '-';
