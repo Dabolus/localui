@@ -50,7 +50,11 @@ const CsvViewer: FunctionComponent<
     );
   }, []);
 
-  return dataGridProps && <DataGrid aria-label={name} {...dataGridProps} />;
+  return (
+    dataGridProps && (
+      <DataGrid aria-label={name} density="compact" {...dataGridProps} />
+    )
+  );
 };
 
 const FullScreenSyntaxHighlighter = styled(SyntaxHighlighter)(({ theme }) => ({
