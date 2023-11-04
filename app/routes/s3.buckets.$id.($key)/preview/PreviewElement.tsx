@@ -1,4 +1,10 @@
-import { FunctionComponent, HTMLAttributes, ReactNode, useState } from 'react';
+import {
+  FunctionComponent,
+  HTMLAttributes,
+  ReactNode,
+  useRef,
+  useState,
+} from 'react';
 import { PrismAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
 import { TreeItem, TreeView, TreeViewProps } from '@mui/x-tree-view';
@@ -32,10 +38,10 @@ const CsvViewer: FunctionComponent<
 
   useEnhancedEffect(() => {
     Promise.all([
-      import('csv-parse/browser/esm').then(({ parse }) => parse),
+      import('csv-parse/browser/esm'),
       fetch(src).then(response => response.text()),
-    ]).then(([parseCsv, data]) =>
-      parseCsv(data, { columns: true }, (_, output) =>
+    ]).then(([{ parse }, data]) =>
+      parse(data, { columns: true }, (_, output) =>
         setDataGridProps({
           getRowId: row => JSON.stringify(row),
           rows: output,
@@ -191,6 +197,33 @@ const JsonViewer: FunctionComponent<
   );
 };
 
+const DocxContainer = styled('div')({
+  overflow: 'scroll',
+});
+export const DocxViewer: FunctionComponent<
+  Pick<PreviewElementProps, 'name' | 'src'>
+> = ({ name, src }) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEnhancedEffect(() => {
+    Promise.all([
+      import('docx-preview'),
+      fetch(src).then(response => response.blob()),
+    ]).then(
+      ([
+        {
+          default: { renderAsync },
+        },
+        blob,
+      ]) => {
+        return renderAsync(blob, containerRef.current!);
+      },
+    );
+  }, []);
+
+  return <DocxContainer aria-label={name} ref={containerRef} />;
+};
+
 export const PreviewContainer = styled('div')(({ theme }) => ({
   background: theme.vars.palette.background.default,
   width: '100%',
@@ -233,6 +266,13 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   }
   if (contentType.startsWith('application/pdf')) {
     return <FullSizeIframe src={src} title={name} />;
+  }
+  if (
+    contentType.startsWith(
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    )
+  ) {
+    return <DocxViewer src={src} name={name} />;
   }
   const prismLanguage = getPrismLanguage(name);
   if (prismLanguage) {
