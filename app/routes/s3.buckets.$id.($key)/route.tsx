@@ -23,6 +23,7 @@ import {
   Box,
   Card,
   CardHeader,
+  unstable_useEnhancedEffect as useEnhancedEffect,
 } from '@mui/material';
 import {
   Upload as UploadIcon,
@@ -30,6 +31,7 @@ import {
   Refresh as RefreshIcon,
   Clear as ClearIcon,
   Close as CloseIcon,
+  Fullscreen as FullscreenIcon,
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
@@ -43,6 +45,8 @@ import {
 import CurrentPath from '~/src/components/CurrentPath';
 import { setupAwsClients } from '~/src/aws/server';
 import { s3StorageClassToNameMap } from '~/src/aws/common';
+import PreviewElement, { PreviewElementProps } from './PreviewElement';
+import PreviewDialog from './PreviewDialog';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -70,6 +74,26 @@ const DroppableForm = styled(Form)<{ $isDragActive?: boolean }>({
   height: '100%',
   position: 'relative',
 });
+
+const InlinePreviewElement = styled(PreviewElement)(({ theme }) => ({
+  cursor: 'pointer',
+  padding: theme.spacing(2, 0),
+}));
+
+const InlinePreviewContainer = styled('div')({
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  maxHeight: 360,
+});
+
+const FullScreenPreviewButton = styled(IconButton)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  zIndex: 1,
+  position: 'absolute',
+  top: theme.spacing(3),
+  right: theme.spacing(1),
+}));
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const key = params.key ? base64UrlDecode(params.key) : undefined;
@@ -106,7 +130,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 export default function BucketDetails() {
-  const { id, key } = useParams();
+  const { id, key: rawKey } = useParams();
   const { directories, objects, selectedObject } =
     useLoaderData<typeof loader>();
   const mergedContent = useMemo<
@@ -147,6 +171,31 @@ export default function BucketDetails() {
       });
     },
   });
+  const [fullScreenPreviewOpen, setFullScreenPreviewOpen] = useState(false);
+  const [previewElementProps, setPreviewElementProps] = useState<
+    PreviewElementProps | undefined
+  >(undefined);
+
+  useEnhancedEffect(() => {
+    if (!selectedObject?.Key) {
+      return;
+    }
+    let cancelled = false;
+    fetch(`/s3/buckets/${id}/${rawKey}/download?preview`).then(async res => {
+      const blob = await res.blob();
+      const contentType = res.headers.get('Content-Type')!;
+      if (cancelled) {
+        return;
+      }
+      const url = URL.createObjectURL(blob);
+      const key = base64UrlDecode(rawKey!);
+      setPreviewElementProps({ contentType, name: key, src: url });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedObject?.Key, id, rawKey]);
 
   return (
     <>
@@ -310,16 +359,10 @@ export default function BucketDetails() {
             />
             <Stack direction="row" gap={1}>
               <Button
-                component={RemixLink}
-                to={`/s3/buckets/${id}/${key}/preview`}
-              >
-                Preview
-              </Button>
-              <Button
                 variant="contained"
                 color="secondary"
                 component="a"
-                href={`/s3/buckets/${id}/${key}/download`}
+                href={`/s3/buckets/${id}/${rawKey}/download`}
                 download={selectedObject.BaseName}
                 startIcon={<DownloadIcon />}
               >
@@ -329,11 +372,26 @@ export default function BucketDetails() {
                 variant="contained"
                 color="error"
                 component={RemixLink}
-                to={`/s3/buckets/${id}/${key}/delete`}
+                to={`/s3/buckets/${id}/${rawKey}/delete`}
               >
                 Delete
               </Button>
             </Stack>
+            {previewElementProps && (
+              <InlinePreviewContainer>
+                <FullScreenPreviewButton
+                  onClick={() => setFullScreenPreviewOpen(true)}
+                >
+                  <FullscreenIcon />
+                </FullScreenPreviewButton>
+                <InlinePreviewElement {...previewElementProps} />
+                <PreviewDialog
+                  open={fullScreenPreviewOpen}
+                  onClose={() => setFullScreenPreviewOpen(false)}
+                  {...previewElementProps}
+                />
+              </InlinePreviewContainer>
+            )}
           </Card>
         )}
       </Box>

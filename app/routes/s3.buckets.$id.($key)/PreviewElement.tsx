@@ -1,6 +1,6 @@
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
 import { TreeItem, TreeView, TreeViewProps } from '@mui/x-tree-view';
-import { FunctionComponent, ReactNode, useState } from 'react';
+import { FunctionComponent, HTMLAttributes, ReactNode, useState } from 'react';
 import {
   styled,
   unstable_useEnhancedEffect as useEnhancedEffect,
@@ -10,11 +10,14 @@ import {
   ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
 
-export interface PreviewElementProps {
+export interface PreviewContentProps {
   contentType: string;
   name: string;
   src: string;
 }
+
+export type PreviewElementProps = HTMLAttributes<HTMLDivElement> &
+  PreviewContentProps;
 
 const CsvViewer: FunctionComponent<
   Pick<PreviewElementProps, 'name' | 'src'>
@@ -141,7 +144,20 @@ const JsonViewer: FunctionComponent<
   );
 };
 
-export const PreviewElement: FunctionComponent<PreviewElementProps> = ({
+export const PreviewContainer = styled('div')({
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  '& > *': {
+    maxWidth: '100%',
+    maxHeight: '100%',
+  },
+});
+
+export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   contentType,
   name,
   src,
@@ -163,5 +179,16 @@ export const PreviewElement: FunctionComponent<PreviewElementProps> = ({
   }
   return <iframe src={src} title={name} />;
 };
+
+export const PreviewElement: FunctionComponent<PreviewElementProps> = ({
+  contentType,
+  name,
+  src,
+  ...props
+}) => (
+  <PreviewContainer {...props}>
+    <PreviewContent contentType={contentType} name={name} src={src} />
+  </PreviewContainer>
+);
 
 export default PreviewElement;
