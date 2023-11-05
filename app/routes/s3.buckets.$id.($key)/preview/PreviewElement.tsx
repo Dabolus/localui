@@ -258,9 +258,6 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   if (contentType.startsWith('audio/')) {
     return <audio src={src} title={name} controls />;
   }
-  if (contentType.startsWith('text/csv')) {
-    return <CsvViewer src={src} name={name} />;
-  }
   if (contentType.startsWith('application/json')) {
     return <JsonViewer src={src} name={name} />;
   }
@@ -274,9 +271,14 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   ) {
     return <DocxViewer src={src} name={name} />;
   }
+  if (contentType.startsWith('text/csv')) {
+    return <CsvViewer src={src} name={name} />;
+  }
   const prismLanguage = getPrismLanguage(name);
-  if (prismLanguage) {
-    return <TextViewer src={src} name={name} language={prismLanguage} />;
+  if (prismLanguage || contentType.startsWith('text/')) {
+    return (
+      <TextViewer src={src} name={name} language={prismLanguage ?? 'text'} />
+    );
   }
   return <Typography>Preview not supported for this file type.</Typography>;
 };

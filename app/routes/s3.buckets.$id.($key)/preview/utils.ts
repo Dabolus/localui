@@ -12,6 +12,10 @@ export const extensionToPrismLanguage: Record<string, string> = {
       }
     ).supportedLanguages.map(lang => {
       const kebabCaseLang = camelToKebabCase(lang);
+      // Special case for WebAssembly, which is named 'wasm' in Prism
+      // but 'wasm' is actually the binary format, while Prism supports
+      // the WebAssembly text format (wat).
+      const finalLang = kebabCaseLang === 'wasm' ? 'wat' : kebabCaseLang;
       return [kebabCaseLang, kebabCaseLang];
     }),
   ),
@@ -35,8 +39,6 @@ export const extensionToPrismLanguage: Record<string, string> = {
   adoc: 'asciidoc',
   asm: 'asm6502',
   aspx: 'aspnet',
-  cshtml: 'aspnet',
-  vbhtml: 'aspnet',
   ahk: 'autohotkey',
   au3: 'autoit',
   avs: 'avisynth',
@@ -50,73 +52,74 @@ export const extensionToPrismLanguage: Record<string, string> = {
   y: 'bison',
   b: 'brainfuck',
   bf: 'brainfuck',
-  // TODO: complete mapping of all these types
-  // brightscript
-  // bro
-  // bsl
-  // c
-  // cfscript
-  // chaiscript
-  // cil
-  // clike
-  // clojure
-  // cmake
-  // cobol
-  // coffeescript
-  // concurnas
-  // coq
-  // cpp
-  // crystal
-  // csharp
-  // cshtml
-  // csp
-  // cssExtras (css-extras)
-  // css
-  // csv
-  // cypher
-  // d
-  // dart
-  // dataweave
-  // dax
-  // dhall
-  // diff
-  // django
-  // dnsZoneFile (dns-zone-file)
-  // docker
-  // dot
-  // ebnf
-  // editorconfig
-  // eiffel
-  // ejs
-  // elixir
-  // elm
-  // erb
-  // erlang
-  // etlua
-  // excelFormula (excel-formula)
-  // factor
-  // falselang (false)
-  // 'firestore.rules': 'firestore-security-rules',
-  // flow
-  // fortran
-  // fsharp
+  brs: 'brightscript',
+  zeek: 'bro',
+  rkt: 'bsl',
+  h: 'c',
+  cfm: 'cfscript',
+  chai: 'chaiscript',
+  il: 'cil',
+  clj: 'clojure',
+  cljs: 'clojure',
+  cljc: 'clojure',
+  edn: 'clojure',
+  'cmakelists.txt': 'cmake',
+  cbl: 'cobol',
+  cob: 'cobol',
+  cpy: 'cobol',
+  coffee: 'coffeescript',
+  litcoffee: 'coffeescript',
+  conc: 'concurnas',
+  v: 'coq',
+  cc: 'cpp',
+  cxx: 'cpp',
+  'c++': 'cpp',
+  hh: 'cpp',
+  hpp: 'cpp',
+  hxx: 'cpp',
+  'h++': 'cpp',
+  cr: 'crystal',
+  cs: 'csharp',
+  csx: 'csharp',
+  razor: 'cshtml',
+  dwl: 'dataweave',
+  jinja: 'django',
+  jinja2: 'django',
+  j2: 'django',
+  zone: 'dns-zone-file',
+  dockerfile: 'docker',
+  gv: 'dot',
+  e: 'eiffel',
+  ex: 'elixir',
+  exs: 'elixir',
+  erl: 'erlang',
+  hrl: 'erlang',
+  'firestore.rules': 'firestore-security-rules',
+  f90: 'fortran',
+  f: 'fortran',
+  for: 'fortran',
+  fs: 'fsharp',
+  fsi: 'fsharp',
+  fsx: 'fsharp',
+  fsscript: 'fsharp',
   // ftl
   // gap
   // gcode
   // gdscript
   // gedcom
-  // gherkin
-  // git
+  feature: 'gherkin',
   // glsl
   // gml
   // gn
-  // goModule (go-module)
-  // go
-  // graphql
-  // groovy
-  // haml
-  // handlebars
-  // haskell
+  'go.mod': 'go-module',
+  gql: 'graphql',
+  graphqls: 'graphql',
+  gvy: 'groovy',
+  gy: 'groovy',
+  gsh: 'groovy',
+  hbs: 'handlebars',
+  hs: 'haskell',
+  lhs: 'haskell',
   // haxe
   // hcl
   // hlsl
@@ -131,47 +134,37 @@ export const extensionToPrismLanguage: Record<string, string> = {
   // iecst
   // ignore
   // inform7
-  // ini
   // io
   // j
-  // java
-  // javadoc
-  // javadoclike
-  // js: 'javascript',
-  // mjs: 'javascript',
-  // cjs: 'javascript',
-  // javastacktrace
+  js: 'javascript',
+  mjs: 'javascript',
+  cjs: 'javascript',
   // jexl
   // jolie
   // jq
-  // jsExtras (js-extras)
-  // jsTemplates (js-templates)
-  // jsdoc
-  // json
-  // json5
-  // jsonp
+  'tsconfig.json': 'json5',
+  'jsconfig.json': 'json5',
   // jsstacktrace
-  // jsx
   // julia
   // keepalived
   // keyman
-  // kotlin
+  kt: 'kotlin',
+  kts: 'kotlin',
   // kumir
   // kusto
-  // latex
+  tex: 'latex',
   // latte
-  // less
   // lilypond
   // liquid
-  // lisp
+  lsp: 'lisp',
   // livescript
   // llvm
   // log
-  // lolcode
-  // lua
+  lol: 'lolcode',
+  lols: 'lolcode',
   // magma
-  // makefile
-  // markdown
+  mk: 'makefile',
+  md: 'markdown',
   // markupTemplating (markup-templating)
   // markup
   // matlab
@@ -193,40 +186,51 @@ export const extensionToPrismLanguage: Record<string, string> = {
   // nim
   // nix
   // nsis
-  // objectivec
+  m: 'objectivec',
+  mm: 'objectivec',
   // ocaml
   // opencl
   // openqasm
   // oz
   // parigp
   // parser
-  // pascal
+  pp: 'pascal',
+  pas: 'pascal',
   // pascaligo
   // pcaxis
   // peoplecode
-  // perl
-  // phpExtras (php-extras)
-  // php
-  // phpdoc
+  plx: 'perl',
+  pl: 'perl',
+  pm: 'perl',
+  xs: 'perl',
+  t: 'perl',
+  pod: 'perl',
+  cgi: 'perl',
+  phtml: 'php',
+  pht: 'php',
+  phps: 'php',
   // plsql
   // powerquery
   // powershell
-  // pde: 'processing',
+  pde: 'processing',
   // prolog
   // promql
   // properties
-  // protobuf
+  proto: 'protobuf',
+  proto3: 'protobuf',
+  pb: 'protobuf',
   // psl
-  // pug
   // puppet
   // pure
   // purebasic
   // purescript
-  // python
+  py: 'python',
+  pyw: 'python',
+  pyi: 'python',
   // q
   // qml
   // qore
-  // qsharp
+  qs: 'qsharp',
   // r
   // racket
   // reason
@@ -236,30 +240,26 @@ export const extensionToPrismLanguage: Record<string, string> = {
   // rest
   // rip
   // roboconf
-  // robotframework
+  robot: 'robotframework',
   // ruby
   // rust
   // sas
-  // sass
   // scala
   // scheme
-  // scss
   // shellSession (shell-session)
   // smali
   // smalltalk
   // smarty
   // sml
-  // solidity
+  sol: 'solidity',
   // solutionFile (solution-file)
   // soy
   // sparql
   // splunkSpl (splunk-spl)
   // sqf
-  // sql
   // squirrel
   // stan
-  // stylus
-  // swift
+  styl: 'stylus',
   // systemd
   // t4Cs (t4-cs)
   // t4Templating (t4-templating)
@@ -269,13 +269,12 @@ export const extensionToPrismLanguage: Record<string, string> = {
   // textile
   // toml
   // tremor
-  // tsx
   // tt2
   // turtle
   // twig
-  // ts: 'typescript',
-  // mts: 'typescript',
-  // cts: 'typescript',
+  ts: 'typescript',
+  mts: 'typescript',
+  cts: 'typescript',
   // typoscript
   // unrealscript
   // uorazor
@@ -289,7 +288,7 @@ export const extensionToPrismLanguage: Record<string, string> = {
   // vim
   // visualBasic (visual-basic)
   // warpscript
-  // wasm
+  wast: 'wasm',
   // webIdl (web-idl)
   // wiki
   // wolfram
@@ -298,9 +297,8 @@ export const extensionToPrismLanguage: Record<string, string> = {
   // xmlDoc (xml-doc)
   // xojo
   // xquery
-  // yaml
+  yml: 'yaml',
   // yang
-  // zig
 };
 
 export const prismSupportedExtensions = Object.keys(extensionToPrismLanguage);
