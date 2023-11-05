@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, lazy } from 'react';
 import { Link as RemixLink } from '@remix-run/react';
 import {
   Dialog,
@@ -11,7 +11,10 @@ import {
   styled,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import PreviewElement, { PreviewElementProps } from './PreviewElement';
+import { PreviewElementProps } from './PreviewElement';
+import Placeholder from '~/src/components/Placeholder';
+
+const PreviewElement = lazy(() => import('./PreviewElement'));
 
 const PreviewDialogContent = styled(DialogContent)({
   display: 'flex',
@@ -55,7 +58,9 @@ const PreviewDialog: FunctionComponent<PreviewDialogProps> = ({
         </Stack>
       </DialogTitle>
       <PreviewDialogContent>
-        <PreviewElement {...props} />
+        <Placeholder>
+          <PreviewElement {...props} />
+        </Placeholder>
       </PreviewDialogContent>
     </Dialog>
   );

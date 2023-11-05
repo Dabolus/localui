@@ -5,6 +5,7 @@ import Footer from './Footer';
 import Search from './Search';
 import GlobalLoadingIndicator from './components/GlobalLoadingIndicator';
 import AwsUiIcon from './components/AwsUiIcon';
+import Placeholder from './components/Placeholder';
 
 const LogoLink = styled(Link)(({ theme }) => ({
   flexGrow: 1,
@@ -29,7 +30,9 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
         </Toolbar>
       </AppBar>
       <GlobalLoadingIndicator />
-      <Box sx={{ flex: 1 }}>{children}</Box>
+      <Box sx={{ flex: 1 }}>
+        <Placeholder>{children}</Placeholder>
+      </Box>
       <Box sx={{ flex: 0 }}>
         <Footer />
       </Box>

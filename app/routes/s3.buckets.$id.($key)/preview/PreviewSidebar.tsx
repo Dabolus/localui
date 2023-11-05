@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, lazy, useState } from 'react';
 import { Link as RemixLink, useSearchParams } from '@remix-run/react';
 import {
   Button,
@@ -18,9 +18,12 @@ import {
 import PreviewDialog from './PreviewDialog';
 import { base64UrlDecode } from '~/src/utils';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
-import PreviewElement, { PreviewElementProps } from './PreviewElement';
+import type { PreviewElementProps } from './PreviewElement';
 import type { _Object } from '@aws-sdk/client-s3';
 import type { Jsonify } from '@remix-run/server-runtime/dist/jsonify';
+import Placeholder from '~/src/components/Placeholder';
+
+const PreviewElement = lazy(() => import('./PreviewElement'));
 
 export interface EnrichedObject extends _Object {
   BucketName?: string;
@@ -47,7 +50,7 @@ const InlinePreviewContainer = styled('div')({
 const FullScreenPreviewButton = styled(IconButton)(({ theme }) => ({
   zIndex: 1,
   position: 'absolute',
-  top: theme.spacing(3),
+  top: theme.spacing(1),
   right: theme.spacing(1),
   backgroundColor: theme.vars.palette.background.paper,
 
@@ -146,7 +149,9 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
             >
               <FullscreenIcon />
             </FullScreenPreviewButton>
-            <InlinePreviewElement {...previewElementProps} />
+            <Placeholder>
+              <InlinePreviewElement {...previewElementProps} />
+            </Placeholder>
             <PreviewDialog
               open={searchParams.has('preview')}
               closeLink={withSearchParam('preview', null)}
