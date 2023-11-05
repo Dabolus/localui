@@ -11,7 +11,6 @@ import {
   Form,
   useSubmit,
   FormEncType,
-  useSearchParams,
 } from '@remix-run/react';
 import {
   Typography,
@@ -22,18 +21,11 @@ import {
   IconButton,
   styled,
   Box,
-  Card,
-  CardHeader,
-  unstable_useEnhancedEffect as useEnhancedEffect,
-  CardContent,
 } from '@mui/material';
 import {
   Upload as UploadIcon,
-  Download as DownloadIcon,
   Refresh as RefreshIcon,
   Clear as ClearIcon,
-  Close as CloseIcon,
-  Fullscreen as FullscreenIcon,
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
@@ -47,10 +39,8 @@ import {
 import CurrentPath from '~/src/components/CurrentPath';
 import { setupAwsClients } from '~/src/aws/server';
 import { s3StorageClassToNameMap } from '~/src/aws/common';
-import PreviewElement, { PreviewElementProps } from './preview/PreviewElement';
-import PreviewDialog from './preview/PreviewDialog';
-import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
+import PreviewSidebar from './preview/PreviewSidebar';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -79,29 +69,6 @@ const DroppableForm = styled(Form)<{ $isDragActive?: boolean }>({
   position: 'relative',
 });
 
-const InlinePreviewElement = styled(PreviewElement)(({ theme }) => ({
-  margin: theme.spacing(2, 0),
-}));
-
-const InlinePreviewContainer = styled('div')({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  maxHeight: 360,
-});
-
-const FullScreenPreviewButton = styled(IconButton)(({ theme }) => ({
-  zIndex: 1,
-  position: 'absolute',
-  top: theme.spacing(3),
-  right: theme.spacing(1),
-  backgroundColor: theme.vars.palette.background.paper,
-
-  '&:hover': {
-    backgroundColor: theme.vars.palette.background.default,
-  },
-})) as typeof IconButton;
-
 export async function loader({ params }: LoaderFunctionArgs) {
   const key = params.key ? base64UrlDecode(params.key) : undefined;
   const [s3Client] = setupAwsClients('s3') as [S3Client];
@@ -117,11 +84,13 @@ export async function loader({ params }: LoaderFunctionArgs) {
     ...listObjectsResponse,
     CommonPrefixes: listObjectsResponse.CommonPrefixes?.map(commonPrefix => ({
       ...commonPrefix,
+      BucketName: params.id,
       DirName: prefix,
       BaseName: commonPrefix.Prefix?.replace(prefix ?? '', ''),
     })),
     Contents: listObjectsResponse.Contents?.map(obj => ({
       ...obj,
+      BucketName: params.id,
       DirName: prefix,
       BaseName: obj.Key?.replace(prefix ?? '', ''),
     })),
@@ -180,37 +149,6 @@ export default function BucketDetails() {
       });
     },
   });
-  const [searchParams] = useSearchParams();
-  const { withSearchParam } = useLinkUtils();
-  const [previewElementProps, setPreviewElementProps] = useState<
-    PreviewElementProps | undefined
-  >(undefined);
-
-  useEnhancedEffect(() => {
-    setPreviewElementProps(undefined);
-    if (!selectedObject?.Key) {
-      return;
-    }
-    let cancelled = false;
-    let url: string | undefined;
-    fetch(`/s3/buckets/${id}/${rawKey}/download?preview`).then(async res => {
-      const blob = await res.blob();
-      const contentType = res.headers.get('Content-Type')!;
-      if (cancelled) {
-        return;
-      }
-      url = URL.createObjectURL(blob);
-      const key = base64UrlDecode(rawKey!);
-      setPreviewElementProps({ contentType, name: key, src: url });
-    });
-
-    return () => {
-      cancelled = true;
-      if (url) {
-        URL.revokeObjectURL(url);
-      }
-    };
-  }, [selectedObject?.Key, id, rawKey]);
 
   return (
     <>
@@ -373,67 +311,7 @@ export default function BucketDetails() {
           />
         </DroppableForm>
         {selectedObject && (
-          <Card
-            component={Stack}
-            position="absolute"
-            top={0}
-            right={0}
-            width={420}
-            maxWidth="100%"
-            height="100%"
-            p={2}
-          >
-            <CardHeader
-              title={selectedObject.BaseName}
-              action={
-                <IconButton
-                  LinkComponent={RemixLink}
-                  {...{ to: `/s3/buckets/${id}` }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              }
-            />
-            <CardContent sx={{ height: '100%' }}>
-              <Stack direction="row" gap={1}>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  component="a"
-                  href={`/s3/buckets/${id}/${rawKey}/download`}
-                  download={selectedObject.BaseName}
-                  startIcon={<DownloadIcon />}
-                >
-                  Download
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  component={RemixLink}
-                  to={`/s3/buckets/${id}/${rawKey}/delete`}
-                >
-                  Delete
-                </Button>
-              </Stack>
-              {previewElementProps && (
-                <InlinePreviewContainer>
-                  <FullScreenPreviewButton
-                    aria-label="Open full screen preview"
-                    component={RemixLink}
-                    to={withSearchParam('preview', '')}
-                  >
-                    <FullscreenIcon />
-                  </FullScreenPreviewButton>
-                  <InlinePreviewElement {...previewElementProps} />
-                  <PreviewDialog
-                    open={searchParams.has('preview')}
-                    closeLink={withSearchParam('preview', null)}
-                    {...previewElementProps}
-                  />
-                </InlinePreviewContainer>
-              )}
-            </CardContent>
-          </Card>
+          <PreviewSidebar object={selectedObject} encodedKey={rawKey!} />
         )}
       </Box>
     </>
