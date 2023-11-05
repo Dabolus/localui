@@ -181,7 +181,7 @@ export default function BucketDetails() {
     },
   });
   const [searchParams] = useSearchParams();
-  const { withSearchParams } = useLinkUtils();
+  const { withSearchParam } = useLinkUtils();
   const [previewElementProps, setPreviewElementProps] = useState<
     PreviewElementProps | undefined
   >(undefined);
@@ -420,26 +420,14 @@ export default function BucketDetails() {
                   <FullScreenPreviewButton
                     aria-label="Open full screen preview"
                     component={RemixLink}
-                    to={withSearchParams(
-                      `/s3/buckets/${id}/${rawKey}`,
-                      previousParams => {
-                        previousParams.set('preview', '');
-                        return previousParams;
-                      },
-                    )}
+                    to={withSearchParam('preview', '')}
                   >
                     <FullscreenIcon />
                   </FullScreenPreviewButton>
                   <InlinePreviewElement {...previewElementProps} />
                   <PreviewDialog
                     open={searchParams.has('preview')}
-                    closeLink={withSearchParams(
-                      `/s3/buckets/${id}/${rawKey}`,
-                      previousParams => {
-                        previousParams.delete('preview');
-                        return previousParams;
-                      },
-                    )}
+                    closeLink={withSearchParam('preview', null)}
                     {...previewElementProps}
                   />
                 </InlinePreviewContainer>

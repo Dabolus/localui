@@ -52,7 +52,7 @@ export default function BucketsList() {
   });
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { withSearchParams } = useLinkUtils();
+  const { withSearchParam } = useLinkUtils();
   const selectedBuckets = searchParams.get('selection')?.split(',') ?? [];
 
   useEffect(() => {
@@ -84,20 +84,14 @@ export default function BucketsList() {
             </Button>
             <Button
               component={RemixLink}
-              to={withSearchParams('/s3/buckets', currentSearchParams => {
-                currentSearchParams.set('empty', '');
-                return currentSearchParams;
-              })}
+              to={withSearchParam('empty', '')}
               disabled={selectedBuckets.length < 1}
             >
               Empty
             </Button>
             <Button
               component={RemixLink}
-              to={withSearchParams('/s3/buckets', currentSearchParams => {
-                currentSearchParams.set('delete', '');
-                return currentSearchParams;
-              })}
+              to={withSearchParam('delete', '')}
               disabled={selectedBuckets.length < 1}
             >
               Delete

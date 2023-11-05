@@ -12,17 +12,14 @@ const DeleteBucketsDialog: FunctionComponent<DeleteBucketsDialogProps> = ({
   open,
   buckets,
 }) => {
-  const { withSearchParams } = useLinkUtils();
+  const { withSearchParam } = useLinkUtils();
 
   return (
     <ConfirmationDialog
       open={open}
       title="Delete selected buckets?"
       content="This action cannot be undone."
-      closeLink={withSearchParams('/s3/buckets', previousParams => {
-        previousParams.delete('delete');
-        return previousParams;
-      })}
+      closeLink={withSearchParam('delete', null)}
       method="DELETE"
       action="/s3/buckets/delete"
       buttons={

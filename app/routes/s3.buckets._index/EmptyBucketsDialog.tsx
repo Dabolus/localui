@@ -12,17 +12,14 @@ const EmptyBucketsDialog: FunctionComponent<EmptyBucketsDialogProps> = ({
   open,
   buckets,
 }) => {
-  const { withSearchParams } = useLinkUtils();
+  const { withSearchParam } = useLinkUtils();
 
   return (
     <ConfirmationDialog
       open={open}
       title="Empty selected buckets?"
       content="This action cannot be undone."
-      closeLink={withSearchParams('/s3/buckets', previousParams => {
-        previousParams.delete('empty');
-        return previousParams;
-      })}
+      closeLink={withSearchParam('empty', null)}
       method="DELETE"
       action="/s3/buckets/empty"
       buttons={
