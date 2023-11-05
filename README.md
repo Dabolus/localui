@@ -14,3 +14,7 @@ services.
 - Interact with different emulators on different ports with the same UI
 - Quickly perform tasks that are common in development environments with ease
   (e.g. delete multiple S3 buckets at once, quickly preview S3 files, etc.)
+
+## License
+
+MIT. See `LICENSE` for more details.

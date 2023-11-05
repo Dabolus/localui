@@ -3,6 +3,7 @@
   "description": "A simple UI to interact with real or emulated AWS services (localstack, minio, etc.)",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "build": "remix build",
     "dev": "concurrently 'npm:dev:*'",
