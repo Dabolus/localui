@@ -4,6 +4,10 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "author": "Giorgio Garasto <giorgio@garasto.me>",
+  "repository": "https://github.com/Dabolus/aws-ui.git",
+  "homepage": "https://github.com/Dabolus/aws-ui",
+  "funding": "https://github.com/sponsors/Dabolus",
   "scripts": {
     "build": "remix build",
     "dev": "concurrently 'npm:dev:*'",
