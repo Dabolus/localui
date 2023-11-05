@@ -70,7 +70,11 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
     )}
     {content && (
       <DialogContent>
-        <DialogContentText>{content}</DialogContentText>
+        {typeof content === 'string' ? (
+          <DialogContentText>{content}</DialogContentText>
+        ) : (
+          content
+        )}
       </DialogContent>
     )}
     {(buttons || closeable) && (

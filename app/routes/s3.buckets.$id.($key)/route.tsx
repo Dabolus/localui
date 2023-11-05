@@ -1,6 +1,11 @@
 import { useMemo, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  ListObjectsV2Command,
+  CommonPrefix,
+  _Object,
+} from '@aws-sdk/client-s3';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
 import { HTMLFormMethod } from '@remix-run/router';
 import {
@@ -11,6 +16,7 @@ import {
   Form,
   useSubmit,
   FormEncType,
+  useSearchParams,
 } from '@remix-run/react';
 import {
   Typography,
@@ -41,6 +47,8 @@ import { setupAwsClients } from '~/src/aws/server';
 import { s3StorageClassToNameMap } from '~/src/aws/common';
 import TableOverlay from '~/src/components/TableOverlay';
 import PreviewSidebar from './preview/PreviewSidebar';
+import useLinkUtils from '~/src/hooks/useLinkUtils';
+import CreateFolderDialog from './CreateFolderDialog';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -80,15 +88,25 @@ export async function loader({ params }: LoaderFunctionArgs) {
       Delimiter: '/',
     }),
   );
+  // AWS simulates folders by creating empty objects that end with a slash,
+  // so we do the same and consider them folders instead of objects
+  const folders: CommonPrefix[] = [
+    ...(listObjectsResponse.CommonPrefixes ?? []),
+    ...(listObjectsResponse.Contents?.filter(
+      obj => obj.Key?.endsWith('/') && obj.Key !== prefix,
+    ).map<CommonPrefix>(obj => ({ Prefix: obj.Key })) ?? []),
+  ];
+  const objects: _Object[] =
+    listObjectsResponse.Contents?.filter(obj => !obj.Key?.endsWith('/')) ?? [];
   const enrichedResponse = {
     ...listObjectsResponse,
-    CommonPrefixes: listObjectsResponse.CommonPrefixes?.map(commonPrefix => ({
+    CommonPrefixes: folders.map(commonPrefix => ({
       ...commonPrefix,
       BucketName: params.id,
       DirName: prefix,
       BaseName: commonPrefix.Prefix?.replace(prefix ?? '', ''),
     })),
-    Contents: listObjectsResponse.Contents?.map(obj => ({
+    Contents: objects.map(obj => ({
       ...obj,
       BucketName: params.id,
       DirName: prefix,
@@ -96,11 +114,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
     })),
   };
   return json({
-    directories: enrichedResponse.CommonPrefixes ?? [],
-    objects: enrichedResponse.Contents ?? [],
+    directories: enrichedResponse.CommonPrefixes,
+    objects: enrichedResponse.Contents,
     selectedObject:
       !!key && !key.endsWith('/')
-        ? enrichedResponse.Contents?.find(obj => obj.Key === key)
+        ? enrichedResponse.Contents.find(obj => obj.Key === key)
         : undefined,
   });
 }
@@ -121,6 +139,8 @@ export default function BucketDetails() {
     keys: ['BaseName'],
     includeMatches: true,
   });
+  const [searchParams] = useSearchParams();
+  const { withSearchParam } = useLinkUtils();
   const { revalidate } = useRevalidator();
   const formRef = useRef<HTMLFormElement | null>(null);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -185,7 +205,10 @@ export default function BucketDetails() {
             <Button onClick={revalidate}>
               <RefreshIcon />
             </Button>
-            <Button component={RemixLink} to="create-folder">
+            <Button
+              component={RemixLink}
+              to={withSearchParam('create-folder', '')}
+            >
               Create folder
             </Button>
             <Button
@@ -310,6 +333,10 @@ export default function BucketDetails() {
             }}
           />
         </DroppableForm>
+        <CreateFolderDialog
+          open={searchParams.has('create-folder')}
+          bucketName={id!}
+        />
         {selectedObject && (
           <PreviewSidebar object={selectedObject} encodedKey={rawKey!} />
         )}
