@@ -5,12 +5,4 @@ node_modules
 /public/build
 .env
 
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
 /.localstack
