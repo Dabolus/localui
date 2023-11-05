@@ -1,40 +1,16 @@
-# Material UI - Remix example in TypeScript
+<p align="center">
+  <img width="280" src="logo.svg">
+</p>
 
-## How to use
+# AWS UI
 
-Download the example [or clone the repo](https://github.com/mui/material-ui):
+AWS UI is a simple web portal that uses the AWS SDK (v3) to interact with AWS
+services. It is designed to be used with emulated AWS services (localstack,
+minio, etc.), even though it can technically be used also with real AWS
+services.
 
-<!-- #default-branch-switch -->
+## Features
 
-```bash
-curl https://codeload.github.com/mui/material-ui/tar.gz/master | tar -xz --strip=2  material-ui-master/examples/material-ui-remix-ts
-cd material-ui-remix-ts
-```
-
-Install it and run:
-
-```bash
-npm install
-npm run dev
-```
-
-or:
-
-<!-- #default-branch-switch -->
-
-[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui/material-ui/tree/master/examples/material-ui-remix-ts)
-
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/mui/material-ui/tree/master/examples/material-ui-remix-ts)
-
-## The idea behind the example
-
-The project uses [Remix](https://remix.run/), which is a full stack web framework.
-It includes `@mui/material` and its peer dependencies, including [Emotion](https://emotion.sh/docs/introduction), the default style engine in Material UI v5.
-If you prefer, you can [use styled-components instead](https://mui.com/material-ui/guides/interoperability/#styled-components).
-
-## What's next?
-
-<!-- #default-branch-switch -->
-
-You now have a working example project.
-You can head back to the documentation and continue by browsing the [templates](https://mui.com/material-ui/getting-started/templates/) section.
+- Interact with different emulators on different ports with the same UI
+- Quickly perform tasks that are common in development environments with ease
+  (e.g. delete multiple S3 buckets at once, quickly preview S3 files, etc.)
