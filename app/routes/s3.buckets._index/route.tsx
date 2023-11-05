@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
 import { json } from '@remix-run/node';
 import {
@@ -19,7 +19,6 @@ import {
 import {
   Refresh as RefreshIcon,
   Clear as ClearIcon,
-  TakeoutDining as TakeoutDiningIcon,
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
@@ -45,15 +44,15 @@ export async function loader() {
 
 export default function BucketsList() {
   const { buckets } = useLoaderData<typeof loader>();
-  const [search, setSearch] = useState('');
-  const { results: searchResults } = useFuzzySearch(search, buckets, {
-    keys: ['Name'],
-    includeMatches: true,
-  });
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
   const { withSearchParam } = useLinkUtils();
   const selectedBuckets = searchParams.get('selection')?.split(',') ?? [];
+  const search = searchParams.get('search') ?? '';
+  const { results: searchResults } = useFuzzySearch(search, buckets, {
+    keys: ['Name'],
+    includeMatches: true,
+  });
 
   useEffect(() => {
     if (selectedBuckets.length > 0) {
@@ -112,13 +111,27 @@ export default function BucketsList() {
             label="Search buckets"
             variant="outlined"
             value={search}
-            onChange={event => setSearch(event.target.value)}
+            onChange={event =>
+              setSearchParams(previousParams => {
+                if (event.target.value) {
+                  previousParams.set('search', event.target.value);
+                } else {
+                  previousParams.delete('search');
+                }
+                return previousParams;
+              })
+            }
             InputProps={{
               endAdornment: search && (
                 <IconButton
                   edge="end"
                   size="small"
-                  onClick={() => setSearch('')}
+                  onClick={() =>
+                    setSearchParams(previousParams => {
+                      previousParams.delete('search');
+                      return previousParams;
+                    })
+                  }
                 >
                   <ClearIcon />
                 </IconButton>

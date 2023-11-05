@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {
   S3Client,
@@ -133,13 +133,13 @@ export default function BucketDetails() {
     ((typeof directories)[number] & (typeof objects)[number])[]
   >(() => [...directories, ...objects], [directories, objects]);
   const submit = useSubmit();
-  const [selectedObjects, setSelectedObjects] = useState<string[]>([]);
-  const [search, setSearch] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedObjects = searchParams.get('selection')?.split(',') ?? [];
+  const search = searchParams.get('search') ?? '';
   const { results: searchResults } = useFuzzySearch(search, mergedContent, {
     keys: ['BaseName'],
     includeMatches: true,
   });
-  const [searchParams] = useSearchParams();
   const { withSearchParam } = useLinkUtils();
   const { revalidate } = useRevalidator();
   const formRef = useRef<HTMLFormElement | null>(null);
@@ -228,13 +228,27 @@ export default function BucketDetails() {
             label="Search objects"
             variant="outlined"
             value={search}
-            onChange={event => setSearch(event.target.value)}
+            onChange={event =>
+              setSearchParams(previousParams => {
+                if (event.target.value) {
+                  previousParams.set('search', event.target.value);
+                } else {
+                  previousParams.delete('search');
+                }
+                return previousParams;
+              })
+            }
             InputProps={{
               endAdornment: search && (
                 <IconButton
                   edge="end"
                   size="small"
-                  onClick={() => setSearch('')}
+                  onClick={() =>
+                    setSearchParams(previousParams => {
+                      previousParams.delete('search');
+                      return previousParams;
+                    })
+                  }
                 >
                   <ClearIcon />
                 </IconButton>
@@ -260,7 +274,14 @@ export default function BucketDetails() {
           <DataGrid
             rowSelectionModel={selectedObjects}
             onRowSelectionModelChange={newSelection =>
-              setSelectedObjects(newSelection as string[])
+              setSearchParams(previousParams => {
+                if (newSelection.length < 1) {
+                  previousParams.delete('selection');
+                } else {
+                  previousParams.set('selection', newSelection.join(','));
+                }
+                return previousParams;
+              })
             }
             rows={searchResults}
             columns={[
