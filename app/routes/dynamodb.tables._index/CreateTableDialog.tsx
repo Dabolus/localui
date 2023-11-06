@@ -29,7 +29,13 @@ const CreateTableDialog: FunctionComponent<CreateTableDialogProps> = ({
       title="Create table"
       content={
         <Stack mt={2} spacing={2}>
-          <TextField fullWidth required label="Table name" name="name" />
+          <TextField
+            fullWidth
+            required
+            autoFocus
+            label="Table name"
+            name="name"
+          />
           <Stack direction="row" spacing={1}>
             <TextField
               fullWidth
