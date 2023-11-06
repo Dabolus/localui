@@ -17,7 +17,7 @@ const CreateFolderDialog: FunctionComponent<CreateFolderDialogProps> = ({
   return (
     <ConfirmationDialog
       open={open}
-      title="Create a folder"
+      title="Create folder"
       content={
         <TextField
           fullWidth
