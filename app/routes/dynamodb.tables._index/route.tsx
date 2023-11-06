@@ -63,7 +63,6 @@ const TablesList: FunctionComponent = () => {
   const selectedTables = searchParams.get('selection')?.split(',') ?? [];
   const search = searchParams.get('search') ?? '';
   const { results: searchResults } = useFuzzySearch(search, tables, {
-    keys: ['Name'],
     includeMatches: true,
   });
 
