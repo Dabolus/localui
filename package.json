@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "type": "module",
   "author": "Giorgio Garasto <giorgio@garasto.me>",
   "repository": "https://github.com/Dabolus/aws-ui.git",
   "homepage": "https://github.com/Dabolus/aws-ui",
@@ -40,7 +41,7 @@
     "material-ui-popup-state": "^5.0.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-dropzone": "^14.2.3",
+    "react-dropzone-esm": "^15.0.1",
     "react-syntax-highlighter": "^15.5.0"
   },
   "devDependencies": {

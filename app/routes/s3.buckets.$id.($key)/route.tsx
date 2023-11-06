@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone-esm';
 import {
   S3Client,
   ListObjectsV2Command,
