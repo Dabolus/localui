@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { ListTablesCommand } from '@aws-sdk/client-dynamodb';
-import { json } from '@remix-run/node';
+import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import {
   useLoaderData,
   Link as RemixLink,
@@ -22,12 +22,32 @@ import {
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
-import { formatDateTime, highlightMatches } from '~/src/utils';
+import { highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { WrappedDynamoDBClient, setupAwsClients } from '~/src/aws/server';
+import CreateTableDialog from './CreateTableDialog';
 import DeleteTablesDialog from './DeleteTablesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
+import { createTableAction, deleteTablesAction } from './actions';
+
+export const loader = async () => {
+  const [dynamoDbClient] = setupAwsClients('dynamodb') as [
+    WrappedDynamoDBClient,
+  ];
+  const response = await dynamoDbClient.send(new ListTablesCommand({}));
+  return json({ tables: response.TableNames ?? [] });
+};
+
+export const action = (args: ActionFunctionArgs) => {
+  switch (args.request.method) {
+    case 'POST':
+      return createTableAction(args);
+    case 'DELETE':
+      return deleteTablesAction(args);
+  }
+  throw redirect('/dynamodb/tables');
+};
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -35,16 +55,7 @@ const SearchField = styled(TextField)({
   },
 });
 
-export async function loader() {
-  const [dynamodbClient] = setupAwsClients('dynamodb') as [
-    WrappedDynamoDBClient,
-  ];
-  const response = await dynamodbClient.send(new ListTablesCommand({}));
-
-  return json({ tables: response.TableNames ?? [] });
-}
-
-export default function TablesList() {
+const TablesList: FunctionComponent = () => {
   const { tables } = useLoaderData<typeof loader>();
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -85,13 +96,6 @@ export default function TablesList() {
             </Button>
             <Button
               component={RemixLink}
-              to={withSearchParam('empty', '')}
-              disabled={selectedTables.length < 1}
-            >
-              Empty
-            </Button>
-            <Button
-              component={RemixLink}
               to={withSearchParam('delete', '')}
               disabled={selectedTables.length < 1}
             >
@@ -101,7 +105,7 @@ export default function TablesList() {
               variant="contained"
               color="secondary"
               component={RemixLink}
-              to="/dynamodb/tables/create"
+              to={withSearchParam('create', '')}
             >
               Create table
             </Button>
@@ -187,10 +191,13 @@ export default function TablesList() {
           },
         }}
       />
+      <CreateTableDialog open={searchParams.has('create')} />
       <DeleteTablesDialog
         open={searchParams.has('delete') && tables.length > 0}
         tables={selectedTables}
       />
     </>
   );
-}
+};
+
+export default TablesList;

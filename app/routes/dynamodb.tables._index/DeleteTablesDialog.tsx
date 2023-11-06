@@ -21,11 +21,11 @@ const DeleteTablesDialog: FunctionComponent<DeleteTablesDialogProps> = ({
       content="This action cannot be undone."
       closeLink={withSearchParam('delete', null)}
       method="DELETE"
-      action="/dynamodb/tables/delete"
+      action="/dynamodb/tables"
       buttons={
         <>
           <input type="hidden" name="names" value={tables.join(',')} />
-          <Button type="submit" variant="contained" color="error">
+          <Button type="submit" variant="contained" color="error" autoFocus>
             Delete
           </Button>
         </>
