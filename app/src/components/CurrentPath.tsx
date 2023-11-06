@@ -63,7 +63,9 @@ export default function CurrentPath({
         {pathItems.map((item, index) => {
           const key = typeof item === 'string' ? item : item.key;
           const name =
-            typeof item === 'string' ? kebabToTitleCase(item) : item.name;
+            typeof item === 'string'
+              ? serviceToNameMap[item] ?? kebabToTitleCase(item)
+              : item.name;
           const to =
             typeof item === 'string'
               ? computePath(pathItems, index)
@@ -85,7 +87,7 @@ export default function CurrentPath({
       {withHeading && (
         <Typography variant="h2" sx={visuallyHidden}>
           {typeof selected === 'string'
-            ? kebabToTitleCase(selected)
+            ? serviceToNameMap[selected] ?? kebabToTitleCase(selected)
             : selected.name}
         </Typography>
       )}

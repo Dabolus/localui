@@ -1,10 +1,11 @@
 import {
   DeleteObjectsCommand,
   ListObjectVersionsCommand,
-  ListObjectsV2Command,
   ObjectIdentifier,
   S3Client,
 } from '@aws-sdk/client-s3';
+import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import type { RegionInputConfig } from '@smithy/config-resolver';
 import type { EndpointInputConfig } from '@smithy/middleware-endpoint';
 import type { AwsAuthInputConfig } from '@aws-sdk/middleware-signing';
@@ -28,6 +29,13 @@ type AwsClient = Client<
 
 type AwsClientConstructor = new (config: AwsClientConfig) => AwsClient;
 
+export class WrappedDynamoDBClient extends DynamoDBDocumentClient {
+  constructor(config: DynamoDBClientConfig) {
+    const client = new DynamoDBClient(config);
+    super(client);
+  }
+}
+
 const serviceToConfigMap: Record<
   string,
   {
@@ -38,6 +46,10 @@ const serviceToConfigMap: Record<
   s3: {
     Client: S3Client,
     envName: 'S3',
+  },
+  dynamodb: {
+    Client: WrappedDynamoDBClient,
+    envName: 'DYNAMODB',
   },
 };
 
@@ -79,7 +91,7 @@ export const setupAwsClients = (...services: string[]): AwsClient[] =>
   });
 
 export const getEnabledServices = () =>
-  process.env.AWS_UI_ENABLED_SERVICES?.split(',') ?? ['s3']; // Default to all available services if no env variable is provided
+  process.env.AWS_UI_ENABLED_SERVICES?.split(',') ?? ['s3', 'dynamodb']; // Default to all available services if no env variable is provided
 
 export const emptyBucket = async (client: S3Client, bucket: string) => {
   // Delete all versions of all objects in the bucket

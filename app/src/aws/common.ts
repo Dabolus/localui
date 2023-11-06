@@ -156,6 +156,7 @@ export const awsRegionsWithContinents: AwsRegionWithContinent[] =
 export const serviceToNameMap: Record<string, string> = {
   home: 'Home',
   s3: 'S3',
+  dynamodb: 'DynamoDB',
 };
 
 export const s3StorageClassToNameMap: Record<ObjectStorageClass, string> = {
