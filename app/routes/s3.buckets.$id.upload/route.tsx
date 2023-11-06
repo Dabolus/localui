@@ -9,12 +9,14 @@ import {
   writeAsyncIterableToWritable,
 } from '@remix-run/node';
 import { setupAwsClients } from '~/src/aws/server';
+import { base64UrlEncode } from '~/src/utils';
 
 const pathDecoder = new TextDecoder();
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const [s3Client] = setupAwsClients('s3') as [S3Client];
   const { searchParams } = new URL(request.url);
+  const prefix = searchParams.get('prefix') ?? '';
 
   const paths: Record<string, string> = {};
 
@@ -37,9 +39,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
       const stream = new PassThrough();
       const writePromise = writeAsyncIterableToWritable(data, stream);
-      const key = `${searchParams.get('prefix') ?? ''}${
-        paths[filename] ?? filename
-      }`;
+      const key = `${prefix}${paths[filename] ?? filename}`;
 
       const multipartUpload = new Upload({
         client: s3Client,
@@ -57,5 +57,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     },
   );
 
-  return redirect(`/s3/buckets/${params.id}`);
+  return redirect(
+    `/s3/buckets/${params.id}${prefix ? `/${base64UrlEncode(prefix)}` : ''}`,
+  );
 }

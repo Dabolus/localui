@@ -129,6 +129,7 @@ export default function BucketDetails() {
   const segments = mergedSegments?.split('/').filter(Boolean) ?? [];
   const { directories, objects, selectedObject } =
     useLoaderData<typeof loader>();
+  const decodedBaseDir = selectedObject?.DirName ?? mergedSegments ?? '';
   const mergedContent = useMemo<
     ((typeof directories)[number] & (typeof objects)[number])[]
   >(() => [...directories, ...objects], [directories, objects]);
@@ -261,7 +262,7 @@ export default function BucketDetails() {
       <Box position="relative" height="calc(100vh - 270px)">
         <DroppableForm
           method="POST"
-          action={`/s3/buckets/${id}/upload`}
+          action={`/s3/buckets/${id}/upload?prefix=${decodedBaseDir}`}
           encType="multipart/form-data"
           ref={formRef}
         >
@@ -269,6 +270,7 @@ export default function BucketDetails() {
             <UploadIcon fontSize="large" />
             <Typography>Drop files here to upload them</Typography>
           </DropOverlay>
+          <input type="hidden" name="baseDir" value={decodedBaseDir} />
           <input type="hidden" name="paths" />
           <input {...getInputProps({ name: 'files' })} />
           <DataGrid
@@ -357,6 +359,7 @@ export default function BucketDetails() {
         <CreateFolderDialog
           open={searchParams.has('create-folder')}
           bucketName={id!}
+          prefix={decodedBaseDir}
         />
         {selectedObject && (
           <PreviewSidebar object={selectedObject} encodedKey={rawKey!} />
