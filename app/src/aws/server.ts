@@ -74,16 +74,25 @@ export const setupAwsClients = (...services: string[]): AwsClient[] =>
         'SERVICE_ENDPOINT',
         envName,
         // Use localstack endpoint as default if no env variable is provided
-        'http://localhost:4566',
+        process.env.AWS_ENDPOINT_URL ?? 'http://localhost:4566',
         'SERVICES_ENDPOINT',
       ),
-      // Default to us-east-1 if no region is provided
-      region: resolveEnvironmentVariable('REGION', envName, 'us-east-1'),
+      region: resolveEnvironmentVariable(
+        'REGION',
+        envName,
+        // Default to us-east-1 if no region is provided
+        process.env.AWS_DEFAULT_REGION ?? 'us-east-1',
+      ),
       credentials: {
-        accessKeyId: resolveEnvironmentVariable('ACCESS_KEY_ID', envName),
+        accessKeyId: resolveEnvironmentVariable(
+          'ACCESS_KEY_ID',
+          envName,
+          process.env.AWS_ACCESS_KEY_ID,
+        ),
         secretAccessKey: resolveEnvironmentVariable(
           'SECRET_ACCESS_KEY',
           envName,
+          process.env.AWS_SECRET_ACCESS_KEY,
         ),
       },
       forcePathStyle: true,
