@@ -21,11 +21,11 @@ const DeleteBucketsDialog: FunctionComponent<DeleteBucketsDialogProps> = ({
       content="This action cannot be undone."
       closeLink={withSearchParam('delete', null)}
       method="DELETE"
-      action="/s3/buckets/delete"
+      action="/s3/buckets"
       buttons={
         <>
-          <input type="hidden" name="ids" value={buckets.join(',')} />
-          <Button type="submit" variant="contained" color="error">
+          <input type="hidden" name="names" value={buckets.join(',')} />
+          <Button type="submit" variant="contained" color="error" autoFocus>
             Delete
           </Button>
         </>

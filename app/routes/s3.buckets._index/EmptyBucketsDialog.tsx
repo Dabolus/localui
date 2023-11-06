@@ -20,12 +20,12 @@ const EmptyBucketsDialog: FunctionComponent<EmptyBucketsDialogProps> = ({
       title="Empty selected buckets?"
       content="This action cannot be undone."
       closeLink={withSearchParam('empty', null)}
-      method="DELETE"
-      action="/s3/buckets/empty"
+      method="PUT"
+      action="/s3/buckets"
       buttons={
         <>
-          <input type="hidden" name="ids" value={buckets.join(',')} />
-          <Button type="submit" variant="contained" color="error">
+          <input type="hidden" name="names" value={buckets.join(',')} />
+          <Button type="submit" variant="contained" color="error" autoFocus>
             Empty
           </Button>
         </>

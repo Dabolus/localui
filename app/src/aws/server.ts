@@ -1,9 +1,4 @@
-import {
-  DeleteObjectsCommand,
-  ListObjectVersionsCommand,
-  ObjectIdentifier,
-  S3Client,
-} from '@aws-sdk/client-s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import type { RegionInputConfig } from '@smithy/config-resolver';
@@ -92,31 +87,3 @@ export const setupAwsClients = (...services: string[]): AwsClient[] =>
 
 export const getEnabledServices = () =>
   process.env.AWS_UI_ENABLED_SERVICES?.split(',') ?? ['s3', 'dynamodb']; // Default to all available services if no env variable is provided
-
-export const emptyBucket = async (client: S3Client, bucket: string) => {
-  // Delete all versions of all objects in the bucket
-  const { Versions } = await client.send(
-    new ListObjectVersionsCommand({
-      Bucket: bucket,
-    }),
-  );
-
-  const versionsToDelete = (Versions ?? []).filter(
-    version => !!version.Key,
-  ) as ObjectIdentifier[];
-
-  if (versionsToDelete.length < 1) {
-    return;
-  }
-
-  const result = await client.send(
-    new DeleteObjectsCommand({
-      Bucket: bucket,
-      Delete: {
-        Objects: versionsToDelete,
-      },
-    }),
-  );
-
-  return result;
-};

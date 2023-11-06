@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
-import { json } from '@remix-run/node';
+import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import {
   useLoaderData,
   Link as RemixLink,
@@ -25,10 +25,34 @@ import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import { formatDateTime, highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { setupAwsClients } from '~/src/aws/server';
+import CreateBucketsDialog from './CreateBucketsDialog';
 import EmptyBucketsDialog from './EmptyBucketsDialog';
 import DeleteBucketsDialog from './DeleteBucketsDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
+import {
+  createBucketsAction,
+  emptyBucketsAction,
+  deleteBucketsAction,
+} from './actions';
+
+export const loader = async () => {
+  const [s3Client] = setupAwsClients('s3') as [S3Client];
+  const response = await s3Client.send(new ListBucketsCommand({}));
+  return json({ buckets: response.Buckets ?? [] });
+};
+
+export const action = (args: ActionFunctionArgs) => {
+  switch (args.request.method) {
+    case 'POST':
+      return createBucketsAction(args);
+    case 'PUT':
+      return emptyBucketsAction(args);
+    case 'DELETE':
+      return deleteBucketsAction(args);
+  }
+  throw redirect('/s3/buckets');
+};
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -36,13 +60,7 @@ const SearchField = styled(TextField)({
   },
 });
 
-export async function loader() {
-  const [s3Client] = setupAwsClients('s3') as [S3Client];
-  const response = await s3Client.send(new ListBucketsCommand({}));
-  return json({ buckets: response.Buckets ?? [] });
-}
-
-export default function BucketsList() {
+const BucketsList: FunctionComponent = () => {
   const { buckets } = useLoaderData<typeof loader>();
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -99,9 +117,9 @@ export default function BucketsList() {
               variant="contained"
               color="secondary"
               component={RemixLink}
-              to="/s3/buckets/create"
+              to={withSearchParam('create', '')}
             >
-              Create bucket
+              Create buckets
             </Button>
           </Stack>
         </Stack>
@@ -196,6 +214,7 @@ export default function BucketsList() {
           },
         }}
       />
+      <CreateBucketsDialog open={searchParams.has('create')} />
       <EmptyBucketsDialog
         open={searchParams.has('empty') && buckets.length > 0}
         buckets={selectedBuckets}
@@ -206,4 +225,6 @@ export default function BucketsList() {
       />
     </>
   );
-}
+};
+
+export default BucketsList;
