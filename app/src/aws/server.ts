@@ -1,6 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+import { SQSClient } from '@aws-sdk/client-sqs';
 import type { RegionInputConfig } from '@smithy/config-resolver';
 import type { EndpointInputConfig } from '@smithy/middleware-endpoint';
 import type { AwsAuthInputConfig } from '@aws-sdk/middleware-signing';
@@ -46,6 +47,10 @@ const serviceToConfigMap: Record<
     Client: WrappedDynamoDBClient,
     envName: 'DYNAMODB',
   },
+  sqs: {
+    Client: SQSClient,
+    envName: 'SQS',
+  },
 };
 
 const resolveEnvironmentVariable = (
@@ -86,4 +91,4 @@ export const setupAwsClients = (...services: string[]): AwsClient[] =>
   });
 
 export const getEnabledServices = () =>
-  process.env.AWS_UI_ENABLED_SERVICES?.split(',') ?? ['s3', 'dynamodb']; // Default to all available services if no env variable is provided
+  process.env.AWS_UI_ENABLED_SERVICES?.split(',') ?? ['s3', 'dynamodb', 'sqs']; // Default to all available services if no env variable is provided

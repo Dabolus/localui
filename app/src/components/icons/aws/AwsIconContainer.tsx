@@ -8,11 +8,13 @@ export interface AwsIconContainerProps extends BoxProps {
 const serviceToColorLightThemeMap: Record<string, string> = {
   s3: '#1B660F',
   dynamodb: '#2E27AD',
+  sqs: '#B0084D',
 };
 
 const serviceToColorDarkThemeMap: Record<string, string> = {
   s3: '#6CAE3E',
   dynamodb: '#527FFF',
+  sqs: '#FF4F8B',
 };
 
 const AwsIconContainer = styled(Box)<AwsIconContainerProps>(

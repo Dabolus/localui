@@ -157,6 +157,7 @@ export const serviceToNameMap: Record<string, string> = {
   home: 'Home',
   s3: 'S3',
   dynamodb: 'DynamoDB',
+  sqs: 'Simple Queue Service',
 };
 
 export const s3StorageClassToNameMap: Record<ObjectStorageClass, string> = {

@@ -37,6 +37,7 @@ const ServicesList = styled('ul')(({ theme }) => ({
 const serviceToDescriptionMap: Record<string, string> = {
   s3: 'Scalable object storage for any type of data',
   dynamodb: 'Fast and flexible NoSQL database service',
+  sqs: 'Fully managed message queues for microservices & serverless applications',
 };
 
 const ServiceCard = styled(Card)({
@@ -45,11 +46,12 @@ const ServiceCard = styled(Card)({
   maxWidth: '100%',
 });
 
-const ServiceCardIconContainer = styled(AwsIconContainer)({
+const ServiceCardIconContainer = styled(AwsIconContainer)(({ theme }) => ({
+  color: theme.palette.common.white,
   width: 96,
   height: 96,
   flex: '0 0 auto',
-});
+}));
 
 const ServiceCardIcon = styled(AwsIcon)({
   width: 64,
