@@ -90,7 +90,7 @@ const CreateBucketsDialog: FunctionComponent<CreateBucketsDialogProps> = ({
                     }
                   }}
                   onBlur={event => {
-                    if ((event.target as HTMLInputElement).reportValidity()) {
+                    if (event.target.value && event.target.reportValidity()) {
                       setNames(previousNames => [
                         ...previousNames,
                         namesTextField,
