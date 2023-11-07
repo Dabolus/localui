@@ -6,6 +6,7 @@ import {
   Link as RemixLink,
   useRevalidator,
   useSearchParams,
+  useParams,
 } from '@remix-run/react';
 import {
   Typography,
@@ -29,7 +30,12 @@ import CreateQueueDialog from './CreateQueueDialog';
 import DeleteQueuesDialog from './DeleteQueuesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
-import { createQueueAction, deleteQueuesAction } from './actions';
+import {
+  createQueueAction,
+  deleteQueuesAction,
+  postMessageToQueueAction,
+} from './actions';
+import QueueSidebar from './QueueSidebar';
 
 export const loader = async () => {
   const sqsClient = getAwsClient('sqs');
@@ -46,7 +52,9 @@ export const loader = async () => {
 export const action = (args: ActionFunctionArgs) => {
   switch (args.request.method) {
     case 'POST':
-      return createQueueAction(args);
+      return args.params.name
+        ? postMessageToQueueAction(args)
+        : createQueueAction(args);
     case 'DELETE':
       return deleteQueuesAction(args);
   }
@@ -61,6 +69,8 @@ const SearchField = styled(TextField)({
 
 const QueuesList: FunctionComponent = () => {
   const { queues } = useLoaderData<typeof loader>();
+  const { name: selectedQueueName } = useParams();
+  const selectedQueue = queues.find(queue => queue.Name === selectedQueueName);
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
   const { withSearchParam } = useLinkUtils();
@@ -200,6 +210,7 @@ const QueuesList: FunctionComponent = () => {
         open={searchParams.has('delete') && queues.length > 0}
         queues={selectedQueues}
       />
+      {selectedQueue && <QueueSidebar queue={selectedQueue} />}
     </>
   );
 };

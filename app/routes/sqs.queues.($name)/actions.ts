@@ -1,4 +1,8 @@
-import { CreateQueueCommand, DeleteQueueCommand } from '@aws-sdk/client-sqs';
+import {
+  CreateQueueCommand,
+  DeleteQueueCommand,
+  SendMessageCommand,
+} from '@aws-sdk/client-sqs';
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
 import { getAwsClient } from '~/src/aws/server';
 
@@ -38,4 +42,22 @@ export const deleteQueuesAction = async ({ request }: ActionFunctionArgs) => {
   );
 
   return redirect('/sqs/queues');
+};
+
+export const postMessageToQueueAction = async ({
+  request,
+}: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const sqsClient = getAwsClient('sqs');
+  const queueUrl = formData.get('queueUrl')?.toString();
+  const message = formData.get('message')?.toString();
+
+  await sqsClient.send(
+    new SendMessageCommand({
+      QueueUrl: queueUrl,
+      MessageBody: message,
+    }),
+  );
+
+  return null;
 };
