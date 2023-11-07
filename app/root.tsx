@@ -44,7 +44,11 @@ const Document = withEmotionCache(
     }, []);
 
     return (
-      <html lang="en" data-mui-color-scheme="light">
+      // We suppress hydration warnings for the html element because on the
+      // server we always SSR with light color scheme, but on the client we
+      // want to use the system color scheme and we do that as first thing
+      // to avoid a flash of light color scheme for dark mode users
+      <html lang="en" data-mui-color-scheme="light" suppressHydrationWarning>
         <head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
