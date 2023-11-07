@@ -24,7 +24,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import { highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
-import { WrappedDynamoDBClient, setupAwsClients } from '~/src/aws/server';
+import { getAwsClient } from '~/src/aws/server';
 import CreateTableDialog from './CreateTableDialog';
 import DeleteTablesDialog from './DeleteTablesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
@@ -32,9 +32,7 @@ import TableOverlay from '~/src/components/TableOverlay';
 import { createTableAction, deleteTablesAction } from './actions';
 
 export const loader = async () => {
-  const [dynamoDbClient] = setupAwsClients('dynamodb') as [
-    WrappedDynamoDBClient,
-  ];
+  const dynamoDbClient = getAwsClient('dynamodb');
   const response = await dynamoDbClient.send(new ListTablesCommand({}));
   return json({ tables: response.TableNames ?? [] });
 };

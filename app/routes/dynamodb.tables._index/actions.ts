@@ -5,13 +5,11 @@ import {
   ScalarAttributeType,
 } from '@aws-sdk/client-dynamodb';
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
-import { WrappedDynamoDBClient, setupAwsClients } from '~/src/aws/server';
+import { getAwsClient } from '~/src/aws/server';
 
 export const createTableAction = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const [dynamoDbClient] = setupAwsClients('dynamodb') as [
-    WrappedDynamoDBClient,
-  ];
+  const dynamoDbClient = getAwsClient('dynamodb');
   const partitionKeyName = formData.get('partitionKeyName')?.toString() ?? '';
   const sortKeyName = formData.get('sortKeyName')?.toString();
 
@@ -69,9 +67,7 @@ export const createTableAction = async ({ request }: ActionFunctionArgs) => {
 
 export const deleteTablesAction = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const [dynamoDbClient] = setupAwsClients('dynamodb') as [
-    WrappedDynamoDBClient,
-  ];
+  const dynamoDbClient = getAwsClient('dynamodb');
   const tablesToDelete = formData.get('names')?.toString().split(',') ?? [];
 
   await Promise.all(

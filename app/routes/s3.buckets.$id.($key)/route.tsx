@@ -1,7 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
 import {
-  S3Client,
   ListObjectsV2Command,
   CommonPrefix,
   _Object,
@@ -42,7 +41,7 @@ import {
   prettifySize,
 } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
-import { setupAwsClients } from '~/src/aws/server';
+import { getAwsClient } from '~/src/aws/server';
 import { s3StorageClassToNameMap } from '~/src/aws/common';
 import TableOverlay from '~/src/components/TableOverlay';
 import PreviewSidebar from './preview/PreviewSidebar';
@@ -79,7 +78,7 @@ const DroppableForm = styled(Form)<{ $isDragActive?: boolean }>({
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const key = params.key ? base64UrlDecode(params.key) : undefined;
-  const [s3Client] = setupAwsClients('s3') as [S3Client];
+  const s3Client = getAwsClient('s3');
   const prefix = key?.slice(0, key?.lastIndexOf('/') + 1);
   const listObjectsResponse = await s3Client.send(
     new ListObjectsV2Command({

@@ -8,7 +8,7 @@ import {
   styled,
 } from '@mui/material';
 import { redirect, type MetaFunction } from '@remix-run/node';
-import { getEnabledServices } from '~/src/aws/server';
+import { enabledServices } from '~/src/aws/server';
 import { serviceToNameMap } from '~/src/aws/common';
 import CurrentPath from '~/src/components/CurrentPath';
 import AwsIcon from '~/src/components/icons/aws/AwsIcon';
@@ -21,8 +21,9 @@ export const meta: MetaFunction = () => [
 ];
 
 export async function loader() {
-  const services = getEnabledServices();
-  return services.length > 1 ? { services } : redirect(`/${services[0]}`);
+  return enabledServices.length > 1
+    ? { services: enabledServices }
+    : redirect(`/${enabledServices[0]}`);
 }
 
 const ServicesList = styled('ul')(({ theme }) => ({

@@ -1,5 +1,5 @@
 import {
-  S3Client,
+  type S3Client,
   CreateBucketCommand,
   BucketLocationConstraint,
   DeleteBucketCommand,
@@ -8,7 +8,7 @@ import {
   ObjectIdentifier,
 } from '@aws-sdk/client-s3';
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
-import { setupAwsClients } from '~/src/aws/server';
+import { getAwsClient } from '~/src/aws/server';
 
 const emptyBucket = async (client: S3Client, bucket: string) => {
   // Delete all versions of all objects in the bucket
@@ -40,7 +40,7 @@ const emptyBucket = async (client: S3Client, bucket: string) => {
 
 export const createBucketsAction = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const [s3Client] = setupAwsClients('s3') as [S3Client];
+  const s3Client = getAwsClient('s3');
   const bucketsToCreate = formData.get('names')?.toString().split(',') ?? [];
   const providedRegion = formData.get('region') ?? undefined;
 
@@ -65,7 +65,7 @@ export const createBucketsAction = async ({ request }: ActionFunctionArgs) => {
 
 export const emptyBucketsAction = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const [s3Client] = setupAwsClients('s3') as [S3Client];
+  const s3Client = getAwsClient('s3');
   const bucketsToEmpty = formData.get('names')?.toString().split(',') ?? [];
 
   await Promise.all(
@@ -77,7 +77,7 @@ export const emptyBucketsAction = async ({ request }: ActionFunctionArgs) => {
 
 export const deleteBucketsAction = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const [s3Client] = setupAwsClients('s3') as [S3Client];
+  const s3Client = getAwsClient('s3');
   const bucketsToDelete = formData.get('names')?.toString().split(',') ?? [];
 
   await Promise.all(

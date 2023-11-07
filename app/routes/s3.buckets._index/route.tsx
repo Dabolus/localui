@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect } from 'react';
-import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
+import { ListBucketsCommand } from '@aws-sdk/client-s3';
 import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import {
   useLoaderData,
@@ -24,7 +24,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import { formatDateTime, highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
-import { setupAwsClients } from '~/src/aws/server';
+import { getAwsClient } from '~/src/aws/server';
 import CreateBucketsDialog from './CreateBucketsDialog';
 import EmptyBucketsDialog from './EmptyBucketsDialog';
 import DeleteBucketsDialog from './DeleteBucketsDialog';
@@ -37,7 +37,7 @@ import {
 } from './actions';
 
 export const loader = async () => {
-  const [s3Client] = setupAwsClients('s3') as [S3Client];
+  const s3Client = getAwsClient('s3');
   const response = await s3Client.send(new ListBucketsCommand({}));
   return json({ buckets: response.Buckets ?? [] });
 };

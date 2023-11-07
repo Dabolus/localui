@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { PassThrough } from 'node:stream';
-import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import {
   ActionFunctionArgs,
@@ -8,13 +7,13 @@ import {
   unstable_parseMultipartFormData,
   writeAsyncIterableToWritable,
 } from '@remix-run/node';
-import { setupAwsClients } from '~/src/aws/server';
+import { getAwsClient } from '~/src/aws/server';
 import { base64UrlEncode } from '~/src/utils';
 
 const pathDecoder = new TextDecoder();
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const [s3Client] = setupAwsClients('s3') as [S3Client];
+  const s3Client = getAwsClient('s3');
   const { searchParams } = new URL(request.url);
   const prefix = searchParams.get('prefix') ?? '';
 

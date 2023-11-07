@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect } from 'react';
-import { SQSClient, ListQueuesCommand } from '@aws-sdk/client-sqs';
+import { ListQueuesCommand } from '@aws-sdk/client-sqs';
 import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import {
   useLoaderData,
@@ -24,7 +24,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import { highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
-import { setupAwsClients } from '~/src/aws/server';
+import { getAwsClient } from '~/src/aws/server';
 import CreateQueueDialog from './CreateQueueDialog';
 import DeleteQueuesDialog from './DeleteQueuesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
@@ -32,7 +32,7 @@ import TableOverlay from '~/src/components/TableOverlay';
 import { createQueueAction, deleteQueuesAction } from './actions';
 
 export const loader = async () => {
-  const [sqsClient] = setupAwsClients('sqs') as [SQSClient];
+  const sqsClient = getAwsClient('sqs');
   const response = await sqsClient.send(new ListQueuesCommand({}));
   return json({
     queues:
