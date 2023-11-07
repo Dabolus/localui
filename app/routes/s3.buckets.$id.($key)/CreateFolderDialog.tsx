@@ -21,15 +21,13 @@ const CreateFolderDialog: FunctionComponent<CreateFolderDialogProps> = ({
       open={open}
       title="Create folder"
       content={
-        <>
-          <TextField
-            fullWidth
-            required
-            label="Folder name"
-            name="name"
-            sx={{ mt: 2 }}
-          />
-        </>
+        <TextField
+          fullWidth
+          required
+          label="Folder name"
+          name="name"
+          sx={{ mt: 2 }}
+        />
       }
       closeLink={withSearchParam('create-folder', null)}
       method="POST"
