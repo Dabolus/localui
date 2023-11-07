@@ -362,7 +362,11 @@ export default function BucketDetails() {
           prefix={decodedBaseDir}
         />
         {selectedObject && (
-          <PreviewSidebar object={selectedObject} encodedKey={rawKey!} />
+          <PreviewSidebar
+            object={selectedObject}
+            encodedKey={rawKey!}
+            prefix={decodedBaseDir}
+          />
         )}
       </Box>
     </>

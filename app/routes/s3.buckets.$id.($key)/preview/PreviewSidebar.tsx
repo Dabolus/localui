@@ -16,7 +16,7 @@ import {
   Fullscreen as FullscreenIcon,
 } from '@mui/icons-material';
 import PreviewDialog from './PreviewDialog';
-import { base64UrlDecode } from '~/src/utils';
+import { base64UrlDecode, base64UrlEncode } from '~/src/utils';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import type { PreviewElementProps } from './PreviewElement';
 import type { _Object } from '@aws-sdk/client-s3';
@@ -34,6 +34,7 @@ export interface EnrichedObject extends _Object {
 export interface PreviewSidebarProps {
   object: Jsonify<EnrichedObject>;
   encodedKey: string;
+  prefix?: string;
 }
 
 const InlinePreviewElement = styled(PreviewElement)(({ theme }) => ({
@@ -62,6 +63,7 @@ const FullScreenPreviewButton = styled(IconButton)(({ theme }) => ({
 const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
   object,
   encodedKey,
+  prefix = '',
 }) => {
   const [previewElementProps, setPreviewElementProps] = useState<
     PreviewElementProps | undefined
@@ -113,7 +115,11 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
         action={
           <IconButton
             LinkComponent={RemixLink}
-            {...{ to: `/s3/buckets/${object.BucketName}` }}
+            {...{
+              to: `/s3/buckets/${object.BucketName}${
+                prefix ? `/${base64UrlEncode(prefix)}` : ''
+              }`,
+            }}
           >
             <CloseIcon />
           </IconButton>
