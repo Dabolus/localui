@@ -7,7 +7,7 @@ import {
   _Object,
 } from '@aws-sdk/client-s3';
 import { json, LoaderFunctionArgs } from '@remix-run/node';
-import { HTMLFormMethod } from '@remix-run/router';
+import { HTMLFormMethod, FormEncType } from '@remix-run/router';
 import {
   useParams,
   useLoaderData,
@@ -15,7 +15,6 @@ import {
   useRevalidator,
   Form,
   useSubmit,
-  FormEncType,
   useSearchParams,
 } from '@remix-run/react';
 import {
@@ -49,6 +48,7 @@ import TableOverlay from '~/src/components/TableOverlay';
 import PreviewSidebar from './preview/PreviewSidebar';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import CreateFolderDialog from './CreateFolderDialog';
+import UploadObjectsDialog from './UploadObjectsDialog';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -216,7 +216,7 @@ export default function BucketDetails() {
               variant="contained"
               color="secondary"
               component={RemixLink}
-              to="upload"
+              to={withSearchParam('upload', '')}
               startIcon={<UploadIcon />}
             >
               Upload
@@ -358,6 +358,11 @@ export default function BucketDetails() {
         </DroppableForm>
         <CreateFolderDialog
           open={searchParams.has('create-folder')}
+          bucketName={id!}
+          prefix={decodedBaseDir}
+        />
+        <UploadObjectsDialog
+          open={searchParams.has('upload')}
           bucketName={id!}
           prefix={decodedBaseDir}
         />
