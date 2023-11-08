@@ -9,6 +9,7 @@ import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 import createEmotionCache from './src/createEmotionCache';
 import theme from './src/theme';
+import PageStyles from './src/PageStyles';
 
 export default function handleRequest(
   request: Request,
@@ -25,6 +26,7 @@ export default function handleRequest(
         <CssVarsProvider theme={theme} defaultMode="system">
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
+          <PageStyles />
           <RemixServer context={remixContext} url={request.url} />
         </CssVarsProvider>
       </CacheProvider>

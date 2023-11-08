@@ -9,6 +9,7 @@ import {
 import ClientStyleContext from './src/ClientStyleContext';
 import createEmotionCache from './src/createEmotionCache';
 import theme from './src/theme';
+import PageStyles from './src/PageStyles';
 
 interface ClientCacheProviderProps {
   children: ReactNode;
@@ -40,6 +41,7 @@ const hydrate = () => {
         <CssVarsProvider theme={theme} defaultMode="system">
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
+          <PageStyles />
           <RemixBrowser />
         </CssVarsProvider>
       </ClientCacheProvider>,
