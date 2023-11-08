@@ -6,7 +6,7 @@ import {
   Link as RemixLink,
   useRevalidator,
   useSearchParams,
-  useParams,
+  Outlet,
 } from '@remix-run/react';
 import {
   Typography,
@@ -30,21 +30,16 @@ import CreateQueueDialog from './CreateQueueDialog';
 import DeleteQueuesDialog from './DeleteQueuesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
-import {
-  createQueueAction,
-  deleteQueuesAction,
-  postMessageToQueueAction,
-} from './actions';
-import QueueSidebar from './QueueSidebar';
+import { createQueueAction, deleteQueuesAction } from './actions';
 
 export const loader = async () => {
   const sqsClient = getAwsClient('sqs');
   const response = await sqsClient.send(new ListQueuesCommand({}));
   return json({
     queues:
-      response.QueueUrls?.map(Url => ({
-        Name: Url.slice(Url.lastIndexOf('/') + 1),
-        Url,
+      response.QueueUrls?.map(QueueUrl => ({
+        QueueName: QueueUrl.slice(QueueUrl.lastIndexOf('/') + 1),
+        QueueUrl,
       })) ?? [],
   });
 };
@@ -52,9 +47,7 @@ export const loader = async () => {
 export const action = (args: ActionFunctionArgs) => {
   switch (args.request.method) {
     case 'POST':
-      return args.params.name
-        ? postMessageToQueueAction(args)
-        : createQueueAction(args);
+      return createQueueAction(args);
     case 'DELETE':
       return deleteQueuesAction(args);
   }
@@ -69,15 +62,13 @@ const SearchField = styled(TextField)({
 
 const QueuesList: FunctionComponent = () => {
   const { queues } = useLoaderData<typeof loader>();
-  const { name: selectedQueueName } = useParams();
-  const selectedQueue = queues.find(queue => queue.Name === selectedQueueName);
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
   const { withSearchParam } = useLinkUtils();
   const selectedQueues = searchParams.get('selection')?.split(',') ?? [];
   const search = searchParams.get('search') ?? '';
   const { results: searchResults } = useFuzzySearch(search, queues, {
-    keys: ['Name'],
+    keys: ['QueueName'],
     includeMatches: true,
   });
 
@@ -180,12 +171,13 @@ const QueuesList: FunctionComponent = () => {
             headerName: 'Name',
             renderCell: params => (
               <Link
-                to={`/sqs/queues/${params.row.item.Name}`}
+                to={`/sqs/queues/${params.row.item.QueueName}`}
                 color="secondary"
                 component={RemixLink}
+                unstable_viewTransition
               >
                 {highlightMatches(
-                  params.row.item.Name,
+                  params.row.item.QueueName,
                   params.row.matches?.[0]?.indices,
                 )}
               </Link>
@@ -194,7 +186,7 @@ const QueuesList: FunctionComponent = () => {
             flex: 1,
           },
         ]}
-        getRowId={row => row.item.Url}
+        getRowId={row => row.item.QueueUrl}
         checkboxSelection
         disableRowSelectionOnClick
         sx={{ height: 'calc(100vh - 270px)' }}
@@ -205,12 +197,15 @@ const QueuesList: FunctionComponent = () => {
           },
         }}
       />
-      <CreateQueueDialog open={searchParams.has('create')} />
+      <CreateQueueDialog
+        open={searchParams.has('create')}
+        existingQueues={queues}
+      />
       <DeleteQueuesDialog
         open={searchParams.has('delete') && queues.length > 0}
         queues={selectedQueues}
       />
-      {selectedQueue && <QueueSidebar queue={selectedQueue} />}
+      <Outlet />
     </>
   );
 };

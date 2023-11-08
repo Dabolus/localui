@@ -74,3 +74,9 @@ export const base64UrlEncode = (str: string) =>
 
 export const base64UrlDecode = (str: string) =>
   decodeURIComponent(atob(str.replace(/-/g, '+').replace(/_/g, '/')));
+
+export const joinNodes = (nodes: ReactNode[], separator: ReactNode) =>
+  nodes.reduce<ReactNode[] | null>(
+    (accu, elem) => (accu === null ? [elem] : [...accu, separator, elem]),
+    null,
+  );
