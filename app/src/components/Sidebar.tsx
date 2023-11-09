@@ -91,8 +91,11 @@ export const Sidebar: FunctionComponent<PropsWithChildren<SidebarProps>> = ({
             </IconButton>
           </>
         }
+        sx={{ flex: '0 0 auto' }}
       />
-      <CardContent sx={{ height: '100%' }}>{children}</CardContent>
+      <CardContent sx={{ flex: '1 1 auto', minHeight: 0 }}>
+        {children}
+      </CardContent>
     </SidebarContainer>
   );
 };

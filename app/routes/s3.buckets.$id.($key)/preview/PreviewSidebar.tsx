@@ -32,8 +32,10 @@ export interface PreviewSidebarProps {
 const InlinePreviewElement = styled(PreviewElement)<
   PreviewElementProps & { $isFullscreen?: boolean }
 >(({ theme, $isFullscreen }) => ({
+  flex: '1 1 auto',
   marginTop: theme.spacing(2),
   transition: theme.transitions.create('max-height'),
+  minHeight: 0,
   maxHeight: $isFullscreen ? '100%' : 360,
 }));
 
@@ -87,7 +89,7 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
       }`}
     >
       <Stack height="100%">
-        <Stack direction="row" gap={1}>
+        <Stack direction="row" gap={1} flex="0 0 auto">
           <Button
             variant="contained"
             color="secondary"
