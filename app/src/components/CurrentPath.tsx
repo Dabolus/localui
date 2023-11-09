@@ -76,6 +76,7 @@ export default function CurrentPath({
               key={key}
               component={RemixLink}
               to={to}
+              unstable_viewTransition
               selected={selected === item}
               {...(selected === item && { 'aria-current': 'page' })}
             >

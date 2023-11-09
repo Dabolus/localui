@@ -181,6 +181,7 @@ const BucketsList: FunctionComponent = () => {
                 to={`/s3/buckets/${params.row.item.Name}`}
                 color="secondary"
                 component={RemixLink}
+                unstable_viewTransition
               >
                 {highlightMatches(
                   params.row.item.Name ?? '',
