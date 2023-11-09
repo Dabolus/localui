@@ -296,6 +296,7 @@ export default function BucketDetails() {
                     )}`}
                     color="secondary"
                     component={RemixLink}
+                    unstable_viewTransition
                   >
                     {highlightMatches(
                       params.row.item.BaseName ?? '',
@@ -365,14 +366,14 @@ export default function BucketDetails() {
           bucketName={id!}
           prefix={decodedBaseDir}
         />
-        {selectedObject && (
-          <PreviewSidebar
-            object={selectedObject}
-            encodedKey={rawKey!}
-            prefix={decodedBaseDir}
-          />
-        )}
       </Box>
+      {selectedObject && (
+        <PreviewSidebar
+          object={selectedObject}
+          encodedKey={rawKey!}
+          prefix={decodedBaseDir}
+        />
+      )}
     </>
   );
 }

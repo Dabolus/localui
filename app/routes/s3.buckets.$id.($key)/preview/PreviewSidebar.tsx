@@ -3,25 +3,17 @@ import { Link as RemixLink, useSearchParams } from '@remix-run/react';
 import {
   Button,
   Stack,
-  IconButton,
-  Card,
-  CardHeader,
-  CardContent,
   unstable_useEnhancedEffect as useEnhancedEffect,
   styled,
 } from '@mui/material';
-import {
-  Download as DownloadIcon,
-  Close as CloseIcon,
-  Fullscreen as FullscreenIcon,
-} from '@mui/icons-material';
-import PreviewDialog from './PreviewDialog';
+import { Download as DownloadIcon } from '@mui/icons-material';
 import { base64UrlDecode, base64UrlEncode } from '~/src/utils';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import type { PreviewElementProps } from './PreviewElement';
 import type { _Object } from '@aws-sdk/client-s3';
 import type { Jsonify } from '@remix-run/server-runtime/dist/jsonify';
 import Placeholder from '~/src/components/Placeholder';
+import Sidebar from '~/src/components/Sidebar';
 
 const PreviewElement = lazy(() => import('./PreviewElement'));
 
@@ -37,28 +29,13 @@ export interface PreviewSidebarProps {
   prefix?: string;
 }
 
-const InlinePreviewElement = styled(PreviewElement)(({ theme }) => ({
-  margin: theme.spacing(2, 0),
+const InlinePreviewElement = styled(PreviewElement)<
+  PreviewElementProps & { $isFullscreen?: boolean }
+>(({ theme, $isFullscreen }) => ({
+  marginTop: theme.spacing(2),
+  transition: theme.transitions.create('max-height'),
+  maxHeight: $isFullscreen ? '100%' : 360,
 }));
-
-const InlinePreviewContainer = styled('div')({
-  position: 'relative',
-  width: '100%',
-  height: '100%',
-  maxHeight: 360,
-});
-
-const FullScreenPreviewButton = styled(IconButton)(({ theme }) => ({
-  zIndex: 1,
-  position: 'absolute',
-  top: theme.spacing(1),
-  right: theme.spacing(1),
-  backgroundColor: theme.vars.palette.background.paper,
-
-  '&:hover': {
-    backgroundColor: theme.vars.palette.background.default,
-  },
-})) as typeof IconButton;
 
 const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
   object,
@@ -69,6 +46,7 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
     PreviewElementProps | undefined
   >(undefined);
   const [searchParams] = useSearchParams();
+  const isFullscreen = searchParams.has('fullscreen');
   const { withSearchParam } = useLinkUtils();
 
   useEnhancedEffect(() => {
@@ -100,38 +78,21 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
   }, [object?.Key, object?.BucketName, encodedKey]);
 
   return (
-    <Card
-      component={Stack}
-      position="absolute"
-      top={0}
-      right={0}
-      width={420}
-      maxWidth="100%"
-      height="100%"
-      p={2}
+    <Sidebar
+      title={object.BaseName}
+      isFullscreen={isFullscreen}
+      fullscreenLink={withSearchParam('fullscreen', isFullscreen ? null : '')}
+      closeLink={`/s3/buckets/${object.BucketName}${
+        prefix ? `/${base64UrlEncode(prefix)}` : ''
+      }`}
     >
-      <CardHeader
-        title={object.BaseName}
-        action={
-          <IconButton
-            LinkComponent={RemixLink}
-            {...{
-              to: `/s3/buckets/${object.BucketName}${
-                prefix ? `/${base64UrlEncode(prefix)}` : ''
-              }`,
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        }
-      />
-      <CardContent sx={{ height: '100%' }}>
+      <Stack height="100%">
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
             color="secondary"
             component="a"
-            href={'download'}
+            href={`/s3/buckets/${object.BucketName}/${encodedKey}/download`}
             download={object.BaseName}
             startIcon={<DownloadIcon />}
           >
@@ -141,32 +102,21 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
             variant="contained"
             color="error"
             component={RemixLink}
-            to={'delete'}
+            to={`/s3/buckets/${object.BucketName}/${encodedKey}/delete`}
           >
             Delete
           </Button>
         </Stack>
         {previewElementProps && (
-          <InlinePreviewContainer>
-            <FullScreenPreviewButton
-              aria-label="Open full screen preview"
-              component={RemixLink}
-              to={withSearchParam('preview', '')}
-            >
-              <FullscreenIcon />
-            </FullScreenPreviewButton>
-            <Placeholder>
-              <InlinePreviewElement {...previewElementProps} />
-            </Placeholder>
-            <PreviewDialog
-              open={searchParams.has('preview')}
-              closeLink={withSearchParam('preview', null)}
+          <Placeholder>
+            <InlinePreviewElement
+              $isFullscreen={isFullscreen}
               {...previewElementProps}
             />
-          </InlinePreviewContainer>
+          </Placeholder>
         )}
-      </CardContent>
-    </Card>
+      </Stack>
+    </Sidebar>
   );
 };
 
