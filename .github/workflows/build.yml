@@ -158,3 +158,9 @@ jobs:
         if: needs.prepare.outputs.push == 'true'
         run: |
           docker buildx imagetools inspect '${{ needs.prepare.outputs.image }}:${{ needs.prepare.outputs.meta-version }}'
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ needs.prepare.outputs.image }}
