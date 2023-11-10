@@ -198,7 +198,7 @@ const BucketsList: FunctionComponent = () => {
               <Link
                 to={withSearchParam(
                   'endpoint',
-                  params.row.item.EndpointUrl ?? null,
+                  (hasMultipleEndpoints && params.row.item.EndpointUrl) || null,
                   `/s3/buckets/${params.row.item.Name}`,
                 )}
                 color="secondary"
