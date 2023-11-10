@@ -64,10 +64,14 @@ const resolveEnvironmentVariable = (
   defaultValue = '',
   fallbackEnvName = '',
 ): string =>
-  // Try to get the specific service variable
+  // Try to get the specific service variable in singular form
   process.env[`AWS_UI_${serviceEnvName}_${suffix}`] ??
+  // If not available, try to get the specific service variable in plural form (i.e. with a trailing 'S')
+  process.env[`AWS_UI_${serviceEnvName}_${suffix}S`] ??
   // If not available, try to get the generic services variable
   process.env[`AWS_UI_${fallbackEnvName || suffix}`] ??
+  // If not available, try to get the generic services variable in plural form (i.e. with a trailing 'S')
+  process.env[`AWS_UI_${fallbackEnvName || suffix}S`] ??
   // If not available, use the default value provided
   defaultValue;
 
@@ -82,7 +86,10 @@ const resolveEnvironmentVariablesGroup = (
     serviceEnvName,
     defaultValue,
     fallbackEnvName,
-  ).split(',');
+  )
+    .split(',')
+    .map(val => val.trim())
+    .filter(Boolean);
 
 export const setupAwsClientsGroup = <T extends SupportedService>(
   service: T,
