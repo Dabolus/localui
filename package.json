@@ -1,18 +1,18 @@
 {
-  "name": "aws-ui",
+  "name": "localui",
   "description": "A simple UI to interact with real or emulated AWS services (localstack, minio, etc.)",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "type": "module",
   "author": "Giorgio Garasto <giorgio@garasto.me>",
-  "repository": "https://github.com/Dabolus/aws-ui.git",
-  "homepage": "https://github.com/Dabolus/aws-ui",
+  "repository": "https://github.com/Dabolus/localui.git",
+  "homepage": "https://github.com/Dabolus/localui",
   "funding": "https://github.com/sponsors/Dabolus",
   "scripts": {
     "build": "remix build",
     "dev": "concurrently 'npm:dev:*'",
-    "dev:remix": "AWS_UI_SERVICES_ENDPOINT=http://localhost:4566 AWS_UI_ACCESS_KEY_ID=accesskeyid AWS_UI_SECRET_ACCESS_KEY=secretaccesskey remix dev --manual",
+    "dev:remix": "LOCALUI_SERVICES_ENDPOINT=http://localhost:4566 LOCALUI_ACCESS_KEY_ID=accesskeyid LOCALUI_SECRET_ACCESS_KEY=secretaccesskey remix dev --manual",
     "dev:localstack": "docker compose up --force-recreate --build --renew-anon-volumes --remove-orphans",
     "start": "remix-serve ./build/index.js",
     "typecheck": "tsc"

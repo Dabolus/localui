@@ -1,8 +1,6 @@
-import { ChangeEvent, FunctionComponent, useState } from 'react';
+import { FunctionComponent } from 'react';
 import {
-  Autocomplete,
   Button,
-  Chip,
   FormControl,
   InputLabel,
   MenuItem,
@@ -10,7 +8,6 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
-import { awsRegionsWithContinents } from '~/src/aws/common';
 import ConfirmationDialog from '~/src/components/ConfirmationDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 

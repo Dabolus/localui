@@ -1,9 +1,9 @@
 import { FunctionComponent } from 'react';
 import { SvgIcon, SvgIconProps } from '@mui/material';
 
-export type AwsUiIconProps = SvgIconProps;
+export type LocalUIIconProps = SvgIconProps;
 
-const AwsUiIcon: FunctionComponent<AwsUiIconProps> = props => (
+const LocalUIIcon: FunctionComponent<LocalUIIconProps> = props => (
   <SvgIcon {...props}>
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -19,4 +19,4 @@ const AwsUiIcon: FunctionComponent<AwsUiIconProps> = props => (
   </SvgIcon>
 );
 
-export default AwsUiIcon;
+export default LocalUIIcon;

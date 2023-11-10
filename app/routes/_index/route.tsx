@@ -16,8 +16,12 @@ import AwsIconContainer from '~/src/components/icons/aws/AwsIconContainer';
 
 // https://remix.run/docs/en/main/route/meta
 export const meta: MetaFunction = () => [
-  { title: 'AWS UI' },
-  { name: 'description', content: 'AWS UI' },
+  { title: 'LocalUI' },
+  {
+    name: 'description',
+    content:
+      'A simple UI to interact with real or emulated AWS services (LocalStack, Minio, etc).',
+  },
 ];
 
 export async function loader() {

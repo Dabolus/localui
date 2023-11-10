@@ -7,7 +7,7 @@ ENV NODE_ENV production
 # Install all node_modules, including dev dependencies
 FROM base AS deps
 
-WORKDIR /aws-ui
+WORKDIR /localui
 
 ADD package.json ./
 RUN npm install --include=dev
@@ -15,18 +15,18 @@ RUN npm install --include=dev
 # Setup production node_modules
 FROM base AS production-deps
 
-WORKDIR /aws-ui
+WORKDIR /localui
 
-COPY --from=deps /aws-ui/node_modules /aws-ui/node_modules
+COPY --from=deps /localui/node_modules /localui/node_modules
 ADD package.json ./
 RUN npm prune --omit=dev
 
 # Build the app
 FROM base AS build
 
-WORKDIR /aws-ui
+WORKDIR /localui
 
-COPY --from=deps /aws-ui/node_modules /aws-ui/node_modules
+COPY --from=deps /localui/node_modules /localui/node_modules
 
 ADD . .
 RUN npm run build
@@ -37,12 +37,12 @@ FROM base
 ENV PORT="8080"
 ENV NODE_ENV="production"
 
-WORKDIR /aws-ui
+WORKDIR /localui
 
-COPY --from=production-deps /aws-ui/node_modules /aws-ui/node_modules
+COPY --from=production-deps /localui/node_modules /localui/node_modules
 
-COPY --from=build /aws-ui/build /aws-ui/build
-COPY --from=build /aws-ui/public /aws-ui/public
-COPY --from=build /aws-ui/package.json /aws-ui/package.json
+COPY --from=build /localui/build /localui/build
+COPY --from=build /localui/public /localui/public
+COPY --from=build /localui/package.json /localui/package.json
 
 ENTRYPOINT ["npm", "start"]

@@ -65,13 +65,13 @@ const resolveEnvironmentVariable = (
   fallbackEnvName = '',
 ): string =>
   // Try to get the specific service variable in singular form
-  process.env[`AWS_UI_${serviceEnvName}_${suffix}`] ??
+  process.env[`LOCALUI_${serviceEnvName}_${suffix}`] ??
   // If not available, try to get the specific service variable in plural form (i.e. with a trailing 'S')
-  process.env[`AWS_UI_${serviceEnvName}_${suffix}S`] ??
+  process.env[`LOCALUI_${serviceEnvName}_${suffix}S`] ??
   // If not available, try to get the generic services variable
-  process.env[`AWS_UI_${fallbackEnvName || suffix}`] ??
+  process.env[`LOCALUI_${fallbackEnvName || suffix}`] ??
   // If not available, try to get the generic services variable in plural form (i.e. with a trailing 'S')
-  process.env[`AWS_UI_${fallbackEnvName || suffix}S`] ??
+  process.env[`LOCALUI_${fallbackEnvName || suffix}S`] ??
   // If not available, use the default value provided
   defaultValue;
 
@@ -140,7 +140,7 @@ export const setupAwsClients = (
 ): Map<SupportedService, Map<string, AwsClient>> =>
   new Map(services.map(service => [service, setupAwsClientsGroup(service)]));
 
-export const enabledServices = (process.env.AWS_UI_ENABLED_SERVICES?.split(
+export const enabledServices = (process.env.LOCALUI_ENABLED_SERVICES?.split(
   ',',
 ) ?? ['s3', 'dynamodb', 'sqs']) as SupportedService[]; // Default to all available services if no env variable is provided
 

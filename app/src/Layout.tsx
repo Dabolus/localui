@@ -4,8 +4,7 @@ import { Box, AppBar, Toolbar, Typography, styled, Link } from '@mui/material';
 import Footer from './Footer';
 import Search from './Search';
 import GlobalLoadingIndicator from './components/GlobalLoadingIndicator';
-import AwsUiIcon from './components/AwsUiIcon';
-import Placeholder from './components/Placeholder';
+import LocalUIIcon from './components/LocalUIIcon';
 
 const LogoLink = styled(Link)(({ theme }) => ({
   flexGrow: 1,
@@ -21,9 +20,9 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
       <AppBar position="static" sx={{ flex: 0 }}>
         <Toolbar variant="dense">
           <LogoLink component={RemixLink} to="/" underline="none">
-            <AwsUiIcon />
+            <LocalUIIcon />
             <Typography variant="h6" component="h1" noWrap>
-              AWS UI
+              LocalUI
             </Typography>
           </LogoLink>
           <Search />

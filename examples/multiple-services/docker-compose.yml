@@ -1,5 +1,5 @@
 version: '3.8'
-name: aws-ui-multiple-services-example
+name: localui-multiple-services-example
 services:
   # Emulate S3 with minio
   minio:
@@ -29,16 +29,16 @@ services:
     image: roribio16/alpine-sqs:latest
     expose:
       - '9324'
-  aws-ui:
-    container_name: aws-ui
-    image: dabolus/aws-ui:nightly
+  localui:
+    container_name: localui
+    image: dabolus/localui:nightly
     ports:
       - '8080:8080'
     environment:
       # We use the same access keys for all the services
-      AWS_UI_ACCESS_KEY_ID: ${COMMON_ACCESS_KEY_ID}
-      AWS_UI_SECRET_ACCESS_KEY: ${COMMON_SECRET_ACCESS_KEY}
+      LOCALUI_ACCESS_KEY_ID: ${COMMON_ACCESS_KEY_ID}
+      LOCALUI_SECRET_ACCESS_KEY: ${COMMON_SECRET_ACCESS_KEY}
       # While each service has its own endpoint
-      AWS_UI_S3_SERVICE_ENDPOINT: http://minio:9000
-      AWS_UI_DYNAMODB_SERVICE_ENDPOINT: http://dynamodb-local:8000
-      AWS_UI_SQS_SERVICE_ENDPOINT: http://alpine-sqs:9324
+      LOCALUI_S3_SERVICE_ENDPOINT: http://minio:9000
+      LOCALUI_DYNAMODB_SERVICE_ENDPOINT: http://dynamodb-local:8000
+      LOCALUI_SQS_SERVICE_ENDPOINT: http://alpine-sqs:9324
