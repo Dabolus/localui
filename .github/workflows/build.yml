@@ -158,6 +158,11 @@ jobs:
         if: needs.prepare.outputs.push == 'true'
         run: |
           docker buildx imagetools inspect '${{ needs.prepare.outputs.image }}:${{ needs.prepare.outputs.meta-version }}'
+      - name: Get repository README
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: README.md
+          sparse-checkout-cone-mode: false
       - name: Update Docker Hub description
         uses: peter-evans/dockerhub-description@v3
         with:
