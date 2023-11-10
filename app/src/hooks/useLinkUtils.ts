@@ -1,6 +1,11 @@
 import { useCallback } from 'react';
-import { useLocation, useSearchParams } from '@remix-run/react';
-import { createSearchParams, URLSearchParamsInit } from 'react-router-dom';
+import { useLocation } from '@remix-run/react';
+import {
+  parsePath,
+  createPath,
+  createSearchParams,
+  URLSearchParamsInit,
+} from 'react-router-dom';
 
 export interface UseLinkUtilsResult {
   withPathname: (pathname: string) => string;
@@ -19,16 +24,21 @@ export interface UseLinkUtilsResult {
 
 const useLinkUtils = (): UseLinkUtilsResult => {
   const location = useLocation();
-  const [searchParams] = useSearchParams();
 
   const withPathname = useCallback<UseLinkUtilsResult['withPathname']>(
-    pathname => `${pathname}${location.search}`,
+    pathname =>
+      createPath({
+        pathname,
+        search: location.search,
+        hash: location.hash,
+      }),
     [location.search],
   );
 
   const withSearchParams = useCallback<UseLinkUtilsResult['withSearchParams']>(
     (searchParamsSetter, url) => {
-      const newUrl = url ?? location.pathname;
+      const newUrl = url ? parsePath(url) : location;
+      const searchParams = new URLSearchParams(newUrl.search);
       const updatedSearchParamsInit =
         typeof searchParamsSetter === 'function'
           ? searchParamsSetter(new URLSearchParams(searchParams))
@@ -36,32 +46,30 @@ const useLinkUtils = (): UseLinkUtilsResult => {
       const updatedSearchParamsString = createSearchParams(
         updatedSearchParamsInit,
       ).toString();
-      return updatedSearchParamsString
-        ? `${newUrl}?${updatedSearchParamsString}`
-        : newUrl;
+      return createPath({
+        pathname: newUrl.pathname,
+        hash: newUrl.hash,
+        search: updatedSearchParamsString,
+      });
     },
-    [location.pathname, searchParams],
+    [location],
   );
 
   const withSearchParam = useCallback<UseLinkUtilsResult['withSearchParam']>(
-    (paramName, paramValueSetter, url) => {
-      const newUrl = url ?? location.pathname;
-      const updatedSearchParamInit =
-        typeof paramValueSetter === 'function'
-          ? paramValueSetter(searchParams.get(paramName))
-          : paramValueSetter;
-      const newParams = new URLSearchParams(searchParams);
-      if (updatedSearchParamInit === null) {
-        newParams.delete(paramName);
-      } else {
-        newParams.set(paramName, updatedSearchParamInit);
-      }
-      const updatedSearchParamsString = newParams.toString();
-      return updatedSearchParamsString
-        ? `${newUrl}?${updatedSearchParamsString}`
-        : newUrl;
-    },
-    [location.pathname, searchParams],
+    (paramName, paramValueSetter, url) =>
+      withSearchParams(previousParams => {
+        const newParamValue =
+          typeof paramValueSetter === 'function'
+            ? paramValueSetter(previousParams.get(paramName))
+            : paramValueSetter;
+        if (newParamValue === null) {
+          previousParams.delete(paramName);
+        } else {
+          previousParams.set(paramName, newParamValue);
+        }
+        return previousParams;
+      }, url),
+    [withSearchParams],
   );
 
   return {
