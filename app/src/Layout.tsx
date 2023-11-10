@@ -5,6 +5,7 @@ import Footer from './Footer';
 import Search from './Search';
 import GlobalLoadingIndicator from './components/GlobalLoadingIndicator';
 import LocalUIIcon from './components/LocalUIIcon';
+import LocalUIText from './components/LocalUIText';
 
 const LogoLink = styled(Link)(({ theme }) => ({
   flexGrow: 1,
@@ -14,6 +15,10 @@ const LogoLink = styled(Link)(({ theme }) => ({
   color: theme.palette.common.white,
 })) as typeof Link;
 
+const LogoText = styled(LocalUIText)({
+  height: '1rem',
+});
+
 export default function Layout({ children }: PropsWithChildren<{}>) {
   return (
     <>
@@ -21,9 +26,7 @@ export default function Layout({ children }: PropsWithChildren<{}>) {
         <Toolbar variant="dense">
           <LogoLink component={RemixLink} to="/" underline="none">
             <LocalUIIcon />
-            <Typography variant="h6" component="h1" noWrap>
-              LocalUI
-            </Typography>
+            <LogoText />
           </LogoLink>
           <Search />
         </Toolbar>
