@@ -93,7 +93,7 @@ const resolveEnvironmentVariablesGroup = (
 
 export const setupAwsClientsGroup = <T extends SupportedService>(
   service: T,
-): Record<string, ServiceClient<T>> => {
+): Map<string, ServiceClient<T>> => {
   const { Client, envName } = serviceToConfigMap[service];
   const endpoints = resolveEnvironmentVariablesGroup(
     'SERVICE_ENDPOINT',
@@ -118,7 +118,7 @@ export const setupAwsClientsGroup = <T extends SupportedService>(
     envName,
     process.env.AWS_SECRET_ACCESS_KEY,
   );
-  const clientsGroup = Object.fromEntries(
+  const clientsGroup = new Map<string, ServiceClient<T>>(
     endpoints.map((endpoint, index) => [
       endpoint,
       new Client({
@@ -131,33 +131,37 @@ export const setupAwsClientsGroup = <T extends SupportedService>(
         forcePathStyle: true,
       }),
     ]),
-  ) as unknown as Record<string, ServiceClient<T>>;
-  clientsGroup.__default = clientsGroup[endpoints[0]];
+  );
   return clientsGroup;
 };
 
 export const setupAwsClients = (
   ...services: SupportedService[]
-): Record<SupportedService, Record<string, AwsClient>> =>
-  Object.fromEntries(
-    services.map(service => [service, setupAwsClientsGroup(service)]),
-  ) as unknown as Record<SupportedService, Record<string, AwsClient>>;
+): Map<SupportedService, Map<string, AwsClient>> =>
+  new Map(services.map(service => [service, setupAwsClientsGroup(service)]));
 
 export const enabledServices = (process.env.AWS_UI_ENABLED_SERVICES?.split(
   ',',
 ) ?? ['s3', 'dynamodb', 'sqs']) as SupportedService[]; // Default to all available services if no env variable is provided
 
-export const awsClients: Record<
+export const awsClients: Map<
   SupportedService,
-  Record<string, AwsClient>
+  Map<string, AwsClient>
 > = setupAwsClients(...enabledServices);
 
 export const getAwsClientsGroup = <T extends SupportedService>(
   service: T,
-): Record<string, ServiceClient<T>> =>
-  awsClients[service] as unknown as Record<string, ServiceClient<T>>;
+): Map<string, ServiceClient<T>> =>
+  awsClients.get(service) as Map<string, ServiceClient<T>>;
 
 export const getAwsClient = <T extends SupportedService>(
   service: T,
-  endpoint = '__default',
-): ServiceClient<T> => getAwsClientsGroup<T>(service)[endpoint];
+  endpoint?: string | null,
+): ServiceClient<T> => {
+  const group = getAwsClientsGroup<T>(service);
+  return endpoint
+    ? // If the endpoint is provided, return the client for that endpoint
+      group.get(endpoint)
+    : // Otherwise, return the first client in the group
+      group.values().next().value;
+};
