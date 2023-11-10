@@ -1,0 +1,44 @@
+version: '3.8'
+name: aws-ui-multiple-services-example
+services:
+  # Emulate S3 with minio
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    command: server /minio-data
+    environment:
+      MINIO_ROOT_USER: ${COMMON_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${COMMON_SECRET_ACCESS_KEY}
+    expose:
+      - '9000'
+    volumes:
+      - './.minio:/minio-data'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+  # Emulate DynamoDB with dynamodb-local
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: dynamodb-local
+    volumes:
+      - ./.dynamodb-local:/home/dynamodb-local/data
+    expose:
+      - '8000'
+    command: '-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodb-local/data/'
+  # Emulate SQS with alpine-sqs
+  alpine-sqs:
+    container_name: alpine-sqs
+    image: roribio16/alpine-sqs:latest
+    expose:
+      - '9324'
+  aws-ui:
+    container_name: aws-ui
+    image: dabolus/aws-ui:nightly
+    ports:
+      - '8080:8080'
+    environment:
+      # We use the same access keys for all the services
+      AWS_UI_ACCESS_KEY_ID: ${COMMON_ACCESS_KEY_ID}
+      AWS_UI_SECRET_ACCESS_KEY: ${COMMON_SECRET_ACCESS_KEY}
+      # While each service has its own endpoint
+      AWS_UI_S3_SERVICE_ENDPOINT: http://minio:9000
+      AWS_UI_DYNAMODB_SERVICE_ENDPOINT: http://dynamodb-local:8000
+      AWS_UI_SQS_SERVICE_ENDPOINT: http://alpine-sqs:9324
