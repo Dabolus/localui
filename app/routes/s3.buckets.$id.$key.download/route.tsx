@@ -9,7 +9,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const key = base64UrlDecode(params.key!);
   const prefix = key.slice(0, key.lastIndexOf('/') + 1);
   const baseName = key.replace(prefix, '');
-  const s3Client = getAwsClient('s3');
+  const s3Client = getAwsClient('s3', searchParams.get('endpoint'));
   const getObjectResponse = await s3Client.send(
     new GetObjectCommand({
       Bucket: params.id,

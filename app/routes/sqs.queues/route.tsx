@@ -64,7 +64,7 @@ const QueuesList: FunctionComponent = () => {
   const { queues } = useLoaderData<typeof loader>();
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { withSearchParam } = useLinkUtils();
+  const { withSearchParam, withPathname } = useLinkUtils();
   const selectedQueues = searchParams.get('selection')?.split(',') ?? [];
   const search = searchParams.get('search') ?? '';
   const { results: searchResults } = useFuzzySearch(search, queues, {
@@ -171,7 +171,7 @@ const QueuesList: FunctionComponent = () => {
             headerName: 'Name',
             renderCell: params => (
               <Link
-                to={`/sqs/queues/${params.row.item.QueueName}`}
+                to={withPathname(`/sqs/queues/${params.row.item.QueueName}`)}
                 color="secondary"
                 component={RemixLink}
                 unstable_viewTransition

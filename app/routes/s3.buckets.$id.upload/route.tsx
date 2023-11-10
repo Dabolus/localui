@@ -13,8 +13,8 @@ import { base64UrlEncode } from '~/src/utils';
 const pathDecoder = new TextDecoder();
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const s3Client = getAwsClient('s3');
   const { searchParams } = new URL(request.url);
+  const s3Client = getAwsClient('s3', searchParams.get('endpoint'));
   const prefix = searchParams.get('prefix') ?? '';
 
   const paths: Record<string, string> = {};

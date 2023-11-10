@@ -4,9 +4,9 @@ import { getAwsClient } from '~/src/aws/server';
 import { base64UrlEncode } from '~/src/utils';
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const s3Client = getAwsClient('s3');
   const { searchParams } = new URL(request.url);
+  const formData = await request.formData();
+  const s3Client = getAwsClient('s3', searchParams.get('endpoint'));
   const providedName = formData.get('name')?.toString();
   const fullName = providedName?.endsWith('/')
     ? providedName

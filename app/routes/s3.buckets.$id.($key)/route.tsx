@@ -76,10 +76,11 @@ const DroppableForm = styled(Form)<{ $isDragActive?: boolean }>({
   position: 'relative',
 });
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const { searchParams } = new URL(request.url);
   const key = params.key ? base64UrlDecode(params.key) : undefined;
-  const s3Client = getAwsClient('s3');
   const prefix = key?.slice(0, key?.lastIndexOf('/') + 1);
+  const s3Client = getAwsClient('s3', searchParams.get('endpoint'));
   const listObjectsResponse = await s3Client.send(
     new ListObjectsV2Command({
       Bucket: params.id,
@@ -140,7 +141,7 @@ export default function BucketDetails() {
     keys: ['BaseName'],
     includeMatches: true,
   });
-  const { withSearchParam } = useLinkUtils();
+  const { withSearchParam, withPathname } = useLinkUtils();
   const { revalidate } = useRevalidator();
   const formRef = useRef<HTMLFormElement | null>(null);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -179,16 +180,19 @@ export default function BucketDetails() {
           {
             key: id!,
             name: id!,
+            to: withPathname(`/s3/buckets/${id}`),
           },
           ...segments.map(segment => ({
             key: segment,
             name: segment,
-            to: `/s3/buckets/${id}/${base64UrlEncode(
-              mergedSegments?.slice(
-                0,
-                mergedSegments?.indexOf(segment) + segment.length + 1,
-              ) ?? '',
-            )}`,
+            to: withPathname(
+              `/s3/buckets/${id}/${base64UrlEncode(
+                mergedSegments?.slice(
+                  0,
+                  mergedSegments?.indexOf(segment) + segment.length + 1,
+                ) ?? '',
+              )}`,
+            ),
           })),
         ]}
       />
@@ -291,9 +295,11 @@ export default function BucketDetails() {
                 headerName: 'Name',
                 renderCell: params => (
                   <Link
-                    to={`/s3/buckets/${id}/${base64UrlEncode(
-                      params.row.item.Key ?? params.row.item.Prefix ?? '',
-                    )}`}
+                    to={withPathname(
+                      `/s3/buckets/${id}/${base64UrlEncode(
+                        params.row.item.Key ?? params.row.item.Prefix ?? '',
+                      )}`,
+                    )}
                     color="secondary"
                     component={RemixLink}
                     unstable_viewTransition

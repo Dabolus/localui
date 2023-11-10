@@ -1,5 +1,8 @@
 import { FunctionComponent, useEffect } from 'react';
-import { ListBucketsCommand } from '@aws-sdk/client-s3';
+import {
+  ListBucketsCommand,
+  ListBucketsCommandOutput,
+} from '@aws-sdk/client-s3';
 import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import {
   useLoaderData,
@@ -20,11 +23,11 @@ import {
   Refresh as RefreshIcon,
   Clear as ClearIcon,
 } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import { formatDateTime, highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
-import { getAwsClient } from '~/src/aws/server';
+import { getAwsClientsGroup } from '~/src/aws/server';
 import CreateBucketsDialog from './CreateBucketsDialog';
 import EmptyBucketsDialog from './EmptyBucketsDialog';
 import DeleteBucketsDialog from './DeleteBucketsDialog';
@@ -37,9 +40,22 @@ import {
 } from './actions';
 
 export const loader = async () => {
-  const s3Client = getAwsClient('s3');
-  const response = await s3Client.send(new ListBucketsCommand({}));
-  return json({ buckets: response.Buckets ?? [] });
+  const s3Clients = getAwsClientsGroup('s3');
+  const responses = await Promise.all(
+    Array.from(s3Clients.entries(), ([url, s3Client]) =>
+      s3Client
+        .send(new ListBucketsCommand({}))
+        .catch(() => ({} as ListBucketsCommandOutput))
+        .then(
+          response =>
+            response.Buckets?.map(bucket => ({
+              ...bucket,
+              EndpointUrl: url,
+            })) ?? [],
+        ),
+    ),
+  );
+  return json({ buckets: responses.flat() });
 };
 
 export const action = (args: ActionFunctionArgs) => {
@@ -62,6 +78,8 @@ const SearchField = styled(TextField)({
 
 const BucketsList: FunctionComponent = () => {
   const { buckets } = useLoaderData<typeof loader>();
+  const hasMultipleEndpoints =
+    new Set(buckets.map(bucket => bucket.EndpointUrl)).size > 1;
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
   const { withSearchParam } = useLinkUtils();
@@ -178,7 +196,11 @@ const BucketsList: FunctionComponent = () => {
             headerName: 'Name',
             renderCell: params => (
               <Link
-                to={`/s3/buckets/${params.row.item.Name}`}
+                to={withSearchParam(
+                  'endpoint',
+                  params.row.item.EndpointUrl ?? null,
+                  `/s3/buckets/${params.row.item.Name}`,
+                )}
                 color="secondary"
                 component={RemixLink}
                 unstable_viewTransition
@@ -203,6 +225,21 @@ const BucketsList: FunctionComponent = () => {
             sortable: !search,
             flex: 1,
           },
+          ...(hasMultipleEndpoints
+            ? [
+                {
+                  field: 'endpointUrl',
+                  headerName: 'Endpoint',
+                  renderCell: params => (
+                    <Link component={Typography}>
+                      {params.row.item.EndpointUrl}
+                    </Link>
+                  ),
+                  sortable: !search,
+                  flex: 1,
+                } as GridColDef<(typeof searchResults)[number]>,
+              ]
+            : []),
         ]}
         getRowId={row => row.item.Name ?? ''}
         checkboxSelection

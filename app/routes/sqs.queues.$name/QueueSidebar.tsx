@@ -34,7 +34,7 @@ const QueueSidebar: FunctionComponent<QueueSidebarProps> = ({ queue }) => {
   const fetcher = useFetcher();
   const { revalidate } = useRevalidator();
   const [searchParams] = useSearchParams();
-  const { withSearchParam } = useLinkUtils();
+  const { withSearchParam, withPathname } = useLinkUtils();
   const isPolling = searchParams.getAll('include').includes('messages');
   const isFullscreen = searchParams.has('fullscreen');
 
@@ -82,7 +82,7 @@ const QueueSidebar: FunctionComponent<QueueSidebarProps> = ({ queue }) => {
       }
       isFullscreen={isFullscreen}
       fullscreenLink={withSearchParam('fullscreen', isFullscreen ? null : '')}
-      closeLink="/sqs/queues"
+      closeLink={withPathname('/sqs/queues')}
     >
       <Stack direction="row" gap={1}>
         <Button

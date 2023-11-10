@@ -39,8 +39,9 @@ const emptyBucket = async (client: S3Client, bucket: string) => {
 };
 
 export const createBucketsAction = async ({ request }: ActionFunctionArgs) => {
+  const { searchParams } = new URL(request.url);
   const formData = await request.formData();
-  const s3Client = getAwsClient('s3');
+  const s3Client = getAwsClient('s3', searchParams.get('endpoint'));
   const bucketsToCreate = formData.get('names')?.toString().split(',') ?? [];
   const providedRegion = formData.get('region') ?? undefined;
 
@@ -64,8 +65,9 @@ export const createBucketsAction = async ({ request }: ActionFunctionArgs) => {
 };
 
 export const emptyBucketsAction = async ({ request }: ActionFunctionArgs) => {
+  const { searchParams } = new URL(request.url);
   const formData = await request.formData();
-  const s3Client = getAwsClient('s3');
+  const s3Client = getAwsClient('s3', searchParams.get('endpoint'));
   const bucketsToEmpty = formData.get('names')?.toString().split(',') ?? [];
 
   await Promise.all(
@@ -76,8 +78,9 @@ export const emptyBucketsAction = async ({ request }: ActionFunctionArgs) => {
 };
 
 export const deleteBucketsAction = async ({ request }: ActionFunctionArgs) => {
+  const { searchParams } = new URL(request.url);
   const formData = await request.formData();
-  const s3Client = getAwsClient('s3');
+  const s3Client = getAwsClient('s3', searchParams.get('endpoint'));
   const bucketsToDelete = formData.get('names')?.toString().split(',') ?? [];
 
   await Promise.all(

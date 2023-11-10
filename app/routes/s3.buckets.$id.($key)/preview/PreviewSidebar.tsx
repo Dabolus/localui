@@ -49,7 +49,7 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
   >(undefined);
   const [searchParams] = useSearchParams();
   const isFullscreen = searchParams.has('fullscreen');
-  const { withSearchParam } = useLinkUtils();
+  const { withSearchParam, withPathname } = useLinkUtils();
 
   useEnhancedEffect(() => {
     setPreviewElementProps(undefined);
@@ -59,7 +59,11 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
     let cancelled = false;
     let url: string | undefined;
     fetch(
-      `/s3/buckets/${object.BucketName}/${encodedKey}/download?preview`,
+      withSearchParam(
+        'preview',
+        '',
+        withPathname(`/s3/buckets/${object.BucketName}/${encodedKey}/download`),
+      ),
     ).then(async res => {
       const blob = await res.blob();
       const contentType = res.headers.get('Content-Type')!;
@@ -84,9 +88,11 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
       title={object.BaseName}
       isFullscreen={isFullscreen}
       fullscreenLink={withSearchParam('fullscreen', isFullscreen ? null : '')}
-      closeLink={`/s3/buckets/${object.BucketName}${
-        prefix ? `/${base64UrlEncode(prefix)}` : ''
-      }`}
+      closeLink={withPathname(
+        `/s3/buckets/${object.BucketName}${
+          prefix ? `/${base64UrlEncode(prefix)}` : ''
+        }`,
+      )}
     >
       <Stack height="100%">
         <Stack direction="row" gap={1} flex="0 0 auto">
@@ -94,7 +100,9 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
             variant="contained"
             color="secondary"
             component="a"
-            href={`/s3/buckets/${object.BucketName}/${encodedKey}/download`}
+            href={withPathname(
+              `/s3/buckets/${object.BucketName}/${encodedKey}/download`,
+            )}
             download={object.BaseName}
             startIcon={<DownloadIcon />}
           >
@@ -104,7 +112,9 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
             variant="contained"
             color="error"
             component={RemixLink}
-            to={`/s3/buckets/${object.BucketName}/${encodedKey}/delete`}
+            to={withPathname(
+              `/s3/buckets/${object.BucketName}/${encodedKey}/delete`,
+            )}
           >
             Delete
           </Button>
