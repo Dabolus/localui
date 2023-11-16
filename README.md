@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="280" src="logo.svg">
+  <img width="280" src="./logo.svg">
 </p>
 
 # LocalUI
