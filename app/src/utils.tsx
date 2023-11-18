@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { RangeTuple } from 'fuse.js';
+import { ServerRuntimeMetaDescriptor } from '@remix-run/server-runtime';
 
 export const textDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'long',
@@ -80,3 +81,9 @@ export const joinNodes = (nodes: ReactNode[], separator: ReactNode) =>
     (accu, elem) => (accu === null ? [elem] : [...accu, separator, elem]),
     null,
   );
+
+export const computeTitle = (
+  ...parts: (string | undefined)[]
+): ServerRuntimeMetaDescriptor => ({
+  title: ['LocalUI', ...parts].filter(Boolean).join(' › '),
+});

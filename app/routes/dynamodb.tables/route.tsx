@@ -22,7 +22,7 @@ import {
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
-import { highlightMatches } from '~/src/utils';
+import { computeTitle, highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { getAwsClient } from '~/src/aws/server';
 import CreateTableDialog from './CreateTableDialog';
@@ -30,6 +30,11 @@ import DeleteTablesDialog from './DeleteTablesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
 import { createTableAction, deleteTablesAction } from './actions';
+import type { MetaFunction } from '@remix-run/node';
+
+export const meta: MetaFunction<typeof loader> = () => [
+  computeTitle('DynamoDB', 'Tables'),
+];
 
 export const loader = async () => {
   const dynamoDbClient = getAwsClient('dynamodb');

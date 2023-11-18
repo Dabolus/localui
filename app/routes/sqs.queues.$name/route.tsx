@@ -14,8 +14,14 @@ import {
 import { useLoaderData } from '@remix-run/react';
 import { FunctionComponent } from 'react';
 import { getAwsClient } from '~/src/aws/server';
+import { computeTitle } from '~/src/utils';
 import QueueSidebar from './QueueSidebar';
 import { deleteQueueAction, postMessageToQueueAction } from './actions';
+import type { MetaFunction } from '@remix-run/node';
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  computeTitle('SQS', 'Queues', data?.QueueName),
+];
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const sqsClient = getAwsClient('sqs');

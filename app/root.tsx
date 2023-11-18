@@ -13,10 +13,82 @@ import { withEmotionCache } from '@emotion/react';
 import {
   unstable_useEnhancedEffect as useEnhancedEffect,
   getInitColorSchemeScript,
+  useTheme,
 } from '@mui/material';
-import theme from './src/theme';
 import ClientStyleContext from './src/ClientStyleContext';
 import Layout from './src/Layout';
+import { computeTitle } from './src/utils';
+import type { MetaFunction, LinksFunction } from '@remix-run/node';
+
+// https://remix.run/docs/en/main/route/meta
+export const meta: MetaFunction = () => [
+  computeTitle(),
+  {
+    name: 'description',
+    content:
+      'A simple UI to interact with real or emulated AWS services (LocalStack, Minio, etc).',
+  },
+  {
+    name: 'apple-mobile-web-app-title',
+    content: 'LocalUI',
+  },
+  {
+    name: 'application-name',
+    content: 'LocalUI',
+  },
+  {
+    name: 'msapplication-TileColor',
+    content: '#232f3e',
+  },
+  {
+    name: 'msapplication-config',
+    content: '/icons/browserconfig.xml',
+  },
+  {
+    name: 'theme-color',
+    content: '#232f3e',
+  },
+];
+
+// https://remix.run/docs/en/main/route/links
+export const links: LinksFunction = () => [
+  {
+    rel: 'apple-touch-icon',
+    sizes: '180x180',
+    href: '/icons/apple-touch-icon.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '32x32',
+    href: '/icons/favicon-32x32.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '192x192',
+    href: '/icons/android-chrome-192x192.png',
+  },
+  {
+    rel: 'icon',
+    type: 'image/png',
+    sizes: '16x16',
+    href: '/icons/favicon-16x16.png',
+  },
+  {
+    rel: 'manifest',
+    href: '/icons/site.webmanifest',
+  },
+  {
+    rel: 'mask-icon',
+    href: '/icons/safari-pinned-tab.svg',
+    color: '#232f3e',
+  },
+  {
+    rel: 'shortcut icon',
+    href: '/icons/favicon.ico',
+  },
+];
 
 interface DocumentProps {
   children: ReactNode;
@@ -52,10 +124,6 @@ const Document = withEmotionCache(
         <head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
-          <meta
-            name="theme-color"
-            content={theme.colorSchemes.light.palette.primary.main}
-          />
           {title ? <title>{title}</title> : null}
           <Meta />
           <Links />

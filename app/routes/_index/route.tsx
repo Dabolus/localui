@@ -7,22 +7,16 @@ import {
   CardHeader,
   styled,
 } from '@mui/material';
-import { redirect, type MetaFunction } from '@remix-run/node';
+import { redirect } from '@remix-run/node';
 import { enabledServices } from '~/src/aws/server';
 import { serviceToNameMap } from '~/src/aws/common';
 import CurrentPath from '~/src/components/CurrentPath';
 import AwsIcon from '~/src/components/icons/aws/AwsIcon';
 import AwsIconContainer from '~/src/components/icons/aws/AwsIconContainer';
+import { computeTitle } from '~/src/utils';
+import type { MetaFunction } from '@remix-run/node';
 
-// https://remix.run/docs/en/main/route/meta
-export const meta: MetaFunction = () => [
-  { title: 'LocalUI' },
-  {
-    name: 'description',
-    content:
-      'A simple UI to interact with real or emulated AWS services (LocalStack, Minio, etc).',
-  },
-];
+export const meta: MetaFunction<typeof loader> = () => [computeTitle()];
 
 export async function loader() {
   return enabledServices.length > 1

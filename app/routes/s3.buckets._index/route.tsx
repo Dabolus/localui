@@ -25,7 +25,7 @@ import {
 } from '@mui/icons-material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
-import { formatDateTime, highlightMatches } from '~/src/utils';
+import { computeTitle, formatDateTime, highlightMatches } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { getAwsClientsGroup } from '~/src/aws/server';
 import CreateBucketsDialog from './CreateBucketsDialog';
@@ -38,21 +38,23 @@ import {
   emptyBucketsAction,
   deleteBucketsAction,
 } from './actions';
+import type { MetaFunction } from '@remix-run/node';
+
+export const meta: MetaFunction<typeof loader> = () => [
+  computeTitle('S3', 'Buckets'),
+];
 
 export const loader = async () => {
   const s3Clients = getAwsClientsGroup('s3');
   const responses = await Promise.all(
     Array.from(s3Clients.entries(), ([url, s3Client]) =>
-      s3Client
-        .send(new ListBucketsCommand({}))
-        .catch(() => ({} as ListBucketsCommandOutput))
-        .then(
-          response =>
-            response.Buckets?.map(bucket => ({
-              ...bucket,
-              EndpointUrl: url,
-            })) ?? [],
-        ),
+      s3Client.send(new ListBucketsCommand({})).then(
+        response =>
+          response.Buckets?.map(bucket => ({
+            ...bucket,
+            EndpointUrl: url,
+          })) ?? [],
+      ),
     ),
   );
   return json({ buckets: responses.flat() });

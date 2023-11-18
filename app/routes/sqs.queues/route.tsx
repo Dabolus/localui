@@ -30,7 +30,13 @@ import CreateQueueDialog from './CreateQueueDialog';
 import DeleteQueuesDialog from './DeleteQueuesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
+import { computeTitle } from '~/src/utils';
 import { createQueueAction, deleteQueuesAction } from './actions';
+import type { MetaFunction } from '@remix-run/node';
+
+export const meta: MetaFunction<typeof loader> = () => [
+  computeTitle('SQS', 'Queues'),
+];
 
 export const loader = async () => {
   const sqsClient = getAwsClient('sqs');
