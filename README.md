@@ -1,8 +1,4 @@
-<p align="center">
-  <img width="280" src="./logo.svg">
-</p>
-
-# LocalUI
+[![LocalUI](logo.svg)](https://github.com/Dabolus/localui 'LocalUI')
 
 LocalUI is a simple web portal that uses the AWS SDK (v3) to interact with AWS
 services. It is designed to be used with emulated AWS services (LocalStack,
