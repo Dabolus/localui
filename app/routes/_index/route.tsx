@@ -24,6 +24,18 @@ export async function loader() {
     : redirect(`/${enabledServices[0]}`);
 }
 
+const serviceToDescriptionMap: Record<string, string> = {
+  s3: 'Scalable object storage for any type of data',
+  dynamodb: 'Fast and flexible NoSQL database service',
+  sqs: 'Fully managed message queues for microservices & serverless applications',
+};
+
+const serviceToLinkMap: Record<string, string> = {
+  s3: '/s3/buckets',
+  dynamodb: '/dynamodb/tables',
+  sqs: '/sqs/queues',
+};
+
 const ServicesList = styled('ul')(({ theme }) => ({
   margin: 0,
   padding: 0,
@@ -32,12 +44,6 @@ const ServicesList = styled('ul')(({ theme }) => ({
   gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))',
   gridGap: theme.spacing(2),
 }));
-
-const serviceToDescriptionMap: Record<string, string> = {
-  s3: 'Scalable object storage for any type of data',
-  dynamodb: 'Fast and flexible NoSQL database service',
-  sqs: 'Fully managed message queues for microservices & serverless applications',
-};
 
 const ServiceCard = styled(Card)({
   display: 'flex',
@@ -76,7 +82,12 @@ export default function Index() {
         <ServicesList>
           {services.map(service => (
             <li key={service}>
-              <Link component={RemixLink} to={`/${service}`} underline="none">
+              <Link
+                component={RemixLink}
+                to={serviceToLinkMap[service]}
+                underline="none"
+                unstable_viewTransition
+              >
                 <ServiceCard>
                   <ServiceCardIconContainer service={service}>
                     <ServiceCardIcon service={service} />
