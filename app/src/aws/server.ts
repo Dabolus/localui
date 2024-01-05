@@ -142,7 +142,12 @@ export const setupAwsClients = (
 
 export const enabledServices = (process.env.LOCALUI_ENABLED_SERVICES?.split(
   ',',
-) ?? ['s3', 'dynamodb', 'sqs']) as SupportedService[]; // Default to all available services if no env variable is provided
+).map(service => service.trim()) ?? [
+  // Default to all available services if no env variable is provided
+  's3',
+  'dynamodb',
+  'sqs',
+]) as SupportedService[];
 
 export const awsClients: Map<
   SupportedService,
