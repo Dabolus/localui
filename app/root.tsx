@@ -8,17 +8,25 @@ import {
   ScrollRestoration,
   useRouteError,
   isRouteErrorResponse,
+  useLoaderData,
 } from '@remix-run/react';
 import { withEmotionCache } from '@emotion/react';
 import {
   unstable_useEnhancedEffect as useEnhancedEffect,
   getInitColorSchemeScript,
-  useTheme,
 } from '@mui/material';
+import { useChangeLanguage } from 'remix-i18next';
+import { useTranslation } from 'react-i18next';
 import ClientStyleContext from './src/ClientStyleContext';
 import Layout from './src/Layout';
 import { computeTitle } from './src/utils';
-import type { MetaFunction, LinksFunction } from '@remix-run/node';
+import { useServerTranslation } from './i18next.server';
+import {
+  json,
+  type MetaFunction,
+  type LinksFunction,
+  type LoaderFunctionArgs,
+} from '@remix-run/node';
 
 // https://remix.run/docs/en/main/route/meta
 export const meta: MetaFunction = () => [
@@ -90,6 +98,15 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { locale } = await useServerTranslation(request);
+  return json({ locale });
+};
+
+export const handle = {
+  i18n: 'common',
+};
+
 interface DocumentProps {
   children: ReactNode;
   title?: string;
@@ -97,6 +114,16 @@ interface DocumentProps {
 
 const Document = withEmotionCache(
   ({ children, title }: DocumentProps, emotionCache) => {
+    // Get the locale from the loader
+    const { locale } = useLoaderData<typeof loader>();
+    const { i18n } = useTranslation();
+
+    // This hook will change the i18n instance language to the current locale
+    // detected by the loader, this way, when we do something to change the
+    // language, this locale will change and i18next will load the correct
+    // translation files
+    useChangeLanguage(locale);
+
     const clientStyleData = useContext(ClientStyleContext);
 
     // Only executed on client
@@ -116,11 +143,16 @@ const Document = withEmotionCache(
     }, []);
 
     return (
-      // We suppress hydration warnings for the html element because on the
-      // server we always SSR with light color scheme, but on the client we
-      // want to use the system color scheme and we do that as first thing
-      // to avoid a flash of light color scheme for dark mode users
-      <html lang="en" data-mui-color-scheme="light" suppressHydrationWarning>
+      <html
+        lang={locale}
+        dir={i18n.dir()}
+        data-mui-color-scheme="light"
+        // We suppress hydration warnings for the html element because on the
+        // server we always SSR with light color scheme, but on the client we
+        // want to use the system color scheme and we do that as first thing
+        // to avoid a flash of light color scheme for dark mode users
+        suppressHydrationWarning
+      >
         <head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width,initial-scale=1" />
