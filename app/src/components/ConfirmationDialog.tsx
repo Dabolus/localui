@@ -12,7 +12,12 @@ import {
   Typography,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { Form, FormProps, Link as RemixLink } from '@remix-run/react';
+import {
+  Form,
+  FormProps,
+  Link as RemixLink,
+  useNavigate,
+} from '@remix-run/react';
 
 type BaseConfirmationDialogProps = Omit<
   DialogProps,
@@ -38,62 +43,80 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   buttons,
   closeable = true,
   closeLink,
+  onClose,
   ...props
-}) => (
-  <Dialog maxWidth="xs" fullWidth component={Form} {...props}>
-    {(title || closeable) && (
-      <DialogTitle>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          {title && (
-            <Typography variant="h6" component="h2">
-              {title}
-            </Typography>
+}) => {
+  const navigate = useNavigate();
+  return (
+    <Dialog
+      maxWidth="xs"
+      fullWidth
+      component={Form}
+      onClose={(event, reason) => {
+        if (!closeable) {
+          return;
+        }
+        if (closeLink) {
+          navigate(closeLink);
+        }
+        onClose?.(event as SyntheticEvent<Element, Event>, reason);
+      }}
+      {...props}
+    >
+      {(title || closeable) && (
+        <DialogTitle>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            {title && (
+              <Typography variant="h6" component="h2">
+                {title}
+              </Typography>
+            )}
+            {closeable && (
+              <IconButton
+                edge="end"
+                onClick={event => onClose?.(event, 'closeButtonClick')}
+                {...(closeLink && {
+                  component: RemixLink,
+                  to: closeLink,
+                })}
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
+          </Stack>
+        </DialogTitle>
+      )}
+      {content && (
+        <DialogContent>
+          {typeof content === 'string' ? (
+            <DialogContentText>{content}</DialogContentText>
+          ) : (
+            content
           )}
+        </DialogContent>
+      )}
+      {(buttons || closeable) && (
+        <DialogActions>
           {closeable && (
-            <IconButton
-              edge="end"
-              onClick={event => props.onClose?.(event, 'closeButtonClick')}
+            <Button
+              onClick={event => onClose?.(event, 'closeButtonClick')}
               {...(closeLink && {
                 component: RemixLink,
                 to: closeLink,
               })}
             >
-              <CloseIcon />
-            </IconButton>
+              Cancel
+            </Button>
           )}
-        </Stack>
-      </DialogTitle>
-    )}
-    {content && (
-      <DialogContent>
-        {typeof content === 'string' ? (
-          <DialogContentText>{content}</DialogContentText>
-        ) : (
-          content
-        )}
-      </DialogContent>
-    )}
-    {(buttons || closeable) && (
-      <DialogActions>
-        {closeable && (
-          <Button
-            onClick={event => props.onClose?.(event, 'closeButtonClick')}
-            {...(closeLink && {
-              component: RemixLink,
-              to: closeLink,
-            })}
-          >
-            Cancel
-          </Button>
-        )}
-        {buttons}
-      </DialogActions>
-    )}
-  </Dialog>
-);
+          {buttons}
+        </DialogActions>
+      )}
+    </Dialog>
+  );
+};
 
 export default ConfirmationDialog;
