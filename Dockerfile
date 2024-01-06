@@ -41,8 +41,8 @@ WORKDIR /localui
 
 COPY --from=production-deps /localui/node_modules /localui/node_modules
 
-COPY --from=build /localui/build /localui/build
-COPY --from=build /localui/public /localui/public
+COPY --from=build /localui/build/server /localui/build/server
+COPY --from=build /localui/build/client /localui/build/client
 COPY --from=build /localui/package.json /localui/package.json
 
 ENTRYPOINT ["npm", "start"]
