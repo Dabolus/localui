@@ -1,4 +1,5 @@
 import { FunctionComponent, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Autocomplete,
   Button,
@@ -24,6 +25,7 @@ const CreateQueueDialog: FunctionComponent<CreateQueueDialogProps> = ({
   open,
   existingQueues,
 }) => {
+  const { t } = useTranslation();
   const { withSearchParam } = useLinkUtils();
   const [isFifo, setIsFifo] = useState(false);
   const [providedDlqName, setProvidedDlqName] = useState('');
@@ -40,24 +42,24 @@ const CreateQueueDialog: FunctionComponent<CreateQueueDialogProps> = ({
 
   const computeHelperText = () => {
     if (!providedDlqName) {
-      return 'No DLQ will be created';
+      return t('dlqHintNone');
     }
     return dlqExists
-      ? `The queue "${dlqName}" will be used as DLQ`
-      : `A queue named "${dlqName}" will be created and used as DLQ`;
+      ? t('dlqHintExisting', { dlqName })
+      : t('dlqHintNew', { dlqName });
   };
 
   return (
     <ConfirmationDialog
       open={open}
-      title="Create queue"
+      title={t('createQueue')}
       content={
         <>
           <TextField
             fullWidth
             required
             autoFocus
-            label="Queue name"
+            label={t('queueName')}
             name="name"
             sx={{ mt: 2 }}
             inputProps={{
@@ -82,15 +84,15 @@ const CreateQueueDialog: FunctionComponent<CreateQueueDialogProps> = ({
                   onChange={event => setIsFifo(event.target.checked)}
                 />
               }
-              label="First-in-first-out"
+              label={t('firstInFirstOut')}
             />
             <FormControlLabel
               control={<Checkbox name="contentBasedDeduplication" />}
-              label="Content-based deduplication"
+              label={t('contentBasedDeduplication')}
             />
             <FormControlLabel
               control={<Checkbox name="sqsManagedSseEnabled" />}
-              label="SQS-managed server-side encryption"
+              label={t('sqsManagedSse')}
             />
           </Stack>
           <Autocomplete
@@ -100,7 +102,7 @@ const CreateQueueDialog: FunctionComponent<CreateQueueDialogProps> = ({
             renderInput={params => (
               <TextField
                 {...params}
-                label="Dead-letter queue"
+                label={t('deadLetterQueue')}
                 name="dlqName"
                 helperText={computeHelperText()}
                 inputProps={{
@@ -128,7 +130,7 @@ const CreateQueueDialog: FunctionComponent<CreateQueueDialogProps> = ({
           />
           <TextField
             fullWidth
-            label="Max receive count"
+            label={t('maxReceiveCount')}
             name="maxReceiveCount"
             type="number"
             disabled={!providedDlqName}
@@ -142,7 +144,7 @@ const CreateQueueDialog: FunctionComponent<CreateQueueDialogProps> = ({
       action="/sqs/queues"
       buttons={
         <Button type="submit" variant="contained" color="secondary">
-          Create
+          {t('create')}
         </Button>
       }
     />

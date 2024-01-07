@@ -1,4 +1,5 @@
 import { FunctionComponent, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ListQueuesCommand } from '@aws-sdk/client-sqs';
 import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import {
@@ -31,17 +32,18 @@ import DeleteQueuesDialog from './DeleteQueuesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
 import { computeTitle } from '~/src/utils';
+import { useServerTranslation } from '~/i18next.server';
 import { createQueueAction, deleteQueuesAction } from './actions';
-import type { MetaFunction } from '@remix-run/node';
+import type { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
 
-export const meta: MetaFunction<typeof loader> = () => [
-  computeTitle('SQS', 'Queues'),
-];
-
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const sqsClient = getAwsClient('sqs');
-  const response = await sqsClient.send(new ListQueuesCommand({}));
+  const [{ t }, response] = await Promise.all([
+    useServerTranslation(request),
+    sqsClient.send(new ListQueuesCommand({})),
+  ]);
   return json({
+    meta: { titleParts: [t('queues')] },
     queues:
       response.QueueUrls?.map(QueueUrl => ({
         QueueName: QueueUrl.slice(QueueUrl.lastIndexOf('/') + 1),
@@ -49,6 +51,10 @@ export const loader = async () => {
       })) ?? [],
   });
 };
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  computeTitle('SQS', ...(data?.meta.titleParts || [])),
+];
 
 export const action = (args: ActionFunctionArgs) => {
   switch (args.request.method) {
@@ -67,6 +73,7 @@ const SearchField = styled(TextField)({
 });
 
 const QueuesList: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { queues } = useLoaderData<typeof loader>();
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -91,6 +98,7 @@ const QueuesList: FunctionComponent = () => {
 
   return (
     <>
+      {/* t('queues') */}
       <CurrentPath items={['sqs', 'queues']} />
       <Stack p={2}>
         <Stack
@@ -99,7 +107,7 @@ const QueuesList: FunctionComponent = () => {
           alignItems="center"
         >
           <Typography variant="h5" component="h2" gutterBottom>
-            Queues ({queues.length})
+            {t('queues')} ({queues.length})
           </Typography>
           <Stack direction="row" gap={1}>
             <Button onClick={revalidate}>
@@ -110,7 +118,7 @@ const QueuesList: FunctionComponent = () => {
               to={withSearchParam('delete', '')}
               disabled={selectedQueues.length < 1}
             >
-              Delete
+              {t('delete')}
             </Button>
             <Button
               variant="contained"
@@ -118,14 +126,14 @@ const QueuesList: FunctionComponent = () => {
               component={RemixLink}
               to={withSearchParam('create', '')}
             >
-              Create queue
+              {t('createQueue')}
             </Button>
           </Stack>
         </Stack>
         <div>
           <SearchField
             type="search"
-            label="Search queues"
+            label={t('searchQueues')}
             variant="outlined"
             value={search}
             onChange={event =>
@@ -174,7 +182,7 @@ const QueuesList: FunctionComponent = () => {
         columns={[
           {
             field: 'name',
-            headerName: 'Name',
+            headerName: t('name'),
             renderCell: params => (
               <Link
                 to={withPathname(`/sqs/queues/${params.row.item.QueueName}`)}
@@ -199,7 +207,7 @@ const QueuesList: FunctionComponent = () => {
         slots={{ noRowsOverlay: TableOverlay }}
         slotProps={{
           noRowsOverlay: {
-            children: 'No queues available.',
+            children: t('noQueuesAvailable'),
           },
         }}
       />
