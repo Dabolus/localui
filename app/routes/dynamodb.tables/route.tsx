@@ -91,6 +91,7 @@ const TablesList: FunctionComponent = () => {
 
   return (
     <>
+      {/* t('tables') */}
       <CurrentPath items={['dynamodb', 'tables']} />
       <Stack p={2}>
         <Stack

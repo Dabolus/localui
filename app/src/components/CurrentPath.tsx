@@ -13,7 +13,7 @@ import {
 import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { ChevronRight as ChevronRightIcon } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
-import { kebabToTitleCase } from '../utils';
+import { useTranslation } from 'react-i18next';
 import { serviceToNameMap } from '../aws/common';
 
 interface PathLinkProps extends RemixLinkProps {
@@ -53,6 +53,7 @@ export default function CurrentPath({
   selectedItem,
   withHeading,
 }: CurrentPathProps) {
+  const { t } = useTranslation();
   const pathItems: PathItem[] = ['home', ...items];
   const lastItem = pathItems[pathItems.length - 1];
   const selected = selectedItem ?? lastItem;
@@ -64,7 +65,7 @@ export default function CurrentPath({
           const key = typeof item === 'string' ? item : item.key;
           const name =
             typeof item === 'string'
-              ? serviceToNameMap[item] ?? kebabToTitleCase(item)
+              ? serviceToNameMap[item] ?? t(item)
               : item.name;
           const to =
             typeof item === 'string'
@@ -88,7 +89,7 @@ export default function CurrentPath({
       {withHeading && (
         <Typography variant="h2" sx={visuallyHidden}>
           {typeof selected === 'string'
-            ? serviceToNameMap[selected] ?? kebabToTitleCase(selected)
+            ? serviceToNameMap[selected] ?? t(selected)
             : selected.name}
         </Typography>
       )}
