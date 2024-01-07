@@ -1,4 +1,5 @@
 import { FunctionComponent, ReactNode, SyntheticEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogProps,
@@ -46,7 +47,9 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
   onClose,
   ...props
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
   return (
     <Dialog
       maxWidth="xs"
@@ -109,7 +112,7 @@ const ConfirmationDialog: FunctionComponent<ConfirmationDialogProps> = ({
                 to: closeLink,
               })}
             >
-              Cancel
+              {t('cancel')}
             </Button>
           )}
           {buttons}

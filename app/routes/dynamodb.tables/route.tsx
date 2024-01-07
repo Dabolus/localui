@@ -1,4 +1,5 @@
 import { FunctionComponent, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ListTablesCommand } from '@aws-sdk/client-dynamodb';
 import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import {
@@ -30,17 +31,24 @@ import DeleteTablesDialog from './DeleteTablesDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import TableOverlay from '~/src/components/TableOverlay';
 import { createTableAction, deleteTablesAction } from './actions';
-import type { MetaFunction } from '@remix-run/node';
+import type { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
+import { useServerTranslation } from '~/i18next.server';
 
-export const meta: MetaFunction<typeof loader> = () => [
-  computeTitle('DynamoDB', 'Tables'),
-];
-
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const dynamoDbClient = getAwsClient('dynamodb');
-  const response = await dynamoDbClient.send(new ListTablesCommand({}));
-  return json({ tables: response.TableNames ?? [] });
+  const [{ t }, response] = await Promise.all([
+    useServerTranslation(request),
+    dynamoDbClient.send(new ListTablesCommand({})),
+  ]);
+  return json({
+    meta: { titleParts: [t('tables')] },
+    tables: response.TableNames ?? [],
+  });
 };
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  computeTitle('DynamoDB', ...(data?.meta.titleParts || [])),
+];
 
 export const action = (args: ActionFunctionArgs) => {
   switch (args.request.method) {
@@ -59,6 +67,7 @@ const SearchField = styled(TextField)({
 });
 
 const TablesList: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { tables } = useLoaderData<typeof loader>();
   const { revalidate } = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -90,7 +99,7 @@ const TablesList: FunctionComponent = () => {
           alignItems="center"
         >
           <Typography variant="h5" component="h2" gutterBottom>
-            Tables ({tables.length})
+            {t('tables')} ({tables.length})
           </Typography>
           <Stack direction="row" gap={1}>
             <Button onClick={revalidate}>
@@ -101,7 +110,7 @@ const TablesList: FunctionComponent = () => {
               to={withSearchParam('delete', '')}
               disabled={selectedTables.length < 1}
             >
-              Delete
+              {t('delete')}
             </Button>
             <Button
               variant="contained"
@@ -109,14 +118,14 @@ const TablesList: FunctionComponent = () => {
               component={RemixLink}
               to={withSearchParam('create', '')}
             >
-              Create table
+              {t('createTable')}
             </Button>
           </Stack>
         </Stack>
         <div>
           <SearchField
             type="search"
-            label="Search tables"
+            label={t('searchTables')}
             variant="outlined"
             value={search}
             onChange={event =>
@@ -165,7 +174,7 @@ const TablesList: FunctionComponent = () => {
         columns={[
           {
             field: 'name',
-            headerName: 'Name',
+            headerName: t('name'),
             renderCell: params => (
               <Link
                 to={`/dynamodb/tables/${params.row.item}`}
@@ -189,7 +198,7 @@ const TablesList: FunctionComponent = () => {
         slots={{ noRowsOverlay: TableOverlay }}
         slotProps={{
           noRowsOverlay: {
-            children: 'No tables available.',
+            children: t('noTablesAvailable'),
           },
         }}
       />
