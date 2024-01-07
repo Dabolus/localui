@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDropzone } from 'react-dropzone-esm';
 import {
   ListObjectsV2Command,
@@ -124,6 +125,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function BucketDetails() {
+  const { t } = useTranslation();
   const { id, key: rawKey } = useParams();
   const mergedSegments = rawKey ? base64UrlDecode(rawKey) : undefined;
   const segments = mergedSegments?.split('/').filter(Boolean) ?? [];
@@ -173,6 +175,7 @@ export default function BucketDetails() {
 
   return (
     <>
+      {/* t('buckets') */}
       <CurrentPath
         items={[
           's3',
@@ -203,7 +206,7 @@ export default function BucketDetails() {
           alignItems="center"
         >
           <Typography variant="h5" component="h2" gutterBottom>
-            Objects ({mergedContent.length})
+            {t('objects')} ({mergedContent.length})
           </Typography>
           <Stack direction="row" gap={1}>
             <Button onClick={revalidate}>
@@ -229,7 +232,7 @@ export default function BucketDetails() {
         <div>
           <SearchField
             type="search"
-            label="Search objects"
+            label={t('searchObjects')}
             variant="outlined"
             value={search}
             onChange={event =>
@@ -271,7 +274,7 @@ export default function BucketDetails() {
         >
           <DropOverlay hidden={!isDragActive}>
             <UploadIcon fontSize="large" />
-            <Typography>Drop files here to upload them</Typography>
+            <Typography>{t('dropFilesToUpload')}</Typography>
           </DropOverlay>
           <input type="hidden" name="baseDir" value={decodedBaseDir} />
           <input type="hidden" name="paths" />
@@ -292,7 +295,7 @@ export default function BucketDetails() {
             columns={[
               {
                 field: 'name',
-                headerName: 'Name',
+                headerName: t('name'),
                 renderCell: params => (
                   <Link
                     to={withPathname(
@@ -315,7 +318,7 @@ export default function BucketDetails() {
               },
               {
                 field: 'type',
-                headerName: 'Type',
+                headerName: t('type'),
                 valueGetter: params =>
                   params.row.item.Key ? 'File' : 'Folder',
                 sortable: !search,
@@ -323,7 +326,7 @@ export default function BucketDetails() {
               },
               {
                 field: 'lastModified',
-                headerName: 'Last modified',
+                headerName: t('lastModified'),
                 renderCell: params => (
                   <time dateTime={params.row.item.LastModified}>
                     {formatDateTime(params.row.item.LastModified)}
@@ -334,14 +337,14 @@ export default function BucketDetails() {
               },
               {
                 field: 'size',
-                headerName: 'Size',
+                headerName: t('size'),
                 valueGetter: params => prettifySize(params.row.item.Size),
                 sortable: !search,
                 width: 100,
               },
               {
                 field: 'storageClass',
-                headerName: 'Storage class',
+                headerName: t('storageClass'),
                 valueGetter: params =>
                   params.row.item.StorageClass
                     ? s3StorageClassToNameMap[params.row.item.StorageClass]
@@ -357,7 +360,7 @@ export default function BucketDetails() {
             slotProps={{
               row: getRootProps(),
               noRowsOverlay: getRootProps({
-                children: 'No objects available.',
+                children: t('noObjectsAvailable'),
               }),
             }}
           />

@@ -1,4 +1,5 @@
 import { FunctionComponent, lazy } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RemixLink } from '@remix-run/react';
 import {
   Dialog,
@@ -37,6 +38,8 @@ const PreviewDialog: FunctionComponent<PreviewDialogProps> = ({
   closeLink,
   ...props
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Dialog fullScreen open={open}>
       <DialogTitle>
@@ -49,7 +52,7 @@ const PreviewDialog: FunctionComponent<PreviewDialogProps> = ({
             {props.name}
           </Typography>
           <IconButton
-            aria-label="Close preview"
+            aria-label={t('closePreview')}
             component={RemixLink}
             to={closeLink}
           >

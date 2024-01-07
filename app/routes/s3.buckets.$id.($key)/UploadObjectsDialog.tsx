@@ -1,5 +1,6 @@
 import { FormEventHandler, FunctionComponent, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone-esm';
+import { useTranslation } from 'react-i18next';
 import { HTMLFormMethod, FormEncType } from '@remix-run/router';
 import { useSubmit } from '@remix-run/react';
 import {
@@ -61,6 +62,7 @@ const UploadObjectsDialog: FunctionComponent<UploadObjectsDialogProps> = ({
   bucketName,
   prefix = '',
 }) => {
+  const { t } = useTranslation();
   const { withSearchParam } = useLinkUtils();
   const [selectedFiles, setSelectedFiles] = useState<FileWithPath[]>([]);
   const submit = useSubmit();
@@ -125,8 +127,8 @@ const UploadObjectsDialog: FunctionComponent<UploadObjectsDialogProps> = ({
             <input {...getInputProps({ name: 'files' })} />
             <Typography variant="body2">
               {isDragActive
-                ? 'Drop files here to upload them'
-                : 'Drag and drop files here, or click to select files'}
+                ? t('dropFilesToUpload')
+                : t('dragAndDropOrClickToUploadFiles')}
             </Typography>
           </DropzoneContainer>
           <List
@@ -140,7 +142,7 @@ const UploadObjectsDialog: FunctionComponent<UploadObjectsDialogProps> = ({
                 secondaryAction={
                   <IconButton
                     edge="end"
-                    aria-label="Remove folder"
+                    aria-label={t('removeFolder')}
                     onClick={() =>
                       setSelectedFiles(previousFiles =>
                         previousFiles.filter(
@@ -165,7 +167,7 @@ const UploadObjectsDialog: FunctionComponent<UploadObjectsDialogProps> = ({
                 secondaryAction={
                   <IconButton
                     edge="end"
-                    aria-label="Remove file"
+                    aria-label={t('removeFile')}
                     onClick={() =>
                       setSelectedFiles(previousFiles =>
                         previousFiles.filter(file => file.name !== fileName),
@@ -192,7 +194,7 @@ const UploadObjectsDialog: FunctionComponent<UploadObjectsDialogProps> = ({
       onSubmit={handleSubmit as unknown as FormEventHandler<HTMLDivElement>}
       buttons={
         <Button type="submit" variant="contained" color="secondary">
-          Upload
+          {t('upload')}
         </Button>
       }
     />

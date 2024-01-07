@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PrismAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
 import { TreeItem, TreeView, TreeViewProps } from '@mui/x-tree-view';
@@ -249,6 +250,8 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   name,
   src,
 }) => {
+  const { t } = useTranslation();
+
   if (contentType.startsWith('image/')) {
     return <img src={src} alt={name} title={name} />;
   }
@@ -280,7 +283,7 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
       <TextViewer src={src} name={name} language={prismLanguage ?? 'text'} />
     );
   }
-  return <Typography>Preview not supported for this file type.</Typography>;
+  return <Typography>{t('previewNotSupported')}</Typography>;
 };
 
 export const PreviewElement: FunctionComponent<PreviewElementProps> = ({

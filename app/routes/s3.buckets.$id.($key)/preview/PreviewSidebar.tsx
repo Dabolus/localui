@@ -1,4 +1,5 @@
 import { FunctionComponent, lazy, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RemixLink, useSearchParams } from '@remix-run/react';
 import {
   Button,
@@ -44,6 +45,7 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
   encodedKey,
   prefix = '',
 }) => {
+  const { t } = useTranslation();
   const [previewElementProps, setPreviewElementProps] = useState<
     PreviewElementProps | undefined
   >(undefined);
@@ -106,7 +108,7 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
             download={object.BaseName}
             startIcon={<DownloadIcon />}
           >
-            Download
+            {t('download')}
           </Button>
           <Button
             variant="contained"
@@ -116,7 +118,7 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
               `/s3/buckets/${object.BucketName}/${encodedKey}/delete`,
             )}
           >
-            Delete
+            {t('delete')}
           </Button>
         </Stack>
         {previewElementProps && (

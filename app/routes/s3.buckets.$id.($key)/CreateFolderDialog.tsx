@@ -1,5 +1,6 @@
-import { Button, TextField } from '@mui/material';
 import { FunctionComponent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, TextField } from '@mui/material';
 import ConfirmationDialog from '~/src/components/ConfirmationDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 
@@ -14,17 +15,18 @@ const CreateFolderDialog: FunctionComponent<CreateFolderDialogProps> = ({
   bucketName,
   prefix = '',
 }) => {
+  const { t } = useTranslation();
   const { withSearchParam } = useLinkUtils();
 
   return (
     <ConfirmationDialog
       open={open}
-      title="Create folder"
+      title={t('createFolder')}
       content={
         <TextField
           fullWidth
           required
-          label="Folder name"
+          label={t('folderName')}
           name="name"
           sx={{ mt: 2 }}
         />
@@ -34,7 +36,7 @@ const CreateFolderDialog: FunctionComponent<CreateFolderDialogProps> = ({
       action={`/s3/buckets/${bucketName}/create-folder?prefix=${prefix}`}
       buttons={
         <Button type="submit" variant="contained" color="secondary">
-          Create folder
+          {t('createFolder')}
         </Button>
       }
     />
