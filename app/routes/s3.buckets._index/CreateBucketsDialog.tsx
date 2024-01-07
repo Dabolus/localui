@@ -1,4 +1,5 @@
 import { ChangeEvent, FunctionComponent, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Autocomplete, Button, Chip, TextField } from '@mui/material';
 import { awsRegionsWithContinents } from '~/src/aws/common';
 import ConfirmationDialog from '~/src/components/ConfirmationDialog';
@@ -11,6 +12,7 @@ export interface CreateBucketsDialogProps {
 const CreateBucketsDialog: FunctionComponent<CreateBucketsDialogProps> = ({
   open,
 }) => {
+  const { t } = useTranslation();
   const { withSearchParam } = useLinkUtils();
   const [names, setNames] = useState<string[]>([]);
   const [namesTextField, setNamesTextField] = useState<string>('');
@@ -18,7 +20,7 @@ const CreateBucketsDialog: FunctionComponent<CreateBucketsDialogProps> = ({
   return (
     <ConfirmationDialog
       open={open}
-      title="Create buckets"
+      title={t('createBuckets')}
       content={
         <>
           <Autocomplete
@@ -39,7 +41,7 @@ const CreateBucketsDialog: FunctionComponent<CreateBucketsDialogProps> = ({
                   {...params}
                   required
                   autoFocus
-                  label="Bucket names"
+                  label={t('bucketNames')}
                   inputProps={{
                     ...params.inputProps,
                     required: names.length < 1,
@@ -120,7 +122,7 @@ const CreateBucketsDialog: FunctionComponent<CreateBucketsDialogProps> = ({
               return (
                 <>
                   <input name="region" type="hidden" value={optionValue} />
-                  <TextField {...params} required label="Region" />
+                  <TextField {...params} required label={t('region')} />
                 </>
               );
             }}
@@ -133,7 +135,7 @@ const CreateBucketsDialog: FunctionComponent<CreateBucketsDialogProps> = ({
       action="/s3/buckets"
       buttons={
         <Button type="submit" variant="contained" color="secondary">
-          Create
+          {t('create')}
         </Button>
       }
     />

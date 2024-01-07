@@ -1,5 +1,6 @@
 import { Button } from '@mui/material';
 import { FunctionComponent } from 'react';
+import { useTranslation } from 'react-i18next';
 import ConfirmationDialog from '~/src/components/ConfirmationDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 
@@ -12,13 +13,14 @@ const EmptyBucketsDialog: FunctionComponent<EmptyBucketsDialogProps> = ({
   open,
   buckets,
 }) => {
+  const { t } = useTranslation();
   const { withSearchParam } = useLinkUtils();
 
   return (
     <ConfirmationDialog
       open={open}
-      title="Empty selected buckets?"
-      content="This action cannot be undone."
+      title={t('emptyBucketsConfirmationTitle')}
+      content={t('emptyBucketsConfirmationContent')}
       closeLink={withSearchParam('empty', null)}
       method="PUT"
       action="/s3/buckets"
@@ -26,7 +28,7 @@ const EmptyBucketsDialog: FunctionComponent<EmptyBucketsDialogProps> = ({
         <>
           <input type="hidden" name="names" value={buckets.join(',')} />
           <Button type="submit" variant="contained" color="error" autoFocus>
-            Empty
+            {t('empty')}
           </Button>
         </>
       }

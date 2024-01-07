@@ -1,5 +1,6 @@
-import { Button } from '@mui/material';
 import { FunctionComponent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@mui/material';
 import ConfirmationDialog from '~/src/components/ConfirmationDialog';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 
@@ -12,13 +13,14 @@ const DeleteBucketsDialog: FunctionComponent<DeleteBucketsDialogProps> = ({
   open,
   buckets,
 }) => {
+  const { t } = useTranslation();
   const { withSearchParam } = useLinkUtils();
 
   return (
     <ConfirmationDialog
       open={open}
-      title="Delete selected buckets?"
-      content="This action cannot be undone."
+      title={t('deleteBucketsConfirmationTitle')}
+      content={t('deleteBucketsConfirmationContent')}
       closeLink={withSearchParam('delete', null)}
       method="DELETE"
       action="/s3/buckets"
@@ -26,7 +28,7 @@ const DeleteBucketsDialog: FunctionComponent<DeleteBucketsDialogProps> = ({
         <>
           <input type="hidden" name="names" value={buckets.join(',')} />
           <Button type="submit" variant="contained" color="error" autoFocus>
-            Delete
+            {t('delete')}
           </Button>
         </>
       }

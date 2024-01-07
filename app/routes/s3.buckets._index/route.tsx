@@ -1,8 +1,6 @@
 import { FunctionComponent, useEffect } from 'react';
-import {
-  ListBucketsCommand,
-  ListBucketsCommandOutput,
-} from '@aws-sdk/client-s3';
+import { useTranslation } from 'react-i18next';
+import { ListBucketsCommand } from '@aws-sdk/client-s3';
 import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
 import {
   useLoaderData,
@@ -38,16 +36,14 @@ import {
   emptyBucketsAction,
   deleteBucketsAction,
 } from './actions';
-import type { MetaFunction } from '@remix-run/node';
+import type { LoaderFunctionArgs, MetaFunction } from '@remix-run/node';
+import { useServerTranslation } from '~/i18next.server';
 
-export const meta: MetaFunction<typeof loader> = () => [
-  computeTitle('S3', 'Buckets'),
-];
-
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const s3Clients = getAwsClientsGroup('s3');
-  const responses = await Promise.all(
-    Array.from(s3Clients.entries(), ([url, s3Client]) =>
+  const [{ t }, ...responses] = await Promise.all([
+    useServerTranslation(request),
+    ...Array.from(s3Clients.entries(), ([url, s3Client]) =>
       s3Client.send(new ListBucketsCommand({})).then(
         response =>
           response.Buckets?.map(bucket => ({
@@ -56,9 +52,16 @@ export const loader = async () => {
           })) ?? [],
       ),
     ),
-  );
-  return json({ buckets: responses.flat() });
+  ]);
+  return json({
+    meta: { titleParts: [t('buckets')] },
+    buckets: responses.flat(),
+  });
 };
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  computeTitle('S3', ...(data?.meta.titleParts || [])),
+];
 
 export const action = (args: ActionFunctionArgs) => {
   switch (args.request.method) {
@@ -79,6 +82,7 @@ const SearchField = styled(TextField)({
 });
 
 const BucketsList: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { buckets } = useLoaderData<typeof loader>();
   const hasMultipleEndpoints =
     new Set(buckets.map(bucket => bucket.EndpointUrl)).size > 1;
@@ -105,6 +109,7 @@ const BucketsList: FunctionComponent = () => {
 
   return (
     <>
+      {/* t('buckets') */}
       <CurrentPath items={['s3', 'buckets']} />
       <Stack p={2}>
         <Stack
@@ -113,7 +118,7 @@ const BucketsList: FunctionComponent = () => {
           alignItems="center"
         >
           <Typography variant="h5" component="h2" gutterBottom>
-            Buckets ({buckets.length})
+            {t('buckets')} ({buckets.length})
           </Typography>
           <Stack direction="row" gap={1}>
             <Button onClick={revalidate}>
@@ -124,14 +129,14 @@ const BucketsList: FunctionComponent = () => {
               to={withSearchParam('empty', '')}
               disabled={selectedBuckets.length < 1}
             >
-              Empty
+              {t('empty')}
             </Button>
             <Button
               component={RemixLink}
               to={withSearchParam('delete', '')}
               disabled={selectedBuckets.length < 1}
             >
-              Delete
+              {t('delete')}
             </Button>
             <Button
               variant="contained"
@@ -139,14 +144,14 @@ const BucketsList: FunctionComponent = () => {
               component={RemixLink}
               to={withSearchParam('create', '')}
             >
-              Create buckets
+              {t('createBuckets')}
             </Button>
           </Stack>
         </Stack>
         <div>
           <SearchField
             type="search"
-            label="Search buckets"
+            label={t('searchBuckets')}
             variant="outlined"
             value={search}
             onChange={event =>
@@ -195,7 +200,7 @@ const BucketsList: FunctionComponent = () => {
         columns={[
           {
             field: 'name',
-            headerName: 'Name',
+            headerName: t('name'),
             renderCell: params => (
               <Link
                 to={withSearchParam(
@@ -218,7 +223,7 @@ const BucketsList: FunctionComponent = () => {
           },
           {
             field: 'creationDate',
-            headerName: 'Creation date',
+            headerName: t('creationDate'),
             renderCell: params => (
               <time dateTime={params.row.item.CreationDate}>
                 {formatDateTime(params.row.item.CreationDate)}
@@ -231,7 +236,7 @@ const BucketsList: FunctionComponent = () => {
             ? [
                 {
                   field: 'endpointUrl',
-                  headerName: 'Endpoint',
+                  headerName: t('endpoint'),
                   renderCell: params => (
                     <Link component={Typography}>
                       {params.row.item.EndpointUrl}
@@ -250,7 +255,7 @@ const BucketsList: FunctionComponent = () => {
         slots={{ noRowsOverlay: TableOverlay }}
         slotProps={{
           noRowsOverlay: {
-            children: 'No buckets available.',
+            children: t('noBucketsAvailable'),
           },
         }}
       />
