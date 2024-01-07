@@ -7,28 +7,37 @@ import {
   CardHeader,
   styled,
 } from '@mui/material';
-import { redirect } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { enabledServices } from '~/src/aws/server';
 import { serviceToNameMap } from '~/src/aws/common';
 import CurrentPath from '~/src/components/CurrentPath';
 import AwsIcon from '~/src/components/icons/aws/AwsIcon';
 import AwsIconContainer from '~/src/components/icons/aws/AwsIconContainer';
 import { computeTitle } from '~/src/utils';
-import type { MetaFunction } from '@remix-run/node';
+import { useServerTranslation } from '~/i18next.server';
+import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/node';
+import { useTranslation } from 'react-i18next';
+import { useMemo } from 'react';
 
-export const meta: MetaFunction<typeof loader> = () => [computeTitle()];
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  if (enabledServices.length === 1) {
+    return redirect(`/${enabledServices[0]}`);
+  }
 
-export async function loader() {
-  return enabledServices.length > 1
-    ? { services: enabledServices }
-    : redirect(`/${enabledServices[0]}`);
-}
-
-const serviceToDescriptionMap: Record<string, string> = {
-  s3: 'Scalable object storage for any type of data',
-  dynamodb: 'Fast and flexible NoSQL database service',
-  sqs: 'Fully managed message queues for microservices & serverless applications',
+  const { t } = await useServerTranslation(request);
+  return json({
+    meta: { description: t('homeDescription') },
+    services: enabledServices,
+  });
 };
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  computeTitle(),
+  {
+    name: 'description',
+    content: data?.meta.description,
+  },
+];
 
 const serviceToLinkMap: Record<string, string> = {
   s3: '/s3/buckets',
@@ -65,6 +74,16 @@ const ServiceCardIcon = styled(AwsIcon)({
 
 export default function Index() {
   const { services } = useLoaderData<typeof loader>();
+  const { t } = useTranslation();
+
+  const serviceToDescriptionMap = useMemo<Record<string, string>>(
+    () => ({
+      s3: t('s3Description'),
+      dynamodb: t('dynamodbDescription'),
+      sqs: t('sqsDescription'),
+    }),
+    [t],
+  );
 
   return (
     <>
@@ -77,7 +96,7 @@ export default function Index() {
         maxWidth={640}
       >
         <Typography variant="h5" component="h2" gutterBottom>
-          Console Home
+          {t('consoleHome')}
         </Typography>
         <ServicesList>
           {services.map(service => (

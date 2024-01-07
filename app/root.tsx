@@ -29,12 +29,11 @@ import {
 } from '@remix-run/node';
 
 // https://remix.run/docs/en/main/route/meta
-export const meta: MetaFunction = () => [
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
   computeTitle(),
   {
     name: 'description',
-    content:
-      'A simple UI to interact with real or emulated AWS services (LocalStack, Minio, etc).',
+    content: data?.meta.description,
   },
   {
     name: 'apple-mobile-web-app-title',
@@ -99,8 +98,8 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { locale } = await useServerTranslation(request);
-  return json({ locale });
+  const { locale, t } = await useServerTranslation(request);
+  return json({ meta: { description: t('homeDescription') }, locale });
 };
 
 export const handle = {
