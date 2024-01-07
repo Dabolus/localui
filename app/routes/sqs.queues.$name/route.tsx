@@ -18,16 +18,14 @@ import { computeTitle } from '~/src/utils';
 import QueueSidebar from './QueueSidebar';
 import { deleteQueueAction, postMessageToQueueAction } from './actions';
 import type { MetaFunction } from '@remix-run/node';
-
-export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  computeTitle('SQS', 'Queues', data?.QueueName),
-];
+import { useServerTranslation } from '~/i18next.server';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const sqsClient = getAwsClient('sqs');
   const { searchParams } = new URL(request.url);
   const extraIncludes = searchParams.getAll('include');
   const QueueName = params.name;
+  const serverTranslationPromise = useServerTranslation(request);
   const { QueueUrl } = await sqsClient.send(
     new GetQueueUrlCommand({ QueueName }),
   );
@@ -49,8 +47,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         }),
       )
     : { Messages: undefined };
+  const { t } = await serverTranslationPromise;
 
   return json({
+    meta: { titleParts: [t('queues'), QueueName] },
     QueueName,
     QueueUrl,
     Attributes,
@@ -61,6 +61,10 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     Messages,
   });
 };
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  computeTitle('SQS', ...(data?.meta.titleParts || [])),
+];
 
 export const action = (args: ActionFunctionArgs) => {
   switch (args.request.method) {

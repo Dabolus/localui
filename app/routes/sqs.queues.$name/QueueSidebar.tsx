@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Link as RemixLink,
   useFetcher,
@@ -30,6 +31,7 @@ export interface QueueSidebarProps {
 }
 
 const QueueSidebar: FunctionComponent<QueueSidebarProps> = ({ queue }) => {
+  const { t } = useTranslation();
   const { name } = useParams();
   const fetcher = useFetcher();
   const { revalidate } = useRevalidator();
@@ -46,17 +48,17 @@ const QueueSidebar: FunctionComponent<QueueSidebarProps> = ({ queue }) => {
       subheader={
         <Stack direction="row" py={1} gap={0.5}>
           {queue.Attributes?.FifoQueue === 'true' && (
-            <Tooltip title="First-In-First-Out">
+            <Tooltip title={t('firstInFirstOut')}>
               <Chip size="small" label="FIFO" />
             </Tooltip>
           )}
           {queue.Attributes?.ContentBasedDeduplication === 'true' && (
-            <Tooltip title="Content-Based Deduplication">
+            <Tooltip title={t('contentBasedDeduplication')}>
               <Chip size="small" label="CBD" />
             </Tooltip>
           )}
           {queue.Attributes?.SqsManagedSseEnabled === 'true' && (
-            <Tooltip title="SQS-Managed Server-Side Encryption">
+            <Tooltip title={t('sqsManagedSse')}>
               <Chip size="small" label="SSE" />
             </Tooltip>
           )}
@@ -65,7 +67,8 @@ const QueueSidebar: FunctionComponent<QueueSidebarProps> = ({ queue }) => {
               <Tooltip
                 title={
                   <>
-                    Dead Letter Queue for{' '}
+                    {t('dlqOf')}
+                    {': '}
                     {joinNodes(
                       queue.DeadLetterSourceQueues.map(queue => (
                         <strong key={queue.QueueUrl}>{queue.QueueName}</strong>
@@ -89,7 +92,7 @@ const QueueSidebar: FunctionComponent<QueueSidebarProps> = ({ queue }) => {
           component={RemixLink}
           to={withSearchParam('include', isPolling ? null : 'messages')}
         >
-          {isPolling ? 'Stop polling' : 'Start polling'}
+          {isPolling ? t('stopPolling') : t('startPolling')}
         </Button>
         <Button
           variant="contained"
@@ -97,7 +100,7 @@ const QueueSidebar: FunctionComponent<QueueSidebarProps> = ({ queue }) => {
           component={RemixLink}
           to={withSearchParam('delete', '')}
         >
-          Delete
+          {t('delete')}
         </Button>
       </Stack>
       <fetcher.Form method="POST" action={`/sqs/queues/${name}`}>
@@ -109,12 +112,12 @@ const QueueSidebar: FunctionComponent<QueueSidebarProps> = ({ queue }) => {
             multiline
             rows={3}
             name="message"
-            label="Message"
+            label={t('message')}
             inputProps={{
               style: { fontFamily: "'Amazon Ember Mono', monospace" },
             }}
           />
-          <Button type="submit">Send</Button>
+          <Button type="submit">{t('send')}</Button>
         </Stack>
       </fetcher.Form>
       <Box overflow="auto" mb={6}>
