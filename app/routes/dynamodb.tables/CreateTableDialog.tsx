@@ -58,7 +58,7 @@ const CreateTableDialog: FunctionComponent<CreateTableDialogProps> = ({
             </FormControl>
           </Stack>
           <Stack direction="row" spacing={1}>
-            <TextField fullWidth label="Sort key" name="sortKeyName" />
+            <TextField fullWidth label={t('sortKey')} name="sortKeyName" />
             <FormControl sx={{ width: 160 }}>
               <InputLabel id="sort-key-type-label">{t('type')}</InputLabel>
               <Select

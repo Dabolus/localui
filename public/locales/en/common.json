@@ -16,6 +16,7 @@
   "partitionKey": "Partition key",
   "s3Description": "Scalable object storage for any type of data",
   "searchTables": "Search tables",
+  "sortKey": "Sort key",
   "sqsDescription": "Managed message queues for microservices & serverless applications",
   "string": "String",
   "tableName": "Table name",
