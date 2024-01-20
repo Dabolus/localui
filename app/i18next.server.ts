@@ -3,6 +3,15 @@ import { resolve } from 'node:path';
 import { RemixI18Next } from 'remix-i18next';
 import i18n from './i18n';
 
+const publicDirectory = resolve(
+  import.meta.env.PROD ? './build/client' : './public',
+);
+
+export const localesDirectory = resolve(
+  publicDirectory,
+  'locales/{{lng}}/{{ns}}.json',
+);
+
 export const i18next = new RemixI18Next({
   detection: {
     supportedLanguages: i18n.supportedLngs,
@@ -13,7 +22,7 @@ export const i18next = new RemixI18Next({
   i18next: {
     ...i18n,
     backend: {
-      loadPath: resolve('./public/locales/{{lng}}/{{ns}}.json'),
+      loadPath: localesDirectory,
     },
   },
   // The i18next plugins you want RemixI18next to use for `i18n.getFixedT` inside loaders and actions.

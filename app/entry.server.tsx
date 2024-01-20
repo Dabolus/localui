@@ -1,4 +1,3 @@
-import { resolve } from 'node:path';
 import { renderToString } from 'react-dom/server';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
@@ -14,7 +13,7 @@ import Backend from 'i18next-fs-backend';
 import createEmotionCache from './src/createEmotionCache';
 import createTheme from './src/theme';
 import PageStyles from './src/PageStyles';
-import i18next from './i18next.server';
+import i18next, { localesDirectory } from './i18next.server';
 import i18n from './i18n';
 
 export default async function handleRequest(
@@ -34,7 +33,7 @@ export default async function handleRequest(
       ...i18n, // spread the configuration
       lng, // The locale we detected above
       ns, // The namespaces the routes about to render wants to use
-      backend: { loadPath: resolve('./public/locales/{{lng}}/{{ns}}.json') },
+      backend: { loadPath: localesDirectory },
     });
 
   const cache = createEmotionCache();
