@@ -53,6 +53,7 @@ jobs:
         platform:
           - linux/amd64
           - linux/arm64/v8
+          - linux/ppc64le
     steps:
       - name: Checkout
         uses: actions/checkout@v4
