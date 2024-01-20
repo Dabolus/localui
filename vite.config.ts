@@ -5,6 +5,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 export default defineConfig({
   plugins: [remix(), tsconfigPaths()],
   build: {
+    sourcemap: true,
     rollupOptions: {
       onwarn(warning, warn) {
         // Ignore warnings related to "use client" directives
