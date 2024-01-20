@@ -17,6 +17,6 @@ export default defineConfig({
     },
   },
   ssr: {
-    noExternal: ['remix-i18next'],
+    noExternal: ['remix-i18next', /@mui\/.*/],
   },
 });
