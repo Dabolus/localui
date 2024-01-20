@@ -1,5 +1,5 @@
 # base node image
-FROM node:21-alpine3.18 AS base
+FROM oven/bun:1.0-alpine AS base
 
 # set for base and all layer that inherit from it
 ENV NODE_ENV production
@@ -10,7 +10,8 @@ FROM base AS deps
 WORKDIR /localui
 
 ADD package.json ./
-RUN npm install --include=dev
+ADD bun.lockb ./
+RUN bun install
 
 # Setup production node_modules
 FROM base AS production-deps
@@ -19,7 +20,11 @@ WORKDIR /localui
 
 COPY --from=deps /localui/node_modules /localui/node_modules
 ADD package.json ./
-RUN npm prune --omit=dev
+ADD bun.lockb ./
+# Prune dev dependencies
+# Note: Bun doesn't support a command to directly prune dev dependencies yet
+# See: https://github.com/oven-sh/bun/issues/3605
+RUN rm -rf node_modules && bun install --production
 
 # Build the app
 FROM base AS build
@@ -29,7 +34,7 @@ WORKDIR /localui
 COPY --from=deps /localui/node_modules /localui/node_modules
 
 ADD . .
-RUN npm run build
+RUN bun run build
 
 # Finally, build the production image with minimal footprint
 FROM base
@@ -44,5 +49,6 @@ COPY --from=production-deps /localui/node_modules /localui/node_modules
 COPY --from=build /localui/build/server /localui/build/server
 COPY --from=build /localui/build/client /localui/build/client
 COPY --from=build /localui/package.json /localui/package.json
+COPY --from=build /localui/bun.lockb /localui/bun.lockb
 
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["bun", "start"]
