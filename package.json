@@ -11,7 +11,7 @@
   "funding": "https://github.com/sponsors/Dabolus",
   "scripts": {
     "build": "remix vite:build",
-    "dev": "concurrently 'bun:dev:*'",
+    "dev": "concurrently 'npm:dev:*'",
     "dev:remix": "LOCALUI_SERVICES_ENDPOINT=http://localhost:4566 LOCALUI_ACCESS_KEY_ID=accesskeyid LOCALUI_SECRET_ACCESS_KEY=secretaccesskey remix vite:dev",
     "dev:localstack": "docker compose up --force-recreate --build --renew-anon-volumes --remove-orphans",
     "start": "remix-serve ./build/server/index.js",
@@ -20,23 +20,23 @@
     "upgrade-interactive": "ncu --interactive"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.496.0",
-    "@aws-sdk/client-s3": "^3.496.0",
-    "@aws-sdk/client-sqs": "^3.496.0",
-    "@aws-sdk/lib-dynamodb": "^3.496.0",
-    "@aws-sdk/lib-storage": "^3.496.0",
+    "@aws-sdk/client-dynamodb": "^3.485.0",
+    "@aws-sdk/client-s3": "^3.485.0",
+    "@aws-sdk/client-sqs": "^3.485.0",
+    "@aws-sdk/lib-dynamodb": "^3.485.0",
+    "@aws-sdk/lib-storage": "^3.485.0",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.3",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.15.5",
-    "@mui/material": "^5.15.5",
-    "@mui/x-data-grid": "^6.19.1",
+    "@mui/icons-material": "^5.15.3",
+    "@mui/material": "^5.15.3",
+    "@mui/x-data-grid": "^6.18.7",
     "@mui/x-tree-view": "^6.17.0",
-    "@remix-run/node": "^2.5.1",
-    "@remix-run/react": "^2.5.1",
-    "@remix-run/serve": "^2.5.1",
-    "@remix-run/server-runtime": "^2.5.1",
+    "@remix-run/node": "^2.4.1",
+    "@remix-run/react": "^2.4.1",
+    "@remix-run/serve": "^2.4.1",
+    "@remix-run/server-runtime": "^2.4.1",
     "csv-parse": "^5.5.3",
     "docx-preview": "^0.3.0",
     "fuse.js": "^7.0.0",
@@ -53,19 +53,16 @@
     "remix-i18next": "^5.5.0"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.5.1",
-    "@types/react": "^18.2.48",
+    "@remix-run/dev": "^2.4.1",
+    "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
     "@types/react-syntax-highlighter": "^15",
     "concurrently": "^8.2.2",
     "i18next-parser": "^8.12.0",
     "npm-check-updates": "^16.14.12",
-    "prettier": "^3.2.4",
+    "prettier": "^3.1.1",
     "typescript": "^5.3.3",
-    "vite-tsconfig-paths": "^4.3.1"
-  },
-  "resolutions": {
-    "rollup": "npm:@rollup/wasm-node@*"
+    "vite-tsconfig-paths": "^4.2.3"
   },
   "engines": {
     "node": ">=14"
