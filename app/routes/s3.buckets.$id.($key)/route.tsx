@@ -6,7 +6,12 @@ import {
   CommonPrefix,
   _Object,
 } from '@aws-sdk/client-s3';
-import { json, LoaderFunctionArgs } from '@remix-run/node';
+import {
+  ActionFunctionArgs,
+  json,
+  LoaderFunctionArgs,
+  redirect,
+} from '@remix-run/node';
 import { HTMLFormMethod, FormEncType } from '@remix-run/router';
 import {
   useParams,
@@ -49,6 +54,8 @@ import PreviewSidebar from './preview/PreviewSidebar';
 import useLinkUtils from '~/src/hooks/useLinkUtils';
 import CreateFolderDialog from './CreateFolderDialog';
 import UploadObjectsDialog from './UploadObjectsDialog';
+import DeleteObjectsDialog from './DeleteObjectsDialog';
+import { deleteObjectsAction } from './actions';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -77,7 +84,7 @@ const DroppableForm = styled(Form)<{ $isDragActive?: boolean }>({
   position: 'relative',
 });
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
   const key = params.key ? base64UrlDecode(params.key) : undefined;
   const prefix = key?.slice(0, key?.lastIndexOf('/') + 1);
@@ -122,7 +129,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
         ? enrichedResponse.Contents.find(obj => obj.Key === key)
         : undefined,
   });
-}
+};
+
+export const action = (args: ActionFunctionArgs) => {
+  if (args.request.method === 'DELETE') {
+    return deleteObjectsAction(args);
+  }
+  throw redirect(
+    `/s3/buckets/${args.params.id}${args.params.key ? `/${args.params.key}` : ''}`,
+  );
+};
 
 export default function BucketDetails() {
   const { t } = useTranslation();
@@ -214,6 +230,13 @@ export default function BucketDetails() {
             </Button>
             <Button
               component={RemixLink}
+              to={withSearchParam('delete', '')}
+              disabled={selectedObjects.length < 1}
+            >
+              {t('delete')}
+            </Button>
+            <Button
+              component={RemixLink}
               to={withSearchParam('create-folder', '')}
             >
               Create folder
@@ -280,6 +303,9 @@ export default function BucketDetails() {
           <input type="hidden" name="paths" />
           <input {...getInputProps({ name: 'files' })} />
           <DataGrid
+            isRowSelectable={params =>
+              !selectedObject || params.row.item.Key === selectedObject.Key
+            }
             rowSelectionModel={selectedObjects}
             onRowSelectionModelChange={newSelection =>
               setSearchParams(previousParams => {
@@ -296,23 +322,38 @@ export default function BucketDetails() {
               {
                 field: 'name',
                 headerName: t('name'),
-                renderCell: params => (
-                  <Link
-                    to={withPathname(
-                      `/s3/buckets/${id}/${base64UrlEncode(
-                        params.row.item.Key ?? params.row.item.Prefix ?? '',
-                      )}`,
-                    )}
-                    color="secondary"
-                    component={RemixLink}
-                    unstable_viewTransition
-                  >
-                    {highlightMatches(
-                      params.row.item.BaseName ?? '',
-                      params.row.matches?.[0]?.indices,
-                    )}
-                  </Link>
-                ),
+                renderCell: params => {
+                  const rowKey =
+                    params.row.item.Key ?? params.row.item.Prefix ?? '';
+                  const isRowOnlySelected =
+                    params.row.item.Key &&
+                    selectedObjects.length === 1 &&
+                    selectedObjects[0] === rowKey;
+                  const linkPathname = withPathname(
+                    `/s3/buckets/${id}/${base64UrlEncode(
+                      isRowOnlySelected ? decodedBaseDir : rowKey,
+                    )}`,
+                  );
+                  return (
+                    <Link
+                      to={withSearchParam(
+                        'selection',
+                        isRowOnlySelected || params.row.item.Prefix
+                          ? null
+                          : rowKey,
+                        linkPathname,
+                      )}
+                      color="secondary"
+                      component={RemixLink}
+                      unstable_viewTransition
+                    >
+                      {highlightMatches(
+                        params.row.item.BaseName ?? '',
+                        params.row.matches?.[0]?.indices,
+                      )}
+                    </Link>
+                  );
+                },
                 sortable: !search,
                 flex: 1,
               },
@@ -374,6 +415,10 @@ export default function BucketDetails() {
           open={searchParams.has('upload')}
           bucketName={id!}
           prefix={decodedBaseDir}
+        />
+        <DeleteObjectsDialog
+          open={searchParams.has('delete') && selectedObjects.length > 0}
+          objects={selectedObjects}
         />
       </Box>
       {selectedObject && (

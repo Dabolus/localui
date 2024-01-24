@@ -17,6 +17,8 @@
   "delete": "Elimina",
   "deleteBucketsConfirmationContent": "Questa operazione è irreversibile.",
   "deleteBucketsConfirmationTitle": "Eliminare i bucket selezionati?",
+  "deleteObjectsConfirmationContent": "Questa operazione è irreversibile.",
+  "deleteObjectsConfirmationTitle": "Eliminare gli oggetti selezionati?",
   "deleteQueuesConfirmationContent": "Questa operazione è irreversibile.",
   "deleteQueuesConfirmationTitle": "Eliminare le code selezionate?",
   "deleteTablesConfirmationContent": "Questa operazione è irreversibile.",

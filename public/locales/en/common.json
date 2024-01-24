@@ -17,6 +17,8 @@
   "delete": "Delete",
   "deleteBucketsConfirmationContent": "This action cannot be undone.",
   "deleteBucketsConfirmationTitle": "Delete selected buckets?",
+  "deleteObjectsConfirmationContent": "This action cannot be undone.",
+  "deleteObjectsConfirmationTitle": "Delete selected objects?",
   "deleteQueuesConfirmationContent": "This action cannot be undone.",
   "deleteQueuesConfirmationTitle": "Delete selected queues?",
   "deleteTablesConfirmationContent": "This action cannot be undone.",

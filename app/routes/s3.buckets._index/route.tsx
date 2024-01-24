@@ -261,11 +261,11 @@ const BucketsList: FunctionComponent = () => {
       />
       <CreateBucketsDialog open={searchParams.has('create')} />
       <EmptyBucketsDialog
-        open={searchParams.has('empty') && buckets.length > 0}
+        open={searchParams.has('empty') && selectedBuckets.length > 0}
         buckets={selectedBuckets}
       />
       <DeleteBucketsDialog
-        open={searchParams.has('delete') && buckets.length > 0}
+        open={searchParams.has('delete') && selectedBuckets.length > 0}
         buckets={selectedBuckets}
       />
     </>

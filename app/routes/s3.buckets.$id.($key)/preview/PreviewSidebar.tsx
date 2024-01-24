@@ -90,10 +90,14 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
       title={object.BaseName}
       isFullscreen={isFullscreen}
       fullscreenLink={withSearchParam('fullscreen', isFullscreen ? null : '')}
-      closeLink={withPathname(
-        `/s3/buckets/${object.BucketName}${
-          prefix ? `/${base64UrlEncode(prefix)}` : ''
-        }`,
+      closeLink={withSearchParam(
+        'selection',
+        null,
+        withPathname(
+          `/s3/buckets/${object.BucketName}${
+            prefix ? `/${base64UrlEncode(prefix)}` : ''
+          }`,
+        ),
       )}
     >
       <Stack height="100%">
@@ -110,14 +114,7 @@ const PreviewSidebar: FunctionComponent<PreviewSidebarProps> = ({
           >
             {t('download')}
           </Button>
-          <Button
-            variant="contained"
-            color="error"
-            component={RemixLink}
-            to={withPathname(
-              `/s3/buckets/${object.BucketName}/${encodedKey}/delete`,
-            )}
-          >
+          <Button component={RemixLink} to={withSearchParam('delete', '')}>
             {t('delete')}
           </Button>
         </Stack>
