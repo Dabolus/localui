@@ -21,8 +21,8 @@ const DeleteObjectsDialog: FunctionComponent<DeleteObjectsDialogProps> = ({
   return (
     <ConfirmationDialog
       open={open}
-      title={t('deleteObjectsConfirmationTitle')}
-      content={t('deleteObjectsConfirmationContent')}
+      title={t('deleteObjectsConfirmationTitle', { count: objects.length })}
+      content={t('deleteObjectsConfirmationContent', { count: objects.length })}
       closeLink={withSearchParam('delete', null)}
       method="DELETE"
       action={`${location.pathname}${location.search}`}

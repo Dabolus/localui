@@ -19,8 +19,8 @@ const DeleteQueuesDialog: FunctionComponent<DeleteQueuesDialogProps> = ({
   return (
     <ConfirmationDialog
       open={open}
-      title={t('deleteQueuesConfirmationTitle')}
-      content={t('deleteQueuesConfirmationContent')}
+      title={t('deleteQueuesConfirmationTitle', { count: queues.length })}
+      content={t('deleteQueuesConfirmationContent', { count: queues.length })}
       closeLink={withSearchParam('delete', null)}
       method="DELETE"
       action="/sqs/queues"

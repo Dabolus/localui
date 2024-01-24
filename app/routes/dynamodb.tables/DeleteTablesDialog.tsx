@@ -19,8 +19,8 @@ const DeleteTablesDialog: FunctionComponent<DeleteTablesDialogProps> = ({
   return (
     <ConfirmationDialog
       open={open}
-      title={t('deleteTablesConfirmationTitle')}
-      content={t('deleteTablesConfirmationContent')}
+      title={t('deleteTablesConfirmationTitle', { count: tables.length })}
+      content={t('deleteTablesConfirmationContent', { count: tables.length })}
       closeLink={withSearchParam('delete', null)}
       method="DELETE"
       action="/dynamodb/tables"

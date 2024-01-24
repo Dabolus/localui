@@ -19,8 +19,8 @@ const DeleteBucketsDialog: FunctionComponent<DeleteBucketsDialogProps> = ({
   return (
     <ConfirmationDialog
       open={open}
-      title={t('deleteBucketsConfirmationTitle')}
-      content={t('deleteBucketsConfirmationContent')}
+      title={t('deleteBucketsConfirmationTitle', { count: buckets.length })}
+      content={t('deleteBucketsConfirmationContent', { count: buckets.length })}
       closeLink={withSearchParam('delete', null)}
       method="DELETE"
       action="/s3/buckets"

@@ -19,8 +19,8 @@ const EmptyBucketsDialog: FunctionComponent<EmptyBucketsDialogProps> = ({
   return (
     <ConfirmationDialog
       open={open}
-      title={t('emptyBucketsConfirmationTitle')}
-      content={t('emptyBucketsConfirmationContent')}
+      title={t('emptyBucketsConfirmationTitle', { count: buckets.length })}
+      content={t('emptyBucketsConfirmationContent', { count: buckets.length })}
       closeLink={withSearchParam('empty', null)}
       method="PUT"
       action="/s3/buckets"
