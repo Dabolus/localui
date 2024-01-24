@@ -361,7 +361,7 @@ export default function BucketDetails() {
                 field: 'type',
                 headerName: t('type'),
                 valueGetter: params =>
-                  params.row.item.Key ? 'File' : 'Folder',
+                  params.row.item.Key ? t('file') : t('folder'),
                 sortable: !search,
                 width: 100,
               },
