@@ -32,8 +32,10 @@ export const i18next = new RemixI18Next({
 });
 
 export const useServerTranslation = async (request: Request) => {
-  const locale = await i18next.getLocale(request);
-  const t = await i18next.getFixedT(locale ?? i18n.fallbackLng, 'common');
+  const locale =
+    (await i18next.getLocale(request).catch(() => i18n.fallbackLng)) ??
+    i18n.fallbackLng;
+  const t = await i18next.getFixedT(locale, 'common');
   return { locale, t };
 };
 
