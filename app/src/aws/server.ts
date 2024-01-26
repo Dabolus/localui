@@ -57,6 +57,12 @@ export type ServiceToConfigMap = typeof serviceToConfigMap;
 export type SupportedService = keyof ServiceToConfigMap;
 export type ServiceClient<T extends SupportedService> =
   ServiceToConfigMap[T]['Client']['prototype'];
+export interface SupportedServiceClientConfig {
+  id: SupportedService;
+  href?: string;
+}
+
+const allServices = Object.keys(serviceToConfigMap) as SupportedService[];
 
 const resolveEnvironmentVariable = (
   suffix: string,
@@ -140,19 +146,31 @@ export const setupAwsClients = (
 ): Map<SupportedService, Map<string, AwsClient>> =>
   new Map(services.map(service => [service, setupAwsClientsGroup(service)]));
 
-export const enabledServices = (process.env.LOCALUI_ENABLED_SERVICES?.split(
-  ',',
-).map(service => service.trim()) ?? [
+const enabledServicesIds = (process.env.LOCALUI_ENABLED_SERVICES?.split(',')
+  .map(service => service.trim())
+  .filter(Boolean) ??
   // Default to all available services if no env variable is provided
-  's3',
-  'dynamodb',
-  'sqs',
-]) as SupportedService[];
+  allServices) as SupportedService[];
+
+export const enabledServices: SupportedServiceClientConfig[] =
+  enabledServicesIds.map(id => {
+    const { envName } = serviceToConfigMap[id];
+    return {
+      id,
+      href:
+        resolveEnvironmentVariable('EXTERNAL_DASHBOARD_HREF', envName) ||
+        undefined,
+    };
+  });
 
 export const awsClients: Map<
   SupportedService,
   Map<string, AwsClient>
-> = setupAwsClients(...enabledServices);
+> = setupAwsClients(
+  // Setup clients for all enabled services that do not have a href
+  // (i.e. that are not marked as external)
+  ...enabledServices.filter(({ href }) => !href).map(({ id }) => id),
+);
 
 export const getAwsClientsGroup = <T extends SupportedService>(
   service: T,

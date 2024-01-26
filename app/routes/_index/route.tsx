@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RemixLink, useLoaderData } from '@remix-run/react';
 import {
   Typography,
@@ -8,6 +10,7 @@ import {
   styled,
 } from '@mui/material';
 import { json, redirect } from '@remix-run/node';
+import { OpenInNew as OpenInNewIcon } from '@mui/icons-material';
 import { enabledServices } from '~/src/aws/server';
 import { serviceToNameMap } from '~/src/aws/common';
 import CurrentPath from '~/src/components/CurrentPath';
@@ -16,8 +19,6 @@ import AwsIconContainer from '~/src/components/icons/aws/AwsIconContainer';
 import { computeTitle } from '~/src/utils';
 import { useServerTranslation } from '~/i18next.server';
 import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/node';
-import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (enabledServices.length === 1) {
@@ -99,31 +100,44 @@ export default function Index() {
           {t('consoleHome')}
         </Typography>
         <ServicesList>
-          {services.map(service => (
-            <li key={service}>
-              <Link
-                component={RemixLink}
-                to={serviceToLinkMap[service]}
-                underline="none"
-                unstable_viewTransition
-              >
-                <ServiceCard>
-                  <ServiceCardIconContainer service={service}>
-                    <ServiceCardIcon service={service} />
-                  </ServiceCardIconContainer>
-                  <Stack px={2} py={1} justifyContent="space-evenly">
-                    <CardHeader
-                      title={serviceToNameMap[service]}
-                      sx={{ p: 0 }}
-                    />
-                    <Typography lineHeight={1.3}>
-                      {serviceToDescriptionMap[service]}
-                    </Typography>
-                  </Stack>
-                </ServiceCard>
-              </Link>
-            </li>
-          ))}
+          {services.map(({ id, href }) => {
+            const linkProps = href
+              ? {
+                  component: 'a',
+                  href,
+                }
+              : {
+                  component: RemixLink,
+                  to: serviceToLinkMap[id],
+                  unstable_viewTransition: true,
+                };
+
+            return (
+              <li key={id}>
+                <Link underline="none" {...linkProps}>
+                  <ServiceCard>
+                    <ServiceCardIconContainer service={id}>
+                      <ServiceCardIcon service={id} />
+                    </ServiceCardIconContainer>
+                    <Stack px={2} py={1} justifyContent="space-evenly">
+                      <CardHeader
+                        title={
+                          <Stack direction="row" justifyContent="space-between">
+                            {serviceToNameMap[id]}
+                            {href && <OpenInNewIcon fontSize="small" />}
+                          </Stack>
+                        }
+                        sx={{ p: 0 }}
+                      />
+                      <Typography lineHeight={1.3}>
+                        {serviceToDescriptionMap[id]}
+                      </Typography>
+                    </Stack>
+                  </ServiceCard>
+                </Link>
+              </li>
+            );
+          })}
         </ServicesList>
       </Stack>
     </>
