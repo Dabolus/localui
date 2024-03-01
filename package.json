@@ -16,7 +16,7 @@
     "dev:localstack": "docker compose up --force-recreate --build --renew-anon-volumes --remove-orphans",
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc",
-    "extract-locales": "i18next && prettier --write public/locales",
+    "extract-locales": "i18next && prettier --write app/locales",
     "upgrade-interactive": "ncu --interactive"
   },
   "dependencies": {
@@ -42,8 +42,6 @@
     "fuse.js": "^7.0.0",
     "i18next": "^23.7.16",
     "i18next-browser-languagedetector": "^7.2.0",
-    "i18next-fs-backend": "^2.3.1",
-    "i18next-http-backend": "^2.4.2",
     "material-ui-popup-state": "^5.0.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

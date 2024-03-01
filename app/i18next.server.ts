@@ -1,6 +1,6 @@
-import Backend from 'i18next-fs-backend';
 import { resolve } from 'node:path';
 import { RemixI18Next } from 'remix-i18next';
+import Backend from './i18next-fetch-backend';
 import i18n from './i18n';
 
 const publicDirectory = resolve(

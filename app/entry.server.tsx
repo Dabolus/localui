@@ -9,7 +9,7 @@ import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
 import { createInstance } from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
-import Backend from 'i18next-fs-backend';
+import Backend from './i18next-fetch-backend';
 import createEmotionCache from './src/createEmotionCache';
 import createTheme from './src/theme';
 import PageStyles from './src/PageStyles';
