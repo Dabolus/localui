@@ -55,7 +55,8 @@ import useLinkUtils from '~/src/hooks/useLinkUtils';
 import CreateFolderDialog from './CreateFolderDialog';
 import UploadObjectsDialog from './UploadObjectsDialog';
 import DeleteObjectsDialog from './DeleteObjectsDialog';
-import { deleteObjectsAction } from './actions';
+import RenameObjectDialog from './RenameObjectDialog';
+import { deleteObjectsAction, renameObjectAction } from './actions';
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {
@@ -132,8 +133,13 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 };
 
 export const action = (args: ActionFunctionArgs) => {
-  if (args.request.method === 'DELETE') {
-    return deleteObjectsAction(args);
+  switch (args.request.method) {
+    case 'DELETE': {
+      return deleteObjectsAction(args);
+    }
+    case 'PATCH': {
+      return renameObjectAction(args);
+    }
   }
   throw redirect(
     `/s3/buckets/${args.params.id}${args.params.key ? `/${args.params.key}` : ''}`,
@@ -234,6 +240,13 @@ export default function BucketDetails() {
               disabled={selectedObjects.length < 1}
             >
               {t('delete')}
+            </Button>
+            <Button
+              component={RemixLink}
+              to={withSearchParam('rename', '')}
+              disabled={selectedObjects.length !== 1}
+            >
+              {t('rename')}
             </Button>
             <Button
               component={RemixLink}
@@ -419,6 +432,10 @@ export default function BucketDetails() {
         <DeleteObjectsDialog
           open={searchParams.has('delete') && selectedObjects.length > 0}
           objects={selectedObjects}
+        />
+        <RenameObjectDialog
+          open={searchParams.has('rename') && selectedObjects.length === 1}
+          object={selectedObjects[0] ?? ''}
         />
       </Box>
       {selectedObject && (
