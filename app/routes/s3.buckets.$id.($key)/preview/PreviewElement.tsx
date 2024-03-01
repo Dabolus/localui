@@ -261,24 +261,29 @@ export const PreviewContent: FunctionComponent<PreviewElementProps> = ({
   if (contentType.startsWith('audio/')) {
     return <audio src={src} title={name} controls />;
   }
-  if (contentType.startsWith('application/json')) {
+  if (contentType.startsWith('application/json') || name.endsWith('.json')) {
     return <JsonViewer src={src} name={name} />;
   }
-  if (contentType.startsWith('application/pdf')) {
+  if (contentType.startsWith('application/pdf') || name.endsWith('.pdf')) {
     return <FullSizeIframe src={src} title={name} />;
   }
   if (
     contentType.startsWith(
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    )
+    ) ||
+    name.endsWith('.docx')
   ) {
     return <DocxViewer src={src} name={name} />;
   }
-  if (contentType.startsWith('text/csv')) {
+  if (contentType.startsWith('text/csv') || name.endsWith('.csv')) {
     return <CsvViewer src={src} name={name} />;
   }
   const prismLanguage = getPrismLanguage(name);
-  if (prismLanguage || contentType.startsWith('text/')) {
+  if (
+    prismLanguage ||
+    contentType.startsWith('text/') ||
+    name.endsWith('.txt')
+  ) {
     return (
       <TextViewer src={src} name={name} language={prismLanguage ?? 'text'} />
     );
