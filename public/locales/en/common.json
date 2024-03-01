@@ -63,6 +63,7 @@
   "number": "Number",
   "objects": "Objects",
   "partitionKey": "Partition key",
+  "prefix": "Prefix",
   "previewNotSupported": "Preview not supported for this file type.",
   "queueName": "Queue name",
   "queues": "Queues",

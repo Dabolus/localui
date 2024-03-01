@@ -73,6 +73,7 @@
   "number": "Numero",
   "objects": "Oggetti",
   "partitionKey": "Chiave di partizione",
+  "prefix": "Prefisso",
   "previewNotSupported": "Anteprima non supportata per questo tipo di file.",
   "queueName": "Nome coda",
   "queues": "Code",

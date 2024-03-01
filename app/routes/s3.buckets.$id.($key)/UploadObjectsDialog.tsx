@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
+  TextField,
   Typography,
   styled,
 } from '@mui/material';
@@ -97,8 +98,12 @@ const UploadObjectsDialog: FunctionComponent<UploadObjectsDialogProps> = ({
   const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
     // The file input value is read-only, so we need to create a new FormData
     // object and append the files and their paths to it.
+    // Re-adding files and folders in this way, we also make sure that the
+    // user provided prefix is sent before them, even if the text field is
+    // placed after the dropzone in the DOM.
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
+    formData.delete('paths');
     formData.delete('files');
     selectedFiles.forEach(file => {
       formData.append('paths', file.path ?? file.name);
@@ -122,7 +127,7 @@ const UploadObjectsDialog: FunctionComponent<UploadObjectsDialogProps> = ({
       open={open}
       title="Upload objects"
       content={
-        <Stack height={178}>
+        <Stack spacing={2} height={218}>
           <DropzoneContainer $isDragActive={isDragActive} {...getRootProps()}>
             <input {...getInputProps({ name: 'files' })} />
             <Typography variant="body2">
@@ -185,6 +190,7 @@ const UploadObjectsDialog: FunctionComponent<UploadObjectsDialogProps> = ({
               </ListItem>
             ))}
           </List>
+          <TextField fullWidth label={t('prefix')} name="userPrefix" />
         </Stack>
       }
       closeLink={withSearchParam('upload', null)}

@@ -10,21 +10,38 @@ import {
 import { getAwsClient } from '~/src/aws/server';
 import { base64UrlEncode } from '~/src/utils';
 
-const pathDecoder = new TextDecoder();
+const textDecoder = new TextDecoder();
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { searchParams } = new URL(request.url);
   const s3Client = getAwsClient('s3', searchParams.get('endpoint'));
-  const prefix = searchParams.get('prefix') ?? '';
+  const prefixParts = [
+    searchParams
+      .get('prefix')
+      ?.trim()
+      // Remove leading and trailing slashes
+      .replace(/^\/+|\/+$/g, ''),
+  ];
 
   const paths: Record<string, string> = {};
 
   await unstable_parseMultipartFormData(
     request,
     async ({ name, contentType, data, filename }) => {
+      if (name === 'userPrefix') {
+        for await (const userPrefixData of data) {
+          const decodedUserPrefix = textDecoder.decode(userPrefixData);
+          prefixParts.push(
+            decodedUserPrefix
+              .trim()
+              // Remove leading and trailing slashes
+              .replace(/^\/+|\/+$/g, ''),
+          );
+        }
+      }
       if (name === 'paths') {
         for await (const pathData of data) {
-          const decodedPath = pathDecoder.decode(pathData);
+          const decodedPath = textDecoder.decode(pathData);
           paths[path.basename(decodedPath)] = decodedPath.startsWith('/')
             ? decodedPath.slice(1)
             : decodedPath;
@@ -38,7 +55,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
       const stream = new PassThrough();
       const writePromise = writeAsyncIterableToWritable(data, stream);
-      const key = `${prefix}${paths[filename] ?? filename}`;
+      const key = [...prefixParts, paths[filename] ?? filename]
+        .filter(Boolean)
+        .join('/');
 
       const multipartUpload = new Upload({
         client: s3Client,
@@ -56,7 +75,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     },
   );
 
+  const finalPrefix = prefixParts.filter(Boolean).join('/') + '/';
   return redirect(
-    `/s3/buckets/${params.id}${prefix ? `/${base64UrlEncode(prefix)}` : ''}`,
+    `/s3/buckets/${params.id}${finalPrefix ? `/${base64UrlEncode(finalPrefix)}` : ''}`,
   );
 }
