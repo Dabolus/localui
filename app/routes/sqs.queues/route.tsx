@@ -24,7 +24,7 @@ import {
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
-import { highlightMatches } from '~/src/utils';
+import { highlightMatches, ignoreSearchChanges } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { getAwsClient } from '~/src/aws/server';
 import CreateQueueDialog from './CreateQueueDialog';
@@ -51,6 +51,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       })) ?? [],
   });
 };
+
+export const shouldRevalidate = ignoreSearchChanges;
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [
   computeTitle('SQS', ...(data?.meta.titleParts || [])),

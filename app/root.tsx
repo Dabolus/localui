@@ -19,7 +19,7 @@ import { useChangeLanguage } from 'remix-i18next';
 import { useTranslation } from 'react-i18next';
 import ClientStyleContext from './src/ClientStyleContext';
 import Layout from './src/Layout';
-import { computeTitle } from './src/utils';
+import { computeTitle, ignoreSearchChanges } from './src/utils';
 import { useServerTranslation } from './i18next.server';
 import {
   json,
@@ -101,6 +101,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { locale, t } = await useServerTranslation(request);
   return json({ meta: { description: t('homeDescription') }, locale });
 };
+
+export const shouldRevalidate = ignoreSearchChanges;
 
 export const handle = {
   i18n: 'common',

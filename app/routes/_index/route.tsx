@@ -16,7 +16,7 @@ import { serviceToNameMap } from '~/src/aws/common';
 import CurrentPath from '~/src/components/CurrentPath';
 import AwsIcon from '~/src/components/icons/aws/AwsIcon';
 import AwsIconContainer from '~/src/components/icons/aws/AwsIconContainer';
-import { computeTitle } from '~/src/utils';
+import { computeTitle, ignoreSearchChanges } from '~/src/utils';
 import { useServerTranslation } from '~/i18next.server';
 import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/node';
 
@@ -31,6 +31,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     services: enabledServices,
   });
 };
+
+export const shouldRevalidate = ignoreSearchChanges;
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [
   computeTitle(),

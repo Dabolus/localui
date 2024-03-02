@@ -14,7 +14,7 @@ import {
 import { useLoaderData } from '@remix-run/react';
 import { FunctionComponent } from 'react';
 import { getAwsClient } from '~/src/aws/server';
-import { computeTitle } from '~/src/utils';
+import { computeTitle, ignoreSearchChanges } from '~/src/utils';
 import QueueSidebar from './QueueSidebar';
 import { deleteQueueAction, postMessageToQueueAction } from './actions';
 import type { MetaFunction } from '@remix-run/node';
@@ -61,6 +61,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     Messages,
   });
 };
+
+export const shouldRevalidate = ignoreSearchChanges;
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [
   computeTitle('SQS', ...(data?.meta.titleParts || [])),

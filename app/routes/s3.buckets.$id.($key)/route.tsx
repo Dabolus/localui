@@ -44,6 +44,7 @@ import {
   base64UrlEncode,
   formatDateTime,
   highlightMatches,
+  ignoreSearchChanges,
   prettifySize,
 } from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
@@ -131,6 +132,8 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
         : undefined,
   });
 };
+
+export const shouldRevalidate = ignoreSearchChanges;
 
 export const action = (args: ActionFunctionArgs) => {
   switch (args.request.method) {

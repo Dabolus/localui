@@ -1,9 +1,9 @@
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { LoaderFunctionArgs } from '@remix-run/node';
-import { base64UrlDecode } from '~/src/utils';
+import { base64UrlDecode, ignoreSearchChanges } from '~/src/utils';
 import { getAwsClient } from '~/src/aws/server';
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const { searchParams } = new URL(request.url);
   const isPreview = searchParams.has('preview');
   const key = base64UrlDecode(params.key!);
@@ -26,4 +26,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       }; filename="${baseName}"`,
     },
   });
-}
+};
+
+export const shouldRevalidate = ignoreSearchChanges;

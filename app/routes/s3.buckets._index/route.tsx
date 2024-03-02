@@ -23,7 +23,12 @@ import {
 } from '@mui/icons-material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
-import { computeTitle, formatDateTime, highlightMatches } from '~/src/utils';
+import {
+  computeTitle,
+  formatDateTime,
+  highlightMatches,
+  ignoreSearchChanges,
+} from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { getAwsClientsGroup } from '~/src/aws/server';
 import CreateBucketsDialog from './CreateBucketsDialog';
@@ -74,6 +79,8 @@ export const action = (args: ActionFunctionArgs) => {
   }
   throw redirect('/s3/buckets');
 };
+
+export const shouldRevalidate = ignoreSearchChanges;
 
 const SearchField = styled(TextField)({
   'input[type="search"]::-webkit-search-cancel-button': {

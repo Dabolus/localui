@@ -23,7 +23,11 @@ import {
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
-import { computeTitle, highlightMatches } from '~/src/utils';
+import {
+  computeTitle,
+  highlightMatches,
+  ignoreSearchChanges,
+} from '~/src/utils';
 import CurrentPath from '~/src/components/CurrentPath';
 import { getAwsClient } from '~/src/aws/server';
 import CreateTableDialog from './CreateTableDialog';
@@ -45,6 +49,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     tables: response.TableNames ?? [],
   });
 };
+
+export const shouldRevalidate = ignoreSearchChanges;
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => [
   computeTitle('DynamoDB', ...(data?.meta.titleParts || [])),

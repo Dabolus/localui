@@ -1,6 +1,7 @@
-import { ReactNode } from 'react';
-import { RangeTuple } from 'fuse.js';
-import { ServerRuntimeMetaDescriptor } from '@remix-run/server-runtime';
+import type { ReactNode } from 'react';
+import type { RangeTuple } from 'fuse.js';
+import type { ServerRuntimeMetaDescriptor } from '@remix-run/server-runtime';
+import type { ShouldRevalidateFunctionArgs } from '@remix-run/react';
 
 export const textDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
   dateStyle: 'long',
@@ -87,3 +88,13 @@ export const computeTitle = (
 ): ServerRuntimeMetaDescriptor => ({
   title: ['LocalUI', ...parts].filter(Boolean).join(' › '),
 });
+
+export const ignoreSearchChanges = ({
+  currentUrl,
+  defaultShouldRevalidate,
+  nextUrl,
+}: ShouldRevalidateFunctionArgs) =>
+  // Don't re-run the loader if the search query changes
+  currentUrl.searchParams.get('search') !== nextUrl.searchParams.get('search')
+    ? false
+    : defaultShouldRevalidate;
