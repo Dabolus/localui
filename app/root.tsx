@@ -1,7 +1,6 @@
 import { ReactNode, useContext } from 'react';
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -15,7 +14,7 @@ import {
   unstable_useEnhancedEffect as useEnhancedEffect,
   getInitColorSchemeScript,
 } from '@mui/material';
-import { useChangeLanguage } from 'remix-i18next';
+import { useChangeLanguage } from 'remix-i18next/react';
 import { useTranslation } from 'react-i18next';
 import ClientStyleContext from './src/ClientStyleContext';
 import Layout from './src/Layout';
@@ -184,7 +183,6 @@ const Document = withEmotionCache(
           {children}
           <ScrollRestoration />
           <Scripts />
-          <LiveReload />
         </body>
       </html>
     );

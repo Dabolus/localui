@@ -1,8 +1,11 @@
-import { unstable_vitePlugin as remix } from '@remix-run/dev';
+import { vitePlugin as remix } from '@remix-run/dev';
+import { installGlobals } from '@remix-run/node';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-export default defineConfig({
+installGlobals();
+
+export default defineConfig(({ mode }) => ({
   plugins: [remix(), tsconfigPaths()],
   build: {
     sourcemap: true,
@@ -17,6 +20,6 @@ export default defineConfig({
     },
   },
   ssr: {
-    noExternal: ['remix-i18next', /@mui\/.*/],
+    noExternal: mode === 'production' ? [/@mui\/.*/] : [],
   },
-});
+}));

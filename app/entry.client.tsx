@@ -15,7 +15,7 @@ import {
 import i18next from 'i18next';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { getInitialNamespaces } from 'remix-i18next';
+import { getInitialNamespaces } from 'remix-i18next/client';
 import ClientStyleContext from './src/ClientStyleContext';
 import createEmotionCache from './src/createEmotionCache';
 import createTheme from './src/theme';

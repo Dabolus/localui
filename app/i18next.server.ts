@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { RemixI18Next } from 'remix-i18next';
+import { RemixI18Next } from 'remix-i18next/server';
 import Backend from './i18next-fetch-backend';
 import i18n from './i18n';
 
