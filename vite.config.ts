@@ -6,7 +6,14 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 installGlobals({ nativeFetch: true });
 
 export default defineConfig(({ mode }) => ({
-  plugins: [remix(), tsconfigPaths()],
+  plugins: [
+    remix({
+      future: {
+        unstable_singleFetch: true,
+      },
+    }),
+    tsconfigPaths(),
+  ],
   build: {
     sourcemap: true,
     rollupOptions: {

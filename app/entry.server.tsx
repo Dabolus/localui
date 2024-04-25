@@ -1,4 +1,5 @@
-import { renderToString } from 'react-dom/server';
+// Use the server.browser package to be able to use renderToReadableStream also on Node.js/Bun
+import { renderToReadableStream } from 'react-dom/server.browser';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
 import {
@@ -15,6 +16,9 @@ import createTheme from './src/theme';
 import PageStyles from './src/PageStyles';
 import i18next, { localesDirectory } from './i18next.server';
 import i18n from './i18n';
+
+// Reject all pending promises from handler functions after 5 seconds
+export const streamTimeout = 5000;
 
 export default async function handleRequest(
   request: Request,
@@ -45,18 +49,47 @@ export default async function handleRequest(
       <I18nextProvider i18n={i18nextInstance}>
         <CacheProvider value={cache}>
           <CssVarsProvider theme={theme} defaultMode="system">
-            {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
             <PageStyles />
-            <RemixServer context={remixContext} url={request.url} />
+            <RemixServer
+              context={remixContext}
+              url={request.url}
+              abortDelay={streamTimeout * 2}
+            />
           </CssVarsProvider>
         </CacheProvider>
       </I18nextProvider>
     );
   }
 
-  // Render the component to a string.
-  const html = renderToString(<MuiRemixServer />);
+  const controller = new AbortController();
+  let timeout = setTimeout(() => controller.abort(), streamTimeout * 2);
+
+  const stream = await renderToReadableStream(<MuiRemixServer />, {
+    signal: controller.signal,
+  });
+  try {
+    await stream.allReady;
+    clearTimeout(timeout);
+  } catch (error) {
+    responseStatusCode = 500;
+    console.error(error);
+  }
+
+  // Read the stream to a string
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let html = '<!DOCTYPE html>';
+  await reader.read().then(function processText({
+    done,
+    value,
+  }: ReadableStreamReadResult<Uint8Array>): void | Promise<void> {
+    if (done) {
+      return;
+    }
+    html += decoder.decode(value);
+    return reader.read().then(processText);
+  });
 
   // Grab the CSS from emotion
   const { styles } = extractCriticalToChunks(html);
@@ -77,7 +110,7 @@ export default async function handleRequest(
 
   responseHeaders.set('Content-Type', 'text/html');
 
-  return new Response(`<!DOCTYPE html>${markup}`, {
+  return new Response(markup, {
     status: responseStatusCode,
     headers: responseHeaders,
   });
