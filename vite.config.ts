@@ -16,8 +16,6 @@ export default defineConfig(({ mode }) => ({
   ],
   build: {
     sourcemap: true,
-    // Browsers with top-level await support
-    target: ['chrome89', 'edge89', 'firefox89', 'safari15', 'opera75'],
     rollupOptions: {
       onwarn(warning, warn) {
         // Ignore warnings related to "use client" directives

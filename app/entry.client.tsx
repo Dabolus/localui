@@ -23,9 +23,10 @@ import createTheme from './src/theme';
 import PageStyles from './src/PageStyles';
 import Backend from './i18next-fetch-backend';
 import i18n from './i18n';
+import { muiLicenseKey } from './muiLicenseHandler';
 
-if (import.meta.env.VITE_MUI_LICENSE_KEY) {
-  LicenseInfo.setLicenseKey(import.meta.env.VITE_MUI_LICENSE_KEY);
+if (muiLicenseKey) {
+  LicenseInfo.setLicenseKey(muiLicenseKey);
 }
 
 interface ClientCacheProviderProps {

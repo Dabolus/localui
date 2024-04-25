@@ -17,10 +17,7 @@ import createTheme from './src/theme';
 import PageStyles from './src/PageStyles';
 import i18next, { localesDirectory } from './i18next.server';
 import i18n from './i18n';
-
-if (import.meta.env.VITE_MUI_LICENSE_KEY) {
-  LicenseInfo.setLicenseKey(import.meta.env.VITE_MUI_LICENSE_KEY);
-}
+import { muiLicenseKey } from './muiLicenseHandler';
 
 // Reject all pending promises from handler functions after 5 seconds
 export const streamTimeout = 5000;
@@ -114,6 +111,20 @@ export default async function handleRequest(
   );
 
   responseHeaders.set('Content-Type', 'text/html');
+
+  if (muiLicenseKey) {
+    LicenseInfo.setLicenseKey(muiLicenseKey);
+    responseHeaders.set(
+      'Set-Cookie',
+      `mui-license-key=${muiLicenseKey}; Path=/`,
+    );
+  } else {
+    // Clear the license key cookie if it was removed for some reason, just in case
+    responseHeaders.set(
+      'Set-Cookie',
+      'mui-license-key=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+    );
+  }
 
   return new Response(markup, {
     status: responseStatusCode,

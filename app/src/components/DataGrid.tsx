@@ -1,7 +1,8 @@
+import { muiLicenseKey } from '~/muiLicenseHandler';
+import { DataGrid as DataGridBase } from '@mui/x-data-grid';
+import { DataGridPro } from '@mui/x-data-grid-pro';
 export type * from '@mui/x-data-grid';
 
-export const DataGrid = import.meta.env.VITE_MUI_LICENSE_KEY
-  ? await import('@mui/x-data-grid-pro').then(imp => imp.DataGridPro)
-  : await import('@mui/x-data-grid').then(imp => imp.DataGrid);
+export const DataGrid = muiLicenseKey ? DataGridPro : DataGridBase;
 
 export default DataGrid;
