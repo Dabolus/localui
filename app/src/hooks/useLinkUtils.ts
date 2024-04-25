@@ -41,7 +41,11 @@ const useLinkUtils = (): UseLinkUtilsResult => {
       const searchParams = new URLSearchParams(newUrl.search);
       const updatedSearchParamsInit =
         typeof searchParamsSetter === 'function'
-          ? searchParamsSetter(new URLSearchParams(searchParams))
+          ? (
+              searchParamsSetter as (
+                prev: URLSearchParams,
+              ) => URLSearchParamsInit
+            )(new URLSearchParams(searchParams))
           : searchParamsSetter;
       const updatedSearchParamsString = createSearchParams(
         updatedSearchParamsInit,

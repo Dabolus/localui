@@ -171,4 +171,5 @@ export const s3StorageClassToNameMap: Record<ObjectStorageClass, string> = {
   [ObjectStorageClass.SNOW]: 'Snow',
   [ObjectStorageClass.STANDARD]: '-',
   [ObjectStorageClass.STANDARD_IA]: 'IA',
+  [ObjectStorageClass.EXPRESS_ONEZONE]: 'Express One Zone',
 };
