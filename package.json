@@ -11,7 +11,7 @@
   "funding": "https://github.com/sponsors/Dabolus",
   "scripts": {
     "build": "remix vite:build",
-    "dev": "concurrently 'bun:dev:*'",
+    "dev": "concurrently 'yarn:dev:*'",
     "dev:remix": "LOCALUI_SERVICES_ENDPOINT=http://localhost:4566 LOCALUI_ACCESS_KEY_ID=accesskeyid LOCALUI_SECRET_ACCESS_KEY=secretaccesskey remix vite:dev",
     "dev:localstack": "docker compose up --force-recreate --build --renew-anon-volumes --remove-orphans",
     "start": "remix-serve ./build/server/index.js",
@@ -20,47 +20,47 @@
     "upgrade-interactive": "ncu --interactive"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.525.0",
-    "@aws-sdk/client-s3": "^3.525.0",
-    "@aws-sdk/client-sqs": "^3.525.0",
-    "@aws-sdk/lib-dynamodb": "^3.525.0",
-    "@aws-sdk/lib-storage": "^3.525.1",
+    "@aws-sdk/client-dynamodb": "^3.556.0",
+    "@aws-sdk/client-s3": "^3.556.0",
+    "@aws-sdk/client-sqs": "^3.556.0",
+    "@aws-sdk/lib-dynamodb": "^3.556.0",
+    "@aws-sdk/lib-storage": "^3.556.0",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/server": "^11.11.0",
-    "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.15.11",
-    "@mui/material": "^5.15.11",
-    "@mui/x-data-grid": "^6.19.6",
-    "@mui/x-tree-view": "^6.17.0",
-    "@remix-run/node": "^2.8.0",
-    "@remix-run/react": "^2.8.0",
-    "@remix-run/serve": "^2.8.0",
-    "@remix-run/server-runtime": "^2.8.0",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.15",
+    "@mui/material": "^5.15.15",
+    "@mui/x-data-grid": "^7.3.0",
+    "@mui/x-tree-view": "^7.3.0",
+    "@remix-run/node": "^2.9.1",
+    "@remix-run/react": "^2.9.1",
+    "@remix-run/serve": "^2.9.1",
+    "@remix-run/server-runtime": "^2.9.1",
     "csv-parse": "^5.5.5",
     "docx-preview": "^0.3.0",
     "fuse.js": "^7.0.0",
-    "i18next": "^23.10.0",
-    "i18next-browser-languagedetector": "^7.2.0",
-    "material-ui-popup-state": "^5.0.10",
+    "i18next": "^23.11.2",
+    "i18next-browser-languagedetector": "^7.2.1",
+    "material-ui-popup-state": "^5.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone-esm": "^15.0.1",
-    "react-i18next": "^14.0.5",
+    "react-i18next": "^14.1.1",
     "react-syntax-highlighter": "^15.5.0",
-    "remix-i18next": "^6.0.1"
+    "remix-i18next": "^6.1.0"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.8.0",
-    "@types/react": "^18.2.61",
-    "@types/react-dom": "^18.2.19",
+    "@remix-run/dev": "^2.9.1",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
     "@types/react-syntax-highlighter": "^15.5.11",
     "concurrently": "^8.2.2",
     "i18next-parser": "^8.13.0",
-    "npm-check-updates": "^16.14.15",
+    "npm-check-updates": "^16.14.18",
     "prettier": "^3.2.5",
-    "typescript": "^5.3.3",
-    "vite-tsconfig-paths": "^4.3.1"
+    "typescript": "^5.4.5",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "resolutions": {
     "rollup": "npm:@rollup/wasm-node@*"
@@ -69,5 +69,5 @@
     "node": ">=14"
   },
   "sideEffects": false,
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.1.1"
 }

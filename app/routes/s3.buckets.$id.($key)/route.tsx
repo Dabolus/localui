@@ -376,8 +376,8 @@ export default function BucketDetails() {
               {
                 field: 'type',
                 headerName: t('type'),
-                valueGetter: params =>
-                  params.row.item.Key ? t('file') : t('folder'),
+                valueGetter: (_, row) =>
+                  row.item.Key ? t('file') : t('folder'),
                 sortable: !search,
                 width: 100,
               },
@@ -395,16 +395,16 @@ export default function BucketDetails() {
               {
                 field: 'size',
                 headerName: t('size'),
-                valueGetter: params => prettifySize(params.row.item.Size),
+                valueGetter: (_, row) => prettifySize(row.item.Size),
                 sortable: !search,
                 width: 100,
               },
               {
                 field: 'storageClass',
                 headerName: t('storageClass'),
-                valueGetter: params =>
-                  params.row.item.StorageClass
-                    ? s3StorageClassToNameMap[params.row.item.StorageClass]
+                valueGetter: (_, row) =>
+                  row.item.StorageClass
+                    ? s3StorageClassToNameMap[row.item.StorageClass]
                     : '-',
                 sortable: !search,
                 width: 150,

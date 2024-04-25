@@ -8,7 +8,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import { PrismAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { DataGrid, DataGridProps } from '@mui/x-data-grid';
-import { TreeItem, TreeView, TreeViewProps } from '@mui/x-tree-view';
+import {
+  TreeItem,
+  SimpleTreeView,
+  SimpleTreeViewProps,
+} from '@mui/x-tree-view';
 import {
   Typography,
   styled,
@@ -122,13 +126,13 @@ const ColoredValue = styled('span')<{ $value: any }>(({ $value, theme }) => ({
 const JsonValue: FunctionComponent<{ value: any }> = ({ value }) => (
   <ColoredValue $value={value}>{JSON.stringify(value)}</ColoredValue>
 );
-const JsonTreeView = styled(TreeView)(({ theme }) => ({
+const JsonTreeView = styled(SimpleTreeView)(({ theme }) => ({
   background: theme.vars.palette.background.default,
   padding: theme.spacing(2, 0),
   width: '100%',
   height: '100%',
   overflow: 'auto',
-})) as typeof TreeView;
+})) as typeof SimpleTreeView;
 
 const convertToTree = (obj: any, keyPrefix = ''): ReactNode => {
   if (Array.isArray(obj) || (typeof obj === 'object' && obj !== null)) {
@@ -137,26 +141,26 @@ const convertToTree = (obj: any, keyPrefix = ''): ReactNode => {
         Array.isArray(value) ||
         (typeof value === 'object' && value !== null)
       ) {
-        const nodeId = `${keyPrefix}['${key}']`;
+        const itemId = `${keyPrefix}['${key}']`;
         return (
           <TreeItem
-            key={nodeId}
-            nodeId={nodeId}
+            key={itemId}
+            itemId={itemId}
             label={
               <code>
                 <ColoredKey>{key}:</ColoredKey>
               </code>
             }
           >
-            {convertToTree(value, nodeId)}
+            {convertToTree(value, itemId)}
           </TreeItem>
         );
       }
-      const nodeId = `${keyPrefix}['${key}']`;
+      const itemId = `${keyPrefix}['${key}']`;
       return (
         <TreeItem
-          key={nodeId}
-          nodeId={nodeId}
+          key={itemId}
+          itemId={itemId}
           label={
             <code>
               <ColoredKey>{key}:</ColoredKey> <JsonValue value={value} />
@@ -173,7 +177,7 @@ const JsonViewer: FunctionComponent<
   Pick<PreviewElementProps, 'name' | 'src'>
 > = ({ name, src }) => {
   const [treeViewProps, setTreeViewProps] = useState<
-    TreeViewProps<false> | undefined
+    SimpleTreeViewProps<false> | undefined
   >(undefined);
 
   useEnhancedEffect(() => {
@@ -182,7 +186,7 @@ const JsonViewer: FunctionComponent<
       .then(data => {
         // Convert the JSON object to a tree structure.
         const children = convertToTree(data);
-        setTreeViewProps({ defaultExpanded: Object.keys(data), children });
+        setTreeViewProps({ defaultExpandedItems: Object.keys(data), children });
       });
   }, []);
 
@@ -190,8 +194,10 @@ const JsonViewer: FunctionComponent<
     treeViewProps && (
       <JsonTreeView
         aria-label={name}
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpandIcon={<ChevronRightIcon />}
+        slots={{
+          collapseIcon: ExpandMoreIcon,
+          expandIcon: ChevronRightIcon,
+        }}
         {...treeViewProps}
       />
     )
