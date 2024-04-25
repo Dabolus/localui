@@ -32,6 +32,8 @@
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
     "@mui/x-data-grid": "^7.3.0",
+    "@mui/x-data-grid-pro": "^7.3.0",
+    "@mui/x-license": "^7.2.0",
     "@mui/x-tree-view": "^7.3.0",
     "@remix-run/node": "^2.9.1",
     "@remix-run/react": "^2.9.1",

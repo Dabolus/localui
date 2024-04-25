@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PrismAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { DataGrid, DataGridProps } from '@mui/x-data-grid';
+import DataGrid, { DataGridProps } from '~/src/components/DataGrid';
 import {
   TreeItem,
   SimpleTreeView,

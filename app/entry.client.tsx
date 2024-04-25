@@ -8,6 +8,7 @@ import {
 import { hydrateRoot } from 'react-dom/client';
 import { RemixBrowser } from '@remix-run/react';
 import { CacheProvider } from '@emotion/react';
+import { LicenseInfo } from '@mui/x-license';
 import {
   Experimental_CssVarsProvider as CssVarsProvider,
   CssBaseline,
@@ -22,6 +23,10 @@ import createTheme from './src/theme';
 import PageStyles from './src/PageStyles';
 import Backend from './i18next-fetch-backend';
 import i18n from './i18n';
+
+if (import.meta.env.VITE_MUI_LICENSE_KEY) {
+  LicenseInfo.setLicenseKey(import.meta.env.VITE_MUI_LICENSE_KEY);
+}
 
 interface ClientCacheProviderProps {
   children: ReactNode;

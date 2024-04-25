@@ -2,6 +2,7 @@
 import { renderToReadableStream } from 'react-dom/server.browser';
 import { RemixServer } from '@remix-run/react';
 import type { EntryContext } from '@remix-run/node';
+import { LicenseInfo } from '@mui/x-license';
 import {
   Experimental_CssVarsProvider as CssVarsProvider,
   CssBaseline,
@@ -16,6 +17,10 @@ import createTheme from './src/theme';
 import PageStyles from './src/PageStyles';
 import i18next, { localesDirectory } from './i18next.server';
 import i18n from './i18n';
+
+if (import.meta.env.VITE_MUI_LICENSE_KEY) {
+  LicenseInfo.setLicenseKey(import.meta.env.VITE_MUI_LICENSE_KEY);
+}
 
 // Reject all pending promises from handler functions after 5 seconds
 export const streamTimeout = 5000;

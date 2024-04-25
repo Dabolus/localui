@@ -21,7 +21,7 @@ import {
   Refresh as RefreshIcon,
   Clear as ClearIcon,
 } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
+import DataGrid from '~/src/components/DataGrid';
 import useFuzzySearch from '~/src/hooks/useFuzzySearch';
 import {
   computeTitle,
