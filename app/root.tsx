@@ -114,9 +114,12 @@ interface DocumentProps {
 
 const Document = withEmotionCache(
   ({ children, title }: DocumentProps, emotionCache) => {
-    // Get the locale from the loader
-    const { locale } = useLoaderData<typeof loader>();
     const { i18n } = useTranslation();
+    // Try to get the locale from the loader
+    // Note: in this specific case, we also need to handle a default value
+    // because the loader can return undefined if there was an error in the page,
+    // as `useLoaderData` is not supported in error elements
+    const { locale = i18n.language } = useLoaderData<typeof loader>() || {};
 
     // This hook will change the i18n instance language to the current locale
     // detected by the loader, this way, when we do something to change the
