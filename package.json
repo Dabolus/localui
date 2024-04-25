@@ -11,7 +11,7 @@
   "funding": "https://github.com/sponsors/Dabolus",
   "scripts": {
     "build": "remix vite:build",
-    "dev": "concurrently 'bun:dev:*'",
+    "dev": "concurrently 'yarn:dev:*'",
     "dev:remix": "LOCALUI_SERVICES_ENDPOINT=http://localhost:4566 LOCALUI_ACCESS_KEY_ID=accesskeyid LOCALUI_SECRET_ACCESS_KEY=secretaccesskey remix vite:dev",
     "dev:localstack": "docker compose up --force-recreate --build --renew-anon-volumes --remove-orphans",
     "start": "remix-serve ./build/server/index.js",
@@ -70,5 +70,6 @@
   "engines": {
     "node": ">=14"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "packageManager": "yarn@4.1.1"
 }

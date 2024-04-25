@@ -1,5 +1,5 @@
 # base node image
-FROM oven/bun:1.1-alpine AS base
+FROM node:21-alpine3.18 AS base
 
 # set for base and all layer that inherit from it
 ENV NODE_ENV production
@@ -9,9 +9,12 @@ FROM base AS deps
 
 WORKDIR /localui
 
+RUN corepack enable
 ADD package.json ./
-ADD bun.lockb ./
-RUN bun install
+ADD yarn.lock ./
+ADD .yarnrc.yml ./
+ADD .yarn ./.yarn
+RUN yarn install
 
 # Setup production node_modules
 FROM base AS production-deps
@@ -19,12 +22,13 @@ FROM base AS production-deps
 WORKDIR /localui
 
 COPY --from=deps /localui/node_modules /localui/node_modules
+RUN corepack enable
 ADD package.json ./
-ADD bun.lockb ./
+ADD yarn.lock ./
+ADD .yarnrc.yml ./
+ADD .yarn ./.yarn
 # Prune dev dependencies
-# Note: Bun doesn't support a command to directly prune dev dependencies yet
-# See: https://github.com/oven-sh/bun/issues/3605
-RUN rm -rf node_modules && bun install --production
+RUN yarn workspaces focus --production
 
 # Build the app
 FROM base AS build
@@ -34,7 +38,7 @@ WORKDIR /localui
 COPY --from=deps /localui/node_modules /localui/node_modules
 
 ADD . .
-RUN bun run build
+RUN yarn build
 
 # Finally, build the production image with minimal footprint
 FROM base
@@ -46,9 +50,12 @@ WORKDIR /localui
 
 COPY --from=production-deps /localui/node_modules /localui/node_modules
 
+RUN corepack enable
 COPY --from=build /localui/build/server /localui/build/server
 COPY --from=build /localui/build/client /localui/build/client
 COPY --from=build /localui/package.json /localui/package.json
-COPY --from=build /localui/bun.lockb /localui/bun.lockb
+COPY --from=build /localui/yarn.lock /localui/yarn.lock
+COPY --from=build /localui/.yarnrc.yml /localui/.yarnrc.yml
+COPY --from=build /localui/.yarn /localui/.yarn
 
-ENTRYPOINT ["bun", "start"]
+ENTRYPOINT ["yarn", "start"]
